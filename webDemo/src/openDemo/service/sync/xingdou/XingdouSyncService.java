@@ -14,6 +14,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import openDemo.config.XingdouConfig;
 import openDemo.entity.OuInfoModel;
@@ -25,6 +26,7 @@ import openDemo.entity.sync.xingdou.XingdouResEmpData;
 import openDemo.entity.sync.xingdou.XingdouUserInfoModel;
 import openDemo.service.sync.AbstractSyncService2;
 
+@Service
 public class XingdouSyncService extends AbstractSyncService2 implements XingdouConfig {
 	// 全量增量区分
 	private static final String MODE_FULL = "0";

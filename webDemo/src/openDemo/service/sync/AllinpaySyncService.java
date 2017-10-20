@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -22,6 +23,7 @@ import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 
+@Service
 public class AllinpaySyncService extends AbstractSyncService2 implements AllinpayConfig {
 	// 全量增量区分
 	private static final String MODE_FULL = "0";

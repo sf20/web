@@ -19,6 +19,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import openDemo.dao.PositionDao;
 import openDemo.entity.OuInfoModel;
@@ -48,9 +49,12 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	// 请求同步接口的service
-	private SyncPositionService positionService = new SyncPositionService();
-	private SyncOrgService orgService = new SyncOrgService();
-	private SyncUserService userService = new SyncUserService();
+	@Autowired
+	private SyncPositionService positionService;
+	@Autowired
+	private SyncOrgService orgService;
+	@Autowired
+	private SyncUserService userService;
 	// 用于存放请求获取到的数据的集合
 	private List<PositionModel> positionList = new LinkedList<PositionModel>();
 	private List<OuInfoModel> ouInfoList = new LinkedList<OuInfoModel>();
