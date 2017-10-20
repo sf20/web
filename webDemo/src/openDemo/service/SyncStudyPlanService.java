@@ -3,6 +3,8 @@ package openDemo.service;
 import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import openDemo.common.HttpResultUtil;
 import openDemo.entity.ResultEntity;
 
@@ -11,6 +13,7 @@ import openDemo.entity.ResultEntity;
  * @author 2017-09-14 jixf
  *
  */
+@Service
 public class SyncStudyPlanService {
 	
 	/**

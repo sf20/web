@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
 import openDemo.common.HttpResultUtil;
@@ -16,6 +18,7 @@ import openDemo.entity.ResultEntity;
  * @author yaoj
  *
  */
+@Service
 public class SyncOrgService {
 	
 	/**
