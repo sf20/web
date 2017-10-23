@@ -24,7 +24,7 @@ import openDemo.service.sync.OppleSyncService;
  */
 public class SyncTimerService {
 	// 定时器间隔执行时间 单位毫秒
-	private static final long PERIOD = 5 * 60 * 1000;// 60 * 60 * 1000
+	private static final long PERIOD = 60 * 60 * 1000;// 60 * 60 * 1000
 	// 每次定时器执行时间参数
 	private int timerExecHour = 23;
 	private int timerExecMinute = 00;
