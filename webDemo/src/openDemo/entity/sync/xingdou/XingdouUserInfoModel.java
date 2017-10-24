@@ -9,9 +9,10 @@ public class XingdouUserInfoModel {
 	private String sex;
 	private String orgOuCode;
 	private String postionName;
-	private String status;
 	private String entryTime;
 	private String birthday;
+	private String status;
+	private String deleteStatus;
 
 	@XmlElement(name = "EmpID")
 	public String getID() {
@@ -67,14 +68,6 @@ public class XingdouUserInfoModel {
 		this.postionName = postionName;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
 	@XmlElement(name = "Timetoenter")
 	public String getEntryTime() {
 		return entryTime;
@@ -93,4 +86,21 @@ public class XingdouUserInfoModel {
 		this.birthday = birthday;
 	}
 
+	@XmlElement(name = "Employmenttype")
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@XmlElement(name = "Personnelcategory")
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
 }

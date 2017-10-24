@@ -132,7 +132,16 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
-		return false;
+		// 员工类型：1是正职 2是实习生 3是非全日制
+		String status = user.getStatus();
+		// 员工在/离职状态： 1是在职 5是离职
+		String deleteStatus = user.getDeleteStatus();
+		// 非全日制或者已离职的场合 员工过期
+		if ("3".equals(StringUtils.trim(status)) || "5".equals(StringUtils.trim(deleteStatus))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
