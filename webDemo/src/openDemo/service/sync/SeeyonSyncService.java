@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.seeyon.client.CTPRestClient;
 import com.seeyon.client.CTPServiceClientManager;
@@ -19,6 +20,7 @@ import openDemo.entity.sync.SeeyonOuInfoModel;
 import openDemo.entity.sync.SeeyonPositionModel;
 import openDemo.entity.sync.SeeyonUserInfoModel;
 
+@Service
 public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonConfig {
 	// 请求数据接口地址
 	private static String REQUEST_ADDRESS = "http://oa.lonch.com.cn:8081";
@@ -205,7 +207,7 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 			if (StringUtils.isNotEmpty(birthday)) {
 				long timeMills = Long.valueOf(birthday);
 				if (timeMills > 0) {
-					tempModel.setEntryTime(DATE_FORMAT.format(new Date(timeMills / 1000)));
+					tempModel.setBirthday(DATE_FORMAT.format(new Date(timeMills / 1000)));
 				}
 			}
 
