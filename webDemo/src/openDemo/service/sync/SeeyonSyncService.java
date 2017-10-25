@@ -173,7 +173,7 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 		String status = user.getStatus();
 		// state 人员状态：1为在职，2 为离职
 		String deleteStatus = user.getDeleteStatus();
-		// 未启用或已删除场合 组织过期
+		// 停用或离职场合 人员过期
 		if ("false".equals(status) || "2".equals(deleteStatus)) {
 			return true;
 		} else {
@@ -199,7 +199,12 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 			String entryTime = tempModel.getEntryTime();
 			if (StringUtils.isNotEmpty(entryTime)) {
 				long timeMills = Long.valueOf(entryTime);
-				tempModel.setEntryTime(DATE_FORMAT.format(new Date(timeMills / 1000)));
+				if (timeMills > 0) {
+					tempModel.setEntryTime(DATE_FORMAT.format(new Date(timeMills)));
+				} else {
+					// 为负值时不同步
+					tempModel.setEntryTime(null);
+				}
 			}
 
 			// 出生日期修改
@@ -207,7 +212,10 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 			if (StringUtils.isNotEmpty(birthday)) {
 				long timeMills = Long.valueOf(birthday);
 				if (timeMills > 0) {
-					tempModel.setBirthday(DATE_FORMAT.format(new Date(timeMills / 1000)));
+					tempModel.setBirthday(DATE_FORMAT.format(new Date(timeMills)));
+				} else {
+					// 为负值时不同步
+					tempModel.setBirthday(null);
 				}
 			}
 
