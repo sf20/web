@@ -5,6 +5,7 @@ public class SeeyonPositionModel {
 	private String name;
 	private String enabled;
 	private String isDeleted;
+	private String pNameClass;
 
 	public String getId() {
 		return id;
@@ -36,6 +37,14 @@ public class SeeyonPositionModel {
 
 	public void setIsDeleted(String isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+
+	public String getpNameClass() {
+		return pNameClass;
+	}
+
+	public void setpNameClass(String pNameClass) {
+		this.pNameClass = pNameClass;
 	}
 
 	// =====BeanUtils复制属性用=====
