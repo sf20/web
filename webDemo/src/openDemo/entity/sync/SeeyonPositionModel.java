@@ -3,9 +3,8 @@ package openDemo.entity.sync;
 public class SeeyonPositionModel {
 	private String id;
 	private String name;
-	private String superior;
-	private boolean isDeleted;
-	private boolean enabled;
+	private String enabled;
+	private String isDeleted;
 
 	public String getId() {
 		return id;
@@ -23,28 +22,38 @@ public class SeeyonPositionModel {
 		this.name = name;
 	}
 
-	public String getSuperior() {
-		return superior;
-	}
-
-	public void setSuperior(String superior) {
-		this.superior = superior;
-	}
-
-	public boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
-
-	public boolean getEnabled() {
+	public String getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(String enabled) {
 		this.enabled = enabled;
 	}
+
+	public String getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	// =====BeanUtils复制属性用=====
+	public String getpNo() {
+		return id;
+	}
+
+	public String getpNames() {
+		return name;
+	}
+
+	public String getStatus() {
+		return enabled;
+	}
+
+	public String getDeleteStatus() {
+		return isDeleted;
+	}
+	// =====BeanUtils复制属性用=====
 
 }
