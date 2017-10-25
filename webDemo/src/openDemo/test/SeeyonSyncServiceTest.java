@@ -9,7 +9,6 @@ import com.seeyon.client.CTPServiceClientManager;
 import openDemo.entity.sync.SeeyonOuInfoModel;
 import openDemo.entity.sync.SeeyonPositionModel;
 import openDemo.entity.sync.SeeyonUserInfoModel;
-import openDemo.service.sync.SeeyonSyncService;
 
 public class SeeyonSyncServiceTest {
 	private static String REQUEST_ADDRESS = "http://oa.lonch.com.cn:8081";
@@ -17,22 +16,16 @@ public class SeeyonSyncServiceTest {
 	private CTPRestClient client = null;
 
 	public static void main(String[] args) throws Exception {
-		// SeeyonSyncServiceTest service = new SeeyonSyncServiceTest();
-		// List<SeeyonOuInfoModel> allOrgs = service.getAllOrgs();
+		SeeyonSyncServiceTest service = new SeeyonSyncServiceTest();
+		List<SeeyonOuInfoModel> allOrgs = service.getAllOrgs();
 
 		// List<SeeyonPositionModel> posData = service.getPosData(allOrgs);
 		// System.out.println(posData.size());
 		// List<SeeyonOuInfoModel> deptData = service.getOrgData(allOrgs);
 		// System.out.println(deptData.size());
-		// List<SeeyonUserInfoModel> userData = service.getUserData(allOrgs);
-		// System.out.println(userData.size());
+		List<SeeyonUserInfoModel> userData = service.getUserData(allOrgs);
+		System.out.println(userData.size());
 
-		new AbstractSyncServiceTest() {
-			@Override
-			public void serviceSync() throws Exception {
-				new SeeyonSyncService().sync();
-			}
-		}.test();
 	}
 
 	/**
