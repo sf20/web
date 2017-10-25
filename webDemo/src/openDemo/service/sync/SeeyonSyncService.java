@@ -60,14 +60,13 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 	 */
 	private List<SeeyonPositionModel> getPosData(List<SeeyonOuInfoModel> allOrgs) {
 		List<SeeyonPositionModel> posList = new ArrayList<SeeyonPositionModel>();
-		if (authenticate()) {
-			for (SeeyonOuInfoModel org : allOrgs) {
-				String ouId = org.getOrgAccountId();
 
-				// 获取指定单位的所有岗位(包含停用)
-				List<SeeyonPositionModel> poss = client.getList("orgPosts/all/" + ouId, SeeyonPositionModel.class);
-				posList.addAll(poss);
-			}
+		for (SeeyonOuInfoModel org : allOrgs) {
+			String ouId = org.getOrgAccountId();
+
+			// 获取指定单位的所有岗位(包含停用)
+			List<SeeyonPositionModel> poss = client.getList("orgPosts/all/" + ouId, SeeyonPositionModel.class);
+			posList.addAll(poss);
 		}
 
 		return posList;
@@ -84,15 +83,14 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 		// 所有部门数据也包含单位数据
 		orgList.addAll(allOrgs);
 
-		if (authenticate()) {
-			for (SeeyonOuInfoModel org : allOrgs) {
-				String ouId = org.getOrgAccountId();
+		for (SeeyonOuInfoModel org : allOrgs) {
+			String ouId = org.getOrgAccountId();
 
-				// 获取指定单位的所有部门(包含停用)
-				List<SeeyonOuInfoModel> depts = client.getList("orgDepartments/all/" + ouId, SeeyonOuInfoModel.class);
-				orgList.addAll(depts);
-			}
+			// 获取指定单位的所有部门(包含停用)
+			List<SeeyonOuInfoModel> depts = client.getList("orgDepartments/all/" + ouId, SeeyonOuInfoModel.class);
+			orgList.addAll(depts);
 		}
+
 		return orgList;
 	}
 
@@ -104,14 +102,13 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 	 */
 	private List<SeeyonUserInfoModel> getUserData(List<SeeyonOuInfoModel> allOrgs) {
 		List<SeeyonUserInfoModel> userList = new ArrayList<SeeyonUserInfoModel>();
-		if (authenticate()) {
-			for (SeeyonOuInfoModel org : allOrgs) {
-				String ouId = org.getOrgAccountId();
 
-				// 取得指定单位的所有人员（包含停用人员）
-				List<SeeyonUserInfoModel> users = client.getList("orgMembers/all/" + ouId, SeeyonUserInfoModel.class);
-				userList.addAll(users);
-			}
+		for (SeeyonOuInfoModel org : allOrgs) {
+			String ouId = org.getOrgAccountId();
+
+			// 取得指定单位的所有人员（包含停用人员）
+			List<SeeyonUserInfoModel> users = client.getList("orgMembers/all/" + ouId, SeeyonUserInfoModel.class);
+			userList.addAll(users);
 		}
 
 		return userList;
