@@ -63,9 +63,16 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 
 		for (SeeyonOuInfoModel org : allOrgs) {
 			String ouId = org.getOrgAccountId();
+			String ouName = org.getName();
 
 			// 获取指定单位的所有岗位(包含停用)
 			List<SeeyonPositionModel> poss = client.getList("orgPosts/all/" + ouId, SeeyonPositionModel.class);
+
+			// 设置岗位的分级类别
+			for (SeeyonPositionModel pos : poss) {
+				pos.setpNameClass(ouName);
+			}
+
 			posList.addAll(poss);
 		}
 
