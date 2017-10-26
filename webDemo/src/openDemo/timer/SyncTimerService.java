@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import openDemo.service.sync.AlignSyncService;
 import openDemo.service.sync.CustomTimerTask;
-import openDemo.service.sync.LeoSyncService;
-import openDemo.service.sync.OppleSyncService;
+import openDemo.service.sync.align.AlignSyncService;
+import openDemo.service.sync.leo.LeoSyncService;
+import openDemo.service.sync.opple.OppleSyncService;
 
 /**
  * 同步定时器

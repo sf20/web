@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.leo;
 
 import java.util.List;
 

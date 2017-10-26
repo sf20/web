@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.leo;
 
 public interface LeoConfig {
 	// String apikey = "2c898138-d561-41dc-82a3-93fcdaede97e";

@@ -1,4 +1,4 @@
-package openDemo.service.sync;
+package openDemo.service.sync.align;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import openDemo.entity.StudyPlanDetail;
 import openDemo.entity.UserInfoModel;
 import openDemo.service.SyncOrgService;
 import openDemo.service.SyncStudyPlanService;
+import openDemo.service.sync.CustomTimerTask;
 
 public class AlignSyncService implements TestConfig, CustomTimerTask {
 	// 学习计划

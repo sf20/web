@@ -16,7 +16,7 @@ import com.jcraft.jsch.Session;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
-import openDemo.service.sync.AllinpaySyncService;
+import openDemo.service.sync.allinpay.AllinpaySyncService;
 
 public class AllinpaySyncServiceTest {
 	private static final String HOST = "116.228.64.54";

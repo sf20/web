@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.leo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.elion;
 
 public class ElionPositionModel {
 	private String setID;

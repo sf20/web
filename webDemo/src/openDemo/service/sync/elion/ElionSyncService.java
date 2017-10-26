@@ -1,9 +1,10 @@
-package openDemo.service.sync;
+package openDemo.service.sync.elion;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,57 +13,96 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
+import org.apache.axis.description.OperationDesc;
+import org.apache.axis.description.ParameterDesc;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.DOMException;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import openDemo.config.LeoConfig;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.ResultEntity;
 import openDemo.entity.UserInfoModel;
-import openDemo.entity.sync.LeoOuInfoModel;
-import openDemo.entity.sync.LeoPositionModel;
-import openDemo.entity.sync.LeoResData;
-import openDemo.entity.sync.LeoResJsonModel;
-import openDemo.entity.sync.LeoUserInfoModel;
+import openDemo.entity.sync.elion.EL_INT_COMMON_SYNC_REQ_TypeShape;
+import openDemo.entity.sync.elion.EL_INT_DEPT_FULLSYNC_RES;
+import openDemo.entity.sync.elion.EL_INT_DEPT_SYNC_RES;
+import openDemo.entity.sync.elion.EL_INT_DEPT_SYNC_RESLine;
+import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RES;
+import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RESLine;
+import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RES;
+import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RESLine;
 import openDemo.service.SyncOrgService;
 import openDemo.service.SyncPositionService;
 import openDemo.service.SyncUserService;
-import openDemo.utils.HttpClientUtil4Sync;
+import openDemo.service.sync.AbstractSyncService;
 
-public class LeoSyncService extends AbstractSyncService implements LeoConfig {
+public class ElionSyncService extends AbstractSyncService implements ElionConfig {
 	// 用户接口请求参数值
-	private static final String REQUEST_EMP_URL = "https://open.leo.cn/v1/hr/employees/last-updated";
-	private static final String REQUEST_ORG_URL = "https://open.leo.cn/v1/hr/origizations/last-updated";
-	private static final String REQUEST_POS_URL = "https://open.leo.cn/v1/hr/job-positions/last-updated";
-	private static final String REQUEST_PARAM_FROM = "from";
-	private static final String REQUEST_PARAM_PAGE = "p";
+	// 请求webservice的TargetEndpointAddress参数
+	private static String ENDPOINT_ADDRESS = "http://ehr.elion.com.cn/PSIGW/PeopleSoftServiceListeningConnector/PSFT_HR";
+	// 全量同步共通参数
+	private static String FULLSYNC_REQ_ELEMENT_NAME = "EL_INT_COMMON_FULLSYNC_REQ";
+	private static String FULLSYNC_REQ_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INTERFACE.EL_INT_COMMON_FULLSYNC_REQ.V1";
+	// 增量同步共通参数
+	private static String SYNC_REQ_ELEMENT_NAME = "EL_INT_COMMON_SYNC_REQ";
+	private static String SYNC_REQ_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INTERFACE.EL_INT_COMMON_SYNC_REQ.V1";
+	// 岗位全量同步参数
+	private static String JOB_FULLSYNC_OPERATION_NAME = "EL_INT_JOBCD_FULLSYNC_OP";
+	private static String JOB_FULLSYNC_SOAP_ACTION = "EL_INT_JOBCD_FULLSYNC_OP.v1";
+	private static String JOB_FULLSYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_JOBCD_FULLSYNC_RES.V1";
+	// 岗位增量同步参数
+	private static String JOB_SYNC_OPERATION_NAME = "EL_INT_JOBCD_SYNC_OP";
+	private static String JOB_SYNC_SOAP_ACTION = "EL_INT_JOBCD_SYNC_OP.v1";
+	private static String JOB_SYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_JOBCD_SYNC_RES.V1";
+	// 部门全量同步参数
+	private static String DEPT_FULLSYNC_OPERATION_NAME = "EL_INT_DEPT_FULLSYNC_OP";
+	private static String DEPT_FULLSYNC_SOAP_ACTION = "EL_INT_DEPT_FULLSYNC_OP.v1";
+	private static String DEPT_FULLSYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_DEPT_FULLSYNC_RES.V1";
+	// 部门增量同步参数
+	private static String DEPT_SYNC_OPERATION_NAME = "EL_INT_DEPT_SYNC_OP";
+	private static String DEPT_SYNC_SOAP_ACTION = "EL_INT_DEPT_SYNC_OP.v1";
+	private static String DEPT_SYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_DEPT_SYNC_RES.V1";
+	// 人员全量同步参数
+	private static String EMP_FULLSYNC_OPERATION_NAME = "EL_INT_PER_FULLSYNC_OP";
+	private static String EMP_FULLSYNC_SOAP_ACTION = "EL_INT_PER_FULLSYNC_OP.v1";
+	private static String EMP_FULLSYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_PER_FULLSYNC_RES.V1";
+	// 人员增量同步参数
+	private static String EMP_SYNC_OPERATION_NAME = "EL_INT_PER_SYNC_OP";
+	private static String EMP_SYNC_SOAP_ACTION = "EL_INT_PER_SYNC_OP.v1";
+	private static String EMP_SYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_PER_SYNC_RES.V1";
+	// 请求数据参数
+	private static final String DATA_SOURCE_ESB = "99";
+	private static final String DATA_FROM_INDEX = "1";
+	private static final String DATA_TO_INDEX = "5000";
+	private static final int PAGE_SIZE = 5000;
+	// 生效状态
+	private static final String EFFECTIVE_STATUS = "A";
+	// 员工主岗标志
+	private static final String EMPLOYEE_RECORD = "0";
+	// 全量增量区分
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
-	private static final String FROM_DATE = "2017-08-01";// TODO
-	private static final String ENABLE_STATUS = "1";
-	private static final String DELETED_STATUS = "1";
-	private static final String USER_DISABLE_STATUS = "8";
-	private static final int DEFAULT_PAGE_SIZE = 50;
-	private static final int RESPONSE_STATUS_OK = 200;
 	// 自定义map的key
 	private static final String MAPKEY_USER_SYNC_ADD = "userSyncAdd";
 	private static final String MAPKEY_USER_SYNC_UPDATE = "userSyncUpdate";
-	private static final String MAPKEY_USER_SYNC_ENABLE = "userSyncEnable";
-	private static final String MAPKEY_USER_SYNC_DISABLE = "userSyncDisable";
+	private static final String MAPKEY_USER_SYNC_DELETE = "userSyncDelete";
 	private static final String MAPKEY_ORG_SYNC_ADD = "orgSyncAdd";
 	private static final String MAPKEY_ORG_SYNC_UPDATE = "orgSyncUpdate";
 	private static final String MAPKEY_ORG_SYNC_DELETE = "orgSyncDelete";
 	private static final String MAPKEY_POS_SYNC_ADD = "posSyncAdd";
-	private static final String MAPKEY_POS_SYNC_UPDATE = "posSynccUpdate";
+	private static final String MAPKEY_POS_SYNC_UPDATE = "posSyncUpdate";
 	// 请求同步接口成功返回码
 	private static final String SYNC_CODE_SUCCESS = "0";
 	// 岗位类别的默认值
@@ -70,8 +110,9 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	private static final String POSITION_CLASS_SEPARATOR = ";";
 	// 日期格式化用
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat CUSTOMER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	// 记录日志
-	private static final Logger logger = LogManager.getLogger(LeoSyncService.class);
+	private static final Logger logger = LogManager.getLogger(ElionSyncService.class);
 
 	// 请求同步接口的service
 	private SyncPositionService positionService = new SyncPositionService();
@@ -81,62 +122,42 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	private List<PositionModel> positionList = new LinkedList<PositionModel>();
 	private List<OuInfoModel> ouInfoList = new LinkedList<OuInfoModel>();
 	private List<UserInfoModel> userInfoList = new LinkedList<UserInfoModel>();
-	private ObjectMapper mapper;
 
-	public LeoSyncService() {
-		// 创建用于json反序列化的对象
-		mapper = new ObjectMapper();
-		// 忽略json中多余的属性字段
-		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		// json字符串的日期格式
-		mapper.setDateFormat(DATE_FORMAT);
+	public ElionSyncService() {
 	}
 
 	/**
 	 * 对外提供的同步方法
 	 * 
-	 * @throws IOException
-	 * @throws ReflectiveOperationException
+	 * @throws Exception
 	 */
 	@Override
-	public void sync() throws IOException, ReflectiveOperationException {
+	public void sync() throws Exception {
 		int posCount = positionList.size();
 		if (posCount > 0) {
 			// 岗位增量同步
-			logger.info("[岗位增量]同步开始...");
 			opPosSync(MODE_UPDATE);
-			logger.info("[岗位增量]同步结束");
 		} else {
 			// 岗位全量同步
-			logger.info("[岗位全量]同步开始...");
 			opPosSync(MODE_FULL);
-			logger.info("[岗位全量]同步结束");
 		}
 
 		int orgCount = ouInfoList.size();
 		if (orgCount > 0) {
 			// 组织增量同步
-			logger.info("[组织增量]同步开始...");
 			opOrgSync(MODE_UPDATE, false);
-			logger.info("[组织增量]同步结束");
 		} else {
 			// 组织全量同步
-			logger.info("[组织全量]同步开始...");
 			opOrgSync(MODE_FULL, false);
-			logger.info("[组织全量]同步结束");
 		}
 
 		int userCount = userInfoList.size();
 		if (userCount > 0) {
 			// 用户增量同步
-			logger.info("[用户增量]同步开始...");
 			opUserSync(MODE_UPDATE, true);
-			logger.info("[用户增量]同步结束");
 		} else {
 			// 用户全量同步
-			logger.info("[用户全量]同步开始...");
 			opUserSync(MODE_FULL, true);
-			logger.info("[用户全量]同步结束");
 		}
 	}
 
@@ -144,12 +165,11 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * 岗位同步
 	 * 
 	 * @param mode
-	 * @throws ReflectiveOperationException
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public void opPosSync(String mode) throws IOException, ReflectiveOperationException {
-		List<LeoPositionModel> userModelList = getDataModelList(mode, REQUEST_POS_URL, LeoPositionModel.class);
-		List<PositionModel> newList = copyCreateEntityList(userModelList, PositionModel.class);
+	public void opPosSync(String mode) throws Exception {
+		List<EL_INT_JOBCD_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_JOBCD_SYNC_RESLine.class);
+		List<PositionModel> newList = copyCreateEntityList(modelList, PositionModel.class);
 
 		removeExpiredPos(newList);
 		setFullPosNames(newList);
@@ -199,9 +219,8 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 */
 	private boolean isPosExpired(PositionModel pos) {
 		String status = pos.getStatus();
-		String deleteStatus = pos.getDeleteStatus();
-		// 是否启用为0或者是否删除为1的场合 岗位过期
-		if (!ENABLE_STATUS.equals(status) || DELETED_STATUS.equals(deleteStatus)) {
+		// 状态为非生效的场合 岗位过期
+		if (!EFFECTIVE_STATUS.equals(status)) {
 			return true;
 		} else {
 			return false;
@@ -216,7 +235,14 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	private void setFullPosNames(List<PositionModel> newList) {
 		String prefix = POSITION_CLASS_DEFAULT + POSITION_CLASS_SEPARATOR;
 		for (PositionModel pos : newList) {
-			pos.setpNames(prefix + pos.getpNames());
+			String pNameClass = pos.getpNameClass();
+			if (StringUtils.isBlank(pNameClass)) {
+				pos.setpNames(prefix + pos.getpNames());
+			} else {
+				// 替换岗位类别名中的特殊字符
+				pNameClass = pNameClass.replaceAll("&amp;", "&");
+				pos.setpNames(pNameClass + POSITION_CLASS_SEPARATOR + pos.getpNames());
+			}
 		}
 	}
 
@@ -245,7 +271,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * 岗位全量数据集合与最新获取岗位数据集合进行比较
 	 * 
 	 * @param fullList
-	 *            数据库岗位表数据集合
+	 *            全量岗位数据集合
 	 * @param newList
 	 *            最新获取岗位数据集合
 	 * @return
@@ -266,7 +292,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 						if (newPosNo.equals(fullPos.getpNo())) {
 							String newPosName = newPos.getpNames();
 							// 岗位名发生更新
-							if (newPosName != null && !newPosName.equals(fullPos.getpNames())) {
+							if (!newPosName.equals(fullPos.getpNames())) {
 								posToSyncUpdate.add(newPos);
 							}
 							break;
@@ -338,15 +364,14 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	}
 
 	/**
-	 * 组织同步 用时：80-90s
+	 * 组织同步
 	 * 
 	 * @param mode
 	 * @param isBaseInfo
-	 * @throws IOException
-	 * @throws ReflectiveOperationException
+	 * @throws Exception
 	 */
-	public void opOrgSync(String mode, boolean isBaseInfo) throws IOException, ReflectiveOperationException {
-		List<LeoOuInfoModel> modelList = getDataModelList(mode, REQUEST_ORG_URL, LeoOuInfoModel.class);
+	public void opOrgSync(String mode, boolean isBaseInfo) throws Exception {
+		List<EL_INT_DEPT_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_DEPT_SYNC_RESLine.class);
 		List<OuInfoModel> newList = copyCreateEntityList(modelList, OuInfoModel.class);
 
 		removeExpiredOrgs(newList, mode);
@@ -388,10 +413,10 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * @param mode
 	 */
 	private void removeExpiredOrgs(List<OuInfoModel> list, String mode) {
-		for (Iterator<OuInfoModel> iterator = list.iterator(); iterator.hasNext();) {
-			OuInfoModel org = iterator.next();
-			// 仅全量模式下执行
-			if (MODE_FULL.equals(mode)) {
+		// 仅全量模式下执行
+		if (MODE_FULL.equals(mode)) {
+			for (Iterator<OuInfoModel> iterator = list.iterator(); iterator.hasNext();) {
+				OuInfoModel org = iterator.next();
 				if (isOrgExpired(org)) {
 					iterator.remove();
 					logger.info("删除了过期组织：" + org.getOuName());
@@ -408,7 +433,8 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 */
 	private void setRootOrgParentId(List<OuInfoModel> newList) {
 		for (OuInfoModel org : newList) {
-			if ("-2".equals(org.getParentID())) {
+			// 客户数据中根组织的上级部门id为""
+			if ("".equals(org.getParentID())) {
 				org.setParentID(null);
 				break;
 			}
@@ -531,27 +557,20 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * 
 	 * @param mode
 	 * @param islink
-	 * @throws IOException
-	 * @throws ReflectiveOperationException
+	 * @throws Exception
 	 */
-	public void opUserSync(String mode, boolean islink) throws IOException, ReflectiveOperationException {
-		List<LeoUserInfoModel> modelList = getDataModelList(mode, REQUEST_EMP_URL, LeoUserInfoModel.class);
+	public void opUserSync(String mode, boolean islink) throws Exception {
+		List<EL_INT_PER_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_PER_SYNC_RESLine.class);
 		List<UserInfoModel> newList = copyCreateEntityList(modelList, UserInfoModel.class);
 
-		copySetUserName(newList);
 		changeDateFormatAndSex(modelList, newList);
+		removeExpiredUsers(newList, mode);
 
 		logger.info("用户同步Total Size: " + newList.size());
 		// 全量模式
 		if (MODE_FULL.equals(mode)) {
 			logger.info("用户同步新增Size: " + newList.size());
 			syncAddUserOneByOne(newList, islink);
-
-			List<UserInfoModel> expiredUsers = getExpiredUsers(newList);
-			if (expiredUsers.size() > 0) {
-				logger.info("用户同步禁用Size: " + expiredUsers.size());
-				syncDisableOneByOne(expiredUsers);
-			}
 		}
 		// 增量模式
 		else {
@@ -568,82 +587,76 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 				syncUpdateUserOneByOne(usersToSyncUpdate, islink);
 			}
 
-			List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
-			if (usersToDisable.size() > 0) {
-				syncDisableOneByOne(usersToDisable);
-			}
-
-			List<UserInfoModel> usersToEnable = map.get(MAPKEY_USER_SYNC_ENABLE);
-			if (usersToEnable.size() > 0) {
-				syncEnableOneByOne(usersToEnable);
+			List<UserInfoModel> usersToDelete = map.get(MAPKEY_USER_SYNC_DELETE);
+			if (usersToDelete.size() > 0) {
+				syncDeleteOneByOne(usersToDelete);
 			}
 		}
 
 	}
 
 	/**
-	 * 返回过期员工
+	 * 删除过期员工
 	 * 
 	 * @param list
-	 * @return
+	 * @param mode
 	 */
-	private List<UserInfoModel> getExpiredUsers(List<UserInfoModel> list) {
-		List<UserInfoModel> expiredUsers = new ArrayList<UserInfoModel>();
-		for (UserInfoModel user : list) {
-			if (isUserExpired(user)) {
-				expiredUsers.add(user);
+	private void removeExpiredUsers(List<UserInfoModel> list, String mode) {
+		// 仅全量模式下执行
+		if (MODE_FULL.equals(mode)) {
+			for (Iterator<UserInfoModel> iterator = list.iterator(); iterator.hasNext();) {
+				UserInfoModel user = iterator.next();
+				if (isUserExpired(user)) {
+					iterator.remove();
+					logger.info("删除了过期员工：" + user.getID());
+				}
 			}
+
 		}
-		return expiredUsers;
 	}
 
 	/**
-	 * 将json模型对象的日期进行格式化(yyyy-MM-dd)后赋值给对应的java同步对象 + 性别值转换
+	 * 将模型对象的日期进行格式化(yyyy-MM-dd)后赋值给对应的java同步对象 + 性别值转换
 	 * 
 	 * @param fromList
-	 *            json模型对象集合
+	 *            模型对象集合
 	 * @param toList
 	 *            java同步对象集合
 	 */
-	private void changeDateFormatAndSex(List<LeoUserInfoModel> fromList, List<UserInfoModel> toList) {
+	private void changeDateFormatAndSex(List<EL_INT_PER_SYNC_RESLine> fromList, List<UserInfoModel> toList) {
 		int listSize = toList.size();
 		UserInfoModel toModel = null;
-		LeoUserInfoModel fromModel = null;
+		EL_INT_PER_SYNC_RESLine fromModel = null;
 
 		for (int i = 0; i < listSize; i++) {
 			toModel = toList.get(i);
 			fromModel = fromList.get(i);
 
-			Date entryTime = fromModel.getEntryTime();
-			if (entryTime != null) {
-				toModel.setEntryTime(DATE_FORMAT.format(entryTime));
+			String entryTime = fromModel.getEntryTime();
+			if (StringUtils.isNotEmpty(entryTime)) {
+				try {
+					toModel.setEntryTime(DATE_FORMAT.format(CUSTOMER_DATE_FORMAT.parse(entryTime)));
+				} catch (ParseException e) {
+					logger.warn("日期格式有误 " + fromModel.getID() + "：" + entryTime);
+				}
 			}
 
-			Date birthday = fromModel.getBirthday();
-			if (birthday != null) {
-				toModel.setBirthday(DATE_FORMAT.format(birthday));
+			String birthday = fromModel.getBirthday();
+			if (StringUtils.isNotEmpty(birthday)) {
+				try {
+					toModel.setBirthday(DATE_FORMAT.format(CUSTOMER_DATE_FORMAT.parse(birthday)));
+				} catch (ParseException e) {
+					logger.warn("日期格式有误 " + fromModel.getID() + "：" + birthday);
+				}
 			}
 
-			// 性别字符串转换 0：男 1：女
+			// 性别字符串转换 M：男 F：女
 			String sex = fromModel.getSex();
-			if ("0".equals(sex)) {
+			if ("M".equals(sex)) {
 				toModel.setSex("男");
-			} else if ("1".equals(sex)) {
+			} else if ("F".equals(sex)) {
 				toModel.setSex("女");
 			}
-		}
-	}
-
-	/**
-	 * 将mail字段值赋值给userName字段
-	 * 
-	 * @param newList
-	 */
-	private void copySetUserName(List<UserInfoModel> newList) {
-		for (Iterator<UserInfoModel> iterator = newList.iterator(); iterator.hasNext();) {
-			UserInfoModel userInfoEntity = iterator.next();
-			// userName <= mail
-			userInfoEntity.setUserName(userInfoEntity.getMail());
 		}
 	}
 
@@ -724,54 +737,26 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	}
 
 	/**
-	 * 逐个用户同步启用
+	 * 逐个用户同步删除
 	 * 
-	 * @param usersToEnable
+	 * @param usersToDelete
 	 */
-	private void syncEnableOneByOne(List<UserInfoModel> usersToEnable) {
+	private void syncDeleteOneByOne(List<UserInfoModel> usersToDelete) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
-
-		for (UserInfoModel user : usersToEnable) {
+		for (UserInfoModel user : usersToDelete) {
 			tempList.add(user.getUserName());
 
 			try {
-				resultEntity = userService.enabledusersSync(tempList, apikey, secretkey, baseUrl);
+				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					userInfoList.remove(user);
 					userInfoList.add(user);
 				} else {
-					printLog("用户同步启用失败 ", user.getID(), resultEntity);
+					printLog("用户同步删除失败 ", user.getID(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("用户同步启用失败  " + user.getID(), e);
-			}
-
-			tempList.clear();
-		}
-	}
-
-	/**
-	 * 逐个用户同步禁用
-	 * 
-	 * @param usersToDisable
-	 */
-	private void syncDisableOneByOne(List<UserInfoModel> usersToDisable) {
-		List<String> tempList = new ArrayList<String>();
-		ResultEntity resultEntity = null;
-		for (UserInfoModel user : usersToDisable) {
-			tempList.add(user.getUserName());
-
-			try {
-				resultEntity = userService.disabledusersSync(tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					userInfoList.remove(user);
-					userInfoList.add(user);
-				} else {
-					printLog("用户同步禁用失败 ", user.getID(), resultEntity);
-				}
-			} catch (IOException e) {
-				logger.error("用户同步禁用失败 " + user.getID(), e);
+				logger.error("用户同步删除失败 " + user.getID(), e);
 			}
 
 			tempList.clear();
@@ -782,7 +767,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * 组织全量数据集合与最新获取组织数据集合进行比较
 	 * 
 	 * @param fullList
-	 *            数据库组织表数据集合
+	 *            全量组织数据集合
 	 * @param newList
 	 *            最新获取组织数据集合
 	 * @return 包含 同步新增、更新、 删除等组织集合的Map对象
@@ -835,9 +820,8 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 */
 	private boolean isOrgExpired(OuInfoModel org) {
 		String status = org.getStatus();
-		String deleteStatus = org.getDeleteStatus();
-		// 是否启用为0或者是否删除为1的场合 组织过期
-		if (!ENABLE_STATUS.equals(status) || DELETED_STATUS.equals(deleteStatus)) {
+		// 状态为非生效的场合 组织过期
+		if (!EFFECTIVE_STATUS.equals(status)) {
 			return true;
 		} else {
 			return false;
@@ -848,10 +832,10 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * 用户全量数据集合与最新获取用户数据集合进行比较
 	 * 
 	 * @param fullList
-	 *            数据库用户表数据集合
+	 *            全量用户数据集合
 	 * @param newList
 	 *            最新获取用户数据集合
-	 * @return 包含 同步新增、更新、启用、禁用等用户集合的Map对象
+	 * @return 包含 同步新增、更新、删除等用户集合的Map对象
 	 */
 	private Map<String, List<UserInfoModel>> compareUserList(List<UserInfoModel> fullList,
 			List<UserInfoModel> newList) {
@@ -859,52 +843,36 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 
 		List<UserInfoModel> usersToSyncAdd = new ArrayList<UserInfoModel>();
 		List<UserInfoModel> usersToSyncUpdate = new ArrayList<UserInfoModel>();
-		List<UserInfoModel> usersToEnable = new ArrayList<UserInfoModel>();
-		List<UserInfoModel> usersToDisable = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncDelete = new ArrayList<UserInfoModel>();
 
-		// 待更新用户
 		for (UserInfoModel newUser : newList) {
-			for (UserInfoModel fullUser : fullList) {
-				// 已经存在的用户比较
-				if (fullUser.equals(newUser)) {
-					if (!isUserExpired(fullUser)) {
-						if (isUserExpired(newUser)) {
-							// 用户过期禁用
-							usersToDisable.add(newUser);
-						} else {
-							// 存在用户更新
-							usersToSyncUpdate.add(newUser);
-						}
-					} else {
-						if (!isUserExpired(newUser)) {
-							// 用户重新启用
-							usersToEnable.add(newUser);
-						} else {
-							// 存在用户更新
-							usersToSyncUpdate.add(newUser);
-						}
-					}
-					break;
+			// 待新增用户
+			if (!fullList.contains(newUser)) {
+				if (!isUserExpired(newUser)) {
+					usersToSyncAdd.add(newUser);
+				} else {
+					logger.info("包含过期员工：" + newUser.getID());
 				}
 			}
-		}
-
-		// 待新增用户
-		for (UserInfoModel user : newList) {
-			if (!fullList.contains(user)) {
-				usersToSyncAdd.add(user);
+			// 已经存在的用户比较
+			else {
+				if (isUserExpired(newUser)) {
+					// 用户过期删除
+					usersToSyncDelete.add(newUser);
+				} else {
+					// 存在用户更新
+					usersToSyncUpdate.add(newUser);
+				}
 			}
 		}
 
 		map.put(MAPKEY_USER_SYNC_ADD, usersToSyncAdd);
 		map.put(MAPKEY_USER_SYNC_UPDATE, usersToSyncUpdate);
-		map.put(MAPKEY_USER_SYNC_ENABLE, usersToEnable);
-		map.put(MAPKEY_USER_SYNC_DISABLE, usersToDisable);
+		map.put(MAPKEY_USER_SYNC_DELETE, usersToSyncDelete);
 
 		logger.info("用户同步新增Size: " + usersToSyncAdd.size());
 		logger.info("用户同步更新Size: " + usersToSyncUpdate.size());
-		logger.info("用户同步启用Size: " + usersToEnable.size());
-		logger.info("用户同步禁用Size: " + usersToDisable.size());
+		logger.info("用户同步删除Size: " + usersToSyncDelete.size());
 
 		return map;
 	}
@@ -916,10 +884,14 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * @return
 	 */
 	private boolean isUserExpired(UserInfoModel user) {
+		String userName = user.getUserName();
 		String status = user.getStatus();
+		// 该字段在请求到客户接口数据时已关联EmployeeRecord字段
 		String deleteStatus = user.getDeleteStatus();
-		// 用户状态为8:离职 或者是否删除为1的场合下过期
-		if (USER_DISABLE_STATUS.equals(status) || DELETED_STATUS.equals(deleteStatus)) {
+		String expireDate = user.getExpireDate();
+		// UserName为空或者用户状态为非生效或者非主岗或者已经离职的场合下过期
+		if (StringUtils.isBlank(userName) || !EFFECTIVE_STATUS.equals(status) || !EMPLOYEE_RECORD.equals(deleteStatus)
+				|| StringUtils.isNotEmpty(expireDate)) {
 			return true;
 		} else {
 			return false;
@@ -927,163 +899,204 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	}
 
 	/**
-	 * 向客户接口发送请求并返回json数据模型集合
+	 * 向客户接口发送请求并返回数据模型集合
 	 * 
 	 * @param <T>
 	 * 
 	 * @param mode
-	 * @param requestUrl
 	 * @param classType
 	 * @return
 	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws SOAPException
+	 * @throws DOMException
 	 */
-	private <T> List<T> getDataModelList(String mode, String requestUrl, Class<T> classType) throws IOException {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put(REQUEST_PARAM_FROM, getTimestamp(mode));
-		// 用于认证的header信息
-		List<Header> authHeader = getAuthHeader();
+	private <T> List<T> getDataModelList(String mode, Class<T> classType)
+			throws IOException, ServiceException, DOMException, SOAPException {
+		Service service = new Service();
+		Call call = (Call) service.createCall();
+		call.setTargetEndpointAddress(ENDPOINT_ADDRESS);
 
-		List<T> tempList = new ArrayList<T>();
-		// 首次请求
-		Map<Integer, List<T>> dataMap = requestGetData(requestUrl, paramMap, authHeader, classType);
-		tempList.addAll(dataMap.values().iterator().next());
-
-		// 获取total值后请求全部数据
-		int total = dataMap.keySet().iterator().next();
-		for (int i = 0; i < calcRequestTimes(total, DEFAULT_PAGE_SIZE) - 1; i++) {
-			// 请求页码从2开始
-			paramMap.put(REQUEST_PARAM_PAGE, i + 2);
-			dataMap = requestGetData(requestUrl, paramMap, authHeader, classType);
-			tempList.addAll(dataMap.values().iterator().next());
+		// 设置请求参数
+		EL_INT_COMMON_SYNC_REQ_TypeShape req = new EL_INT_COMMON_SYNC_REQ_TypeShape();
+		req.setReqSystemID(DATA_SOURCE_ESB);
+		if (MODE_FULL.equals(mode)) {
+			req.setParam1(DATA_FROM_INDEX);
+			req.setParam2(DATA_TO_INDEX);
+		} else {
+			Date today = new Date();
+			req.setBeginDate(CUSTOMER_DATE_FORMAT.format(getYesterdayDate(today)));
+			req.setEndDate(CUSTOMER_DATE_FORMAT.format(today));
 		}
 
+		Object[] lines = null;
+		// 请求岗位数据
+		if (classType.isAssignableFrom(EL_INT_JOBCD_SYNC_RESLine.class)) {
+			if (MODE_FULL.equals(mode)) {
+				setPropsBeforeCall(mode, call, JOB_FULLSYNC_SOAP_ACTION, JOB_FULLSYNC_OPERATION_NAME,
+						JOB_FULLSYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_JOBCD_SYNC_RES.class);
+			} else {
+				setPropsBeforeCall(mode, call, JOB_SYNC_SOAP_ACTION, JOB_SYNC_OPERATION_NAME,
+						JOB_SYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_JOBCD_SYNC_RES.class);
+			}
+			EL_INT_JOBCD_SYNC_RES res = (EL_INT_JOBCD_SYNC_RES) call.invoke(new java.lang.Object[] { req });
+			lines = res.getLine();
+		}
+		// 请求部门数据
+		else if (classType.isAssignableFrom(EL_INT_DEPT_SYNC_RESLine.class)) {
+			if (MODE_FULL.equals(mode)) {
+				setPropsBeforeCall(mode, call, DEPT_FULLSYNC_SOAP_ACTION, DEPT_FULLSYNC_OPERATION_NAME,
+						DEPT_FULLSYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_DEPT_FULLSYNC_RES.class);
+
+				EL_INT_DEPT_FULLSYNC_RES res = (EL_INT_DEPT_FULLSYNC_RES) call.invoke(new java.lang.Object[] { req });
+				lines = res.getLine();
+			} else {
+				setPropsBeforeCall(mode, call, DEPT_SYNC_SOAP_ACTION, DEPT_SYNC_OPERATION_NAME,
+						DEPT_SYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_DEPT_SYNC_RES.class);
+
+				EL_INT_DEPT_SYNC_RES res = (EL_INT_DEPT_SYNC_RES) call.invoke(new java.lang.Object[] { req });
+				lines = res.getLine();
+			}
+		}
+		// 请求人员数据
+		else if (classType.isAssignableFrom(EL_INT_PER_SYNC_RESLine.class)) {
+			if (MODE_FULL.equals(mode)) {
+				setPropsBeforeCall(mode, call, EMP_FULLSYNC_SOAP_ACTION, EMP_FULLSYNC_OPERATION_NAME,
+						EMP_FULLSYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_PER_SYNC_RES.class);
+			} else {
+				setPropsBeforeCall(mode, call, EMP_SYNC_SOAP_ACTION, EMP_SYNC_OPERATION_NAME,
+						EMP_SYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+						EL_INT_PER_SYNC_RES.class);
+			}
+
+			EL_INT_PER_SYNC_RES res = (EL_INT_PER_SYNC_RES) call.invoke(new java.lang.Object[] { req });
+			lines = res.getLine();
+
+			// 人员数据较多进行多次获取
+			int i = 1;
+			Object[] tempLines = lines;
+			while (tempLines != null) {
+				req.setParam1(String.valueOf(PAGE_SIZE * i + 1));
+				req.setParam2(String.valueOf(PAGE_SIZE * (i + 1)));
+
+				res = (EL_INT_PER_SYNC_RES) call.invoke(new java.lang.Object[] { req });
+				tempLines = res.getLine();
+				// 数组合并
+				lines = ArrayUtils.addAll(lines, tempLines);
+				i++;
+			}
+		}
+
+		List<T> tempList = new ArrayList<T>();
+		if (lines != null && lines.length > 0) {
+			tempList = (List<T>) Arrays.asList(lines);
+		} else {
+			logger.info("获取客户接口[" + classType.getSimpleName() + "]数据为空！");
+		}
 		return tempList;
 	}
 
-	/**
-	 * 向客户接口请求数据并解析
-	 * 
-	 * @param requestUrl
-	 * @param paramMap
-	 * @param headers
-	 * @param classType
-	 * @return Map集合 key：返回数据total值 value：岗位或组织或人员数据集合
-	 * @throws IOException
-	 */
-	private <T> Map<Integer, List<T>> requestGetData(String requestUrl, Map<String, Object> paramMap,
-			List<Header> headers, Class<T> classType) throws IOException {
-		String jsonString = HttpClientUtil4Sync.doGet(requestUrl, paramMap, headers);
-		// logger.info(jsonString);
-
-		// 将json字符串转为用户json对象数据模型
-		LeoResJsonModel<T> resJsonModel = null;
-		// 将json字符串中的jobPositions, origizations, employees统一替换成dataList
-		String replacement = "dataList";
-		// 类型判断传入不同类型参数
-		if (classType.isAssignableFrom(LeoPositionModel.class)) {
-			jsonString = jsonString.replaceFirst("jobPositions", replacement);
-			resJsonModel = mapper.readValue(jsonString, new TypeReference<LeoResJsonModel<LeoPositionModel>>() {
-			});
-		} else if (classType.isAssignableFrom(LeoOuInfoModel.class)) {
-			jsonString = jsonString.replaceFirst("origizations", replacement);
-			resJsonModel = mapper.readValue(jsonString, new TypeReference<LeoResJsonModel<LeoOuInfoModel>>() {
-			});
-		} else if (classType.isAssignableFrom(LeoUserInfoModel.class)) {
-			jsonString = jsonString.replaceFirst("employees", replacement);
-			resJsonModel = mapper.readValue(jsonString, new TypeReference<LeoResJsonModel<LeoUserInfoModel>>() {
-			});
-		}
-
-		Map<Integer, List<T>> dataMap = new HashMap<Integer, List<T>>();
-		List<T> dataList = new ArrayList<T>();
-		// 返回数据状态判断
-		if (RESPONSE_STATUS_OK == resJsonModel.getCode()) {
-			LeoResData<T> data = resJsonModel.getData();
-			if (data != null) {
-				dataList = data.getDataList();
-				dataMap.put(data.getTotal(), dataList);
-			} else {
-				throw new IOException("获取客户接口[" + classType.getSimpleName() + "]数据data为null");
-			}
-		} else {
-			throw new IOException("获取客户接口[" + classType.getSimpleName() + "]数据错误：" + resJsonModel.getMessage());
-		}
-
-		return dataMap;
+	private Date getYesterdayDate(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.DAY_OF_MONTH, -1);
+		return c.getTime();
 	}
 
 	/**
-	 * 根据数据总量和每页数量计算应当请求的次数
-	 * 
-	 * @param totalCount
-	 * @param pageSize
-	 * @return
-	 */
-	private int calcRequestTimes(int totalCount, int pageSize) {
-		int reqTimes = totalCount / pageSize;
-		if (totalCount % pageSize > 0) {
-			reqTimes = reqTimes + 1;
-		}
-
-		return reqTimes;
-	}
-
-	/**
-	 * 获取全量或增量模式下请求的时间戳参数值
+	 * 请求客户接口前设置请求属性
 	 * 
 	 * @param mode
-	 * @return
+	 *            全量/增量类型
+	 * @param call
+	 *            axis中call对象
+	 * @param soapAction
+	 *            请求属性SOAPAction属性值
+	 * @param operationName
+	 *            请求webservice的操作名
+	 * @param resElementNamaspace
+	 *            返回xml中对象命名空间属性值
+	 * @param reqClassType
+	 *            请求xml对应java类
+	 * @param resClassType
+	 *            返回xml对应java类
+	 * @throws SOAPException
+	 * @throws DOMException
 	 */
-	private int getTimestamp(String mode) {
-		// 默认时间戳
-		int timestamp = (int) (new Date().getTime() / 1000);
+	private <E, T> void setPropsBeforeCall(String mode, Call call, String soapAction, String operationName,
+			String resElementNamaspace, Class<E> reqClassType, Class<T> resClassType)
+			throws DOMException, SOAPException {
+		// 设置共通参数
+		String reqElementNamaspace = null;
+		String reqElement = null;
 		if (MODE_FULL.equals(mode)) {
-			try {
-				timestamp = (int) (DATE_FORMAT.parse(FROM_DATE).getTime() / 1000);
-			} catch (ParseException e) {
-				logger.error("获取时间戳失败", e);
-			}
+			reqElement = FULLSYNC_REQ_ELEMENT_NAME;
+			reqElementNamaspace = FULLSYNC_REQ_ELEMENT_NAMASPACE;
 		} else {
-			// 当日零点时间
-			Calendar c = Calendar.getInstance();
-			c.set(Calendar.HOUR_OF_DAY, 0);
-			c.set(Calendar.MINUTE, 0);
-			c.set(Calendar.SECOND, 0);
-			timestamp = (int) (c.getTimeInMillis() / 1000);
+			reqElement = SYNC_REQ_ELEMENT_NAME;
+			reqElementNamaspace = SYNC_REQ_ELEMENT_NAMASPACE;
 		}
-		return timestamp;
+		// 设置OperationDesc
+		OperationDesc oper = new OperationDesc();
+		oper.setName(operationName);
+		ParameterDesc param = new ParameterDesc(new QName(reqElementNamaspace, reqElement), ParameterDesc.IN,
+				new QName(reqElementNamaspace, reqClassType.getSimpleName()), reqClassType, false, false);
+		oper.addParameter(param);
+		oper.setReturnType(new QName(resElementNamaspace, resClassType.getSimpleName()));
+		oper.setReturnClass(resClassType);
+		oper.setReturnQName(new QName(resElementNamaspace, resClassType.getSimpleName()));
+		oper.setStyle(org.apache.axis.constants.Style.DOCUMENT);
+		oper.setUse(org.apache.axis.constants.Use.LITERAL);
+		// 设置call参数值
+		call.setOperation(oper);
+		call.setUseSOAPAction(true);
+		call.setSOAPActionURI(soapAction);
+		call.setEncodingStyle(null);
+		call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+		call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+		call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+		call.setOperationName(new QName("", operationName));
+
+		// 请求信息带用户名密码
+		addSecurityAuth(call);
 	}
 
 	/**
-	 * token放在请求header的Authorization中
+	 * 请求xml的header标签中增加安全认证信息
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @param call
+	 * @throws DOMException
+	 * @throws SOAPException
 	 */
-	private List<Header> getAuthHeader() throws IOException {
-		List<Header> headers = new ArrayList<Header>();
-		headers.add(new BasicHeader("Authorization", "Bearer " + getToken()));
-		return headers;
-	}
+	private void addSecurityAuth(Call call) throws DOMException, SOAPException {
+		String AUTH_PREFIX = "wsse";
+		String AUTH_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+		SOAPHeaderElement soapHeaderElement = null;
 
-	/**
-	 * 获取token
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	private String getToken() throws IOException {
-		String url = "https://open.leo.cn/v1/authentication/oauth2/get-token";
+		SOAPFactory soapFactory = SOAPFactory.newInstance();
+		SOAPElement wsSecHeaderElm = soapFactory.createElement("Security", AUTH_PREFIX, AUTH_NS);
+		SOAPElement userNameTokenElm = soapFactory.createElement("UsernameToken", AUTH_PREFIX, AUTH_NS);
+		SOAPElement userNameElm = soapFactory.createElement("Username", AUTH_PREFIX, AUTH_NS);
+		SOAPElement passwdElm = soapFactory.createElement("Password", AUTH_PREFIX, AUTH_NS);
+		passwdElm.setAttribute("Type",
+				"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
 
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("access_key", "oleo_42db6ee396eb8765435e44446befad8e");
-		paramMap.put("secret_key", "5f81f9a50e7c4043efece652b7a82be2d0d90839b9b550b66c1fb865480a6aad");
+		userNameElm.addTextNode("EL_INTERFACE");
+		passwdElm.addTextNode("interface");
 
-		// 从json字符串中解析token
-		JsonNode jsonNode = mapper.readTree(HttpClientUtil4Sync.doPost(url, paramMap));
-		String token = jsonNode.get("data").get("token").asText();
+		userNameTokenElm.addChildElement(userNameElm);
+		userNameTokenElm.addChildElement(passwdElm);
+		wsSecHeaderElm.addChildElement(userNameTokenElm);
+		soapHeaderElement = new SOAPHeaderElement(wsSecHeaderElm);
+		soapHeaderElement.setMustUnderstand(true);
+		soapHeaderElement.setActor(null);
 
-		return token;
+		call.addHeader(soapHeaderElement);
 	}
 
 	/**
@@ -1093,7 +1106,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 * @param errKey
 	 * @param resultEntity
 	 */
-	protected void printLog(String type, String errKey, ResultEntity resultEntity) {
+	private void printLog(String type, String errKey, ResultEntity resultEntity) {
 		logger.error(type + "ID：" + errKey + " 错误信息：" + resultEntity.getCode() + "-" + resultEntity.getMessage());
 	}
 }

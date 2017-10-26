@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.opple;
 
 import java.util.HashMap;
 import java.util.List;

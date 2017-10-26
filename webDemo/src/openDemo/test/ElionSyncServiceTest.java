@@ -28,7 +28,7 @@ import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RES;
 import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RESLine;
 import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RES;
 import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RESLine;
-import openDemo.service.sync.ElionSyncService;
+import openDemo.service.sync.elion.ElionSyncService;
 
 public class ElionSyncServiceTest {
 	// 请求webservice的TargetEndpointAddress参数

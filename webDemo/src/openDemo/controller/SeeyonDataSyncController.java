@@ -4,7 +4,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import openDemo.service.sync.SeeyonSyncService;
+import openDemo.service.sync.seeyon.SeeyonSyncService;
 import openDemo.timer.SyncTimerService;
 
 @Controller

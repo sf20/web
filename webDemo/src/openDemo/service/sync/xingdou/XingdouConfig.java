@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.xingdou;
 
 public interface XingdouConfig {
 	String apikey = "8847a182-9f8a-4585-93ba-acd6d3e3cda5";

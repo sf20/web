@@ -6,9 +6,9 @@ import java.util.List;
 import com.seeyon.client.CTPRestClient;
 import com.seeyon.client.CTPServiceClientManager;
 
-import openDemo.entity.sync.SeeyonOuInfoModel;
-import openDemo.entity.sync.SeeyonPositionModel;
-import openDemo.entity.sync.SeeyonUserInfoModel;
+import openDemo.entity.sync.seeyon.SeeyonOuInfoModel;
+import openDemo.entity.sync.seeyon.SeeyonPositionModel;
+import openDemo.entity.sync.seeyon.SeeyonUserInfoModel;
 
 public class SeeyonSyncServiceTest {
 	private static String REQUEST_ADDRESS = "http://oa.lonch.com.cn:8081";

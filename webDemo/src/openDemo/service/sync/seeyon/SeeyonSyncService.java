@@ -1,4 +1,4 @@
-package openDemo.service.sync;
+package openDemo.service.sync.seeyon;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import com.seeyon.client.CTPRestClient;
 import com.seeyon.client.CTPServiceClientManager;
 
-import openDemo.config.SeeyonConfig;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
-import openDemo.entity.sync.SeeyonOuInfoModel;
-import openDemo.entity.sync.SeeyonPositionModel;
-import openDemo.entity.sync.SeeyonUserInfoModel;
+import openDemo.entity.sync.seeyon.SeeyonOuInfoModel;
+import openDemo.entity.sync.seeyon.SeeyonPositionModel;
+import openDemo.entity.sync.seeyon.SeeyonUserInfoModel;
+import openDemo.service.sync.AbstractSyncService2;
 
 @Service
 public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonConfig {

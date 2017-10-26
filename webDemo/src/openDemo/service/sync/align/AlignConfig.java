@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.align;
 
 public interface AlignConfig {
 	String apikey = "c68f7786-1236-415f-a6d1-ed49a6766be7";

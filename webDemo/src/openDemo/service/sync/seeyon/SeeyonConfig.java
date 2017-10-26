@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.seeyon;
 
 public interface SeeyonConfig {
 	String apikey = "93702b18-ff13-4e35-be6b-6c66ae1876c3";

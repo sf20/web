@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.elion;
 
 public interface ElionConfig {
 	String apikey = "218bd28c-582d-453c-9ebb-9cf893f908a2";

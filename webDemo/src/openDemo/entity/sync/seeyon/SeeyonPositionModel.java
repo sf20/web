@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.seeyon;
 
 public class SeeyonPositionModel {
 	private String id;

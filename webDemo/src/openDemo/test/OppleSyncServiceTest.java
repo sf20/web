@@ -18,10 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.OuInfoTree;
 import openDemo.entity.UserInfoModel;
-import openDemo.entity.sync.OpOuInfoModel;
-import openDemo.entity.sync.OpResJsonModel;
-import openDemo.entity.sync.OpUserInfoModel;
-import openDemo.service.sync.OppleSyncService;
+import openDemo.entity.sync.opple.OpOuInfoModel;
+import openDemo.entity.sync.opple.OpResJsonModel;
+import openDemo.entity.sync.opple.OpUserInfoModel;
+import openDemo.service.sync.opple.OppleSyncService;
 
 public class OppleSyncServiceTest {
 

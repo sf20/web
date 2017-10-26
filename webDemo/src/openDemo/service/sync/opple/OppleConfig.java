@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.opple;
 
 public interface OppleConfig {
 	String apikey = "57dac39f-aa0c-42dc-a64f-eae4618dd128";

@@ -19,11 +19,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import openDemo.entity.sync.LeoOuInfoModel;
-import openDemo.entity.sync.LeoPositionModel;
-import openDemo.entity.sync.LeoResJsonModel;
-import openDemo.entity.sync.LeoUserInfoModel;
-import openDemo.service.sync.LeoSyncService;
+import openDemo.entity.sync.leo.LeoOuInfoModel;
+import openDemo.entity.sync.leo.LeoPositionModel;
+import openDemo.entity.sync.leo.LeoResJsonModel;
+import openDemo.entity.sync.leo.LeoUserInfoModel;
+import openDemo.service.sync.leo.LeoSyncService;
 import openDemo.utils.HttpClientUtil4Sync;
 
 public class LeoSyncServiceTest {

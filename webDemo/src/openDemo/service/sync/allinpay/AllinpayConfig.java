@@ -1,4 +1,4 @@
-package openDemo.config;
+package openDemo.service.sync.allinpay;
 
 public interface AllinpayConfig {
 	String apikey = "7a9d7cea-ac36-41db-b296-55cee4ba7ff7";

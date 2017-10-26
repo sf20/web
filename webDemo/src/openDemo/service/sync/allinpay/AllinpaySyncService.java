@@ -1,4 +1,4 @@
-package openDemo.service.sync;
+package openDemo.service.sync.allinpay;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,10 +18,10 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import openDemo.config.AllinpayConfig;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
+import openDemo.service.sync.AbstractSyncService2;
 
 @Service
 public class AllinpaySyncService extends AbstractSyncService2 implements AllinpayConfig {

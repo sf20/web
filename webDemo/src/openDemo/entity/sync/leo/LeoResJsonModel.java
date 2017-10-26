@@ -1,4 +1,4 @@
-package openDemo.entity.sync;
+package openDemo.entity.sync.leo;
 
 /**
  * 利欧公司接口返回的json数据模型
