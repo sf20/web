@@ -15,6 +15,12 @@ import openDemo.service.SyncOrgService;
 import openDemo.service.SyncStudyPlanService;
 import openDemo.service.sync.CustomTimerTask;
 
+/**
+ * 爱齐同步service
+ * 
+ * @author yanl
+ *
+ */
 public class AlignSyncService implements TestConfig, CustomTimerTask {
 	// 学习计划
 	private static final String STUDYPLAN_ID = "99b08000-1580-40e4-9a5b-7d76c4feded3";
@@ -129,9 +135,11 @@ public class AlignSyncService implements TestConfig, CustomTimerTask {
 
 		// List<String> stage2UserNames = new ArrayList<>();
 		// stage2UserNames.add("aligntest1");
-		// ResultEntity resultEntity = orgService.batchchangeorgou(stage2UserNames,
+		// ResultEntity resultEntity =
+		// orgService.batchchangeorgou(stage2UserNames,
 		// STAGE2_OUID, apikey, secretkey, baseUrl);
-		// System.out.println(resultEntity.getCode() + "=" + resultEntity.getMessage());
+		// System.out.println(resultEntity.getCode() + "=" +
+		// resultEntity.getMessage());
 	}
 
 }
