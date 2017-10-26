@@ -25,9 +25,6 @@ import openDemo.entity.UserInfoModel;
 
 @Service
 public class AllinpaySyncService extends AbstractSyncService2 implements AllinpayConfig {
-	// 全量增量区分
-	private static final String MODE_FULL = "0";
-	private static final String MODE_UPDATE = "1";
 	// 登录参数
 	private static final String HOST = "116.228.64.54";
 	private static final int PORT = 8002;
@@ -54,8 +51,9 @@ public class AllinpaySyncService extends AbstractSyncService2 implements Allinpa
 		super.setApikey(apikey);
 		super.setSecretkey(secretkey);
 		super.setBaseUrl(baseUrl);
-		super.setModeFull(MODE_FULL);
-		super.setModeUpdate(MODE_UPDATE);
+		// 无全量增量区分
+		// super.setModeFull(MODE_FULL);
+		// super.setModeUpdate(MODE_UPDATE);
 		// 人员信息中未提供岗位id
 		super.setIsPosIdProvided(false);
 		super.setLogger(LOGGER);
