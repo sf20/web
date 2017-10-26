@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import openDemo.config.TestConfig;
 import openDemo.dao.UserInfoDao;
 import openDemo.entity.ResultEntity;
 import openDemo.entity.StudyPlanDetail;
@@ -21,7 +20,7 @@ import openDemo.service.sync.CustomTimerTask;
  * @author yanl
  *
  */
-public class AlignSyncService implements TestConfig, CustomTimerTask {
+public class AlignSyncService implements AlignConfig, CustomTimerTask {
 	// 学习计划
 	private static final String STUDYPLAN_ID = "99b08000-1580-40e4-9a5b-7d76c4feded3";
 	private static final String STUDYPLAN_STATUS = "2";

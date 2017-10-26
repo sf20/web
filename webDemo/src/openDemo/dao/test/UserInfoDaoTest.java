@@ -4,12 +4,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import openDemo.config.TestConfig;
 import openDemo.dao.UserInfoDao;
 import openDemo.entity.StudyPlanDetail;
 import openDemo.entity.UserInfoModel;
+import openDemo.service.sync.align.AlignConfig;
 
-public class UserInfoDaoTest implements TestConfig {
+public class UserInfoDaoTest {
 	UserInfoDao dao = new UserInfoDao();
 
 	public static void main(String[] args) throws SQLException {
@@ -34,7 +34,7 @@ public class UserInfoDaoTest implements TestConfig {
 	}
 
 	public void getStudyPlanDetailByUserIdPlanID() throws SQLException {
-		List<StudyPlanDetail> list = dao.getStudyPlanDetailByUserIdPlanID(apikey,
+		List<StudyPlanDetail> list = dao.getStudyPlanDetailByUserIdPlanID(AlignConfig.apikey,
 				"cb1fbf1b-e9f1-43d3-b9eb-c7ffedec3b24", "8d6b3361-59a5-4032-8a89-298cf9501b0b", "exam");
 		System.out.println(list.size());
 		for (StudyPlanDetail studyPlan : list) {
