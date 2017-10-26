@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import openDemo.common.Config;
 import openDemo.entity.GroupInfoEntity;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
@@ -16,9 +17,8 @@ import openDemo.service.SyncOrgService;
 import openDemo.service.SyncPositionService;
 import openDemo.service.SyncStudyPlanService;
 import openDemo.service.SyncUserService;
-import openDemo.service.sync.elion.ElionConfig;
 
-public class OpenDemoTest implements ElionConfig {
+public class OpenDemoTest implements Config {
 
 	public static void main(String[] args) throws IOException {
 		new OpenDemoTest();
