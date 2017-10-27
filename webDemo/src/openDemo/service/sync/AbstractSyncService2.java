@@ -69,6 +69,8 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	private String modeUpdate = "2";// 默认为2
 	// 是否提供岗位id标志
 	private boolean isPosIdProvided = true;// 默认为已提供
+	// 组织多次同步去重标志
+	private boolean isOrgSyncExecuted = false;
 	// 记录日志
 	private Logger logger = LogManager.getLogger(AbstractSyncService2.class);
 
@@ -135,8 +137,13 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			opUserSync(modeUpdate, true);
 		} else {
 			// 用户全量同步
-			opUserSync(modeFull, true);
+			// opUserSync(modeFull, true);
 		}
+		// TODO todelete
+		logger.info("同步后岗位size:" + positionList.size());
+		logger.info("同步后组织size:" + ouInfoList.size());
+		logger.info("isPosIdProvided:" + isPosIdProvided);
+		logger.info("Logger:" + logger.getName());
 	}
 
 	/**
@@ -203,7 +210,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			logger.info("组织同步新增Size: " + newList.size());
 			// 进行多次同步
 			for (int i = 0; i < 5; i++) {
-				syncAddOrgOneByOne(newList, isBaseInfo);
+				syncAddOrgOneByOne(newList, isBaseInfo, mode);
 			}
 		}
 		// 增量模式
@@ -212,7 +219,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 			List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
 			if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
-				syncAddOrgOneByOne(orgsToSyncAdd, isBaseInfo);
+				syncAddOrgOneByOne(orgsToSyncAdd, isBaseInfo, mode);
 			}
 
 			List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
@@ -655,8 +662,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 
 	 * @param orgsToSyncAdd
 	 * @param isBaseInfo
+	 * @param mode
 	 */
-	protected void syncAddOrgOneByOne(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo) {
+	protected void syncAddOrgOneByOne(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo, String mode) {
 		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
 		ResultEntity resultEntity = null;
 		for (OuInfoModel org : orgsToSyncAdd) {
@@ -665,7 +673,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			try {
 				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					ouInfoList.add(org);
+					if(modeFull.equals(mode) && !isOrgSyncExecuted){
+						ouInfoList.add(org);
+					}else{
+						// TODO
+					}
 				} else {
 					printLog("组织同步新增失败 ", org.getOuName(), resultEntity);
 				}
