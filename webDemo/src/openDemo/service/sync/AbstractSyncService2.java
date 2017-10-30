@@ -143,6 +143,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		logger.info("同步后岗位size:" + positionList.size());
 		logger.info("同步后组织size:" + ouInfoList.size());
 		logger.info("isPosIdProvided:" + isPosIdProvided);
+		logger.info("isOrgSyncExecuted:" + isOrgSyncExecuted);
 		logger.info("Logger:" + logger.getName());
 	}
 
@@ -210,7 +211,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			logger.info("组织同步新增Size: " + newList.size());
 			// 进行多次同步
 			for (int i = 0; i < 5; i++) {
-				syncAddOrgOneByOne(newList, isBaseInfo, mode);
+				syncAddOrgOneByOne1(newList, isBaseInfo);
 			}
 		}
 		// 增量模式
@@ -219,7 +220,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 			List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
 			if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
-				syncAddOrgOneByOne(orgsToSyncAdd, isBaseInfo, mode);
+				syncAddOrgOneByOne2(orgsToSyncAdd, isBaseInfo);
 			}
 
 			List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
@@ -658,13 +659,44 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	}
 
 	/**
-	 * 逐个组织同步新增
+	 * 逐个组织同步新增(全量同步用)
 	 * 
 	 * @param orgsToSyncAdd
 	 * @param isBaseInfo
-	 * @param mode
 	 */
-	protected void syncAddOrgOneByOne(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo, String mode) {
+	protected void syncAddOrgOneByOne1(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo) {
+		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
+		ResultEntity resultEntity = null;
+		for (OuInfoModel org : orgsToSyncAdd) {
+			tempList.add(org);
+
+			try {
+				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
+				// 全量组织同步会循环执行5次 集合数据只需保存一次
+				if (!isOrgSyncExecuted) {
+					if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+						ouInfoList.add(org);
+					} else {
+						printLog("组织同步新增失败 ", org.getOuName(), resultEntity);
+					}
+				}
+			} catch (IOException e) {
+				logger.error("组织同步新增失败 " + org.getOuName(), e);
+			}
+
+			tempList.clear();
+		}
+		// 全量组织同步已执行
+		isOrgSyncExecuted = true;
+	}
+
+	/**
+	 * 逐个组织同步新增(增量同步用)
+	 * 
+	 * @param orgsToSyncAdd
+	 * @param isBaseInfo
+	 */
+	protected void syncAddOrgOneByOne2(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo) {
 		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
 		ResultEntity resultEntity = null;
 		for (OuInfoModel org : orgsToSyncAdd) {
@@ -673,11 +705,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			try {
 				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					if(modeFull.equals(mode) && !isOrgSyncExecuted){
-						ouInfoList.add(org);
-					}else{
-						// TODO
-					}
+					ouInfoList.add(org);
 				} else {
 					printLog("组织同步新增失败 ", org.getOuName(), resultEntity);
 				}
