@@ -96,7 +96,7 @@ public class ElionSyncService extends AbstractSyncService2 implements ElionConfi
 		super.setBaseUrl(baseUrl);
 		super.setModeFull(MODE_FULL);
 		super.setModeUpdate(MODE_UPDATE);
-		super.setLogger(logger);
+		super.setSyncServiceName(this.getClass().getSimpleName());
 	}
 
 	/**

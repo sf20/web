@@ -135,7 +135,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			opOrgSync(modeUpdate, false);
 		} else {
 			// 组织全量同步
-			opOrgSync(modeFull, false);
+			// opOrgSync(modeFull, false);
 		}
 
 		int userCount = userInfoList.size();

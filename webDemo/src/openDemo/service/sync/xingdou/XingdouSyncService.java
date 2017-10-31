@@ -12,8 +12,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import openDemo.entity.OuInfoModel;
@@ -37,8 +35,6 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 	private static final String EFFECTIVE_STATUS = "0";
 	// 用户接口要求时间格式
 	private static final SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-	// 记录日志
-	private Logger logger = LogManager.getLogger(XingdouSyncService.class);
 
 	private WebServiceLocator locator = new WebServiceLocator();
 	private List<UserInfoModel> sharedModelList;
@@ -50,7 +46,7 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 		super.setModeFull(MODE_FULL);
 		super.setModeUpdate(MODE_UPDATE);
 		super.setIsPosIdProvided(false);
-		super.setLogger(logger);
+		super.setSyncServiceName(this.getClass().getSimpleName());
 	}
 
 	private <T> List getDataModelList(String mode, Class<T> listClassType)

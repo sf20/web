@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.seeyon.client.CTPRestClient;
@@ -24,8 +22,6 @@ import openDemo.service.sync.AbstractSyncService2;
 public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonConfig {
 	// 请求数据接口地址
 	private static String REQUEST_ADDRESS = "http://oa.lonch.com.cn:8081";
-	// 记录日志
-	private Logger logger = LogManager.getLogger(SeeyonSyncService.class);
 	// 定义REST动态客户机
 	private CTPRestClient client = null;
 
@@ -36,7 +32,7 @@ public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonCon
 		// 无全量增量区分
 		// super.setModeFull(MODE_FULL);
 		// super.setModeUpdate(MODE_UPDATE);
-		super.setLogger(logger);
+		super.setSyncServiceName(this.getClass().getSimpleName());
 	}
 
 	/**

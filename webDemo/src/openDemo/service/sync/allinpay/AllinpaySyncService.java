@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.jcraft.jsch.ChannelSftp;
@@ -41,8 +39,6 @@ public class AllinpaySyncService extends AbstractSyncService2 implements Allinpa
 	private static final String SEPARATOR = "|";
 	// 分隔符正则转译
 	private static final String SEPARATOR_REGEX = "\\|";
-	// 记录日志
-	private static final Logger LOGGER = LogManager.getLogger(AllinpaySyncService.class);
 	// sftp连接对象
 	private Session session;
 	private ChannelSftp channelSftp;
@@ -56,7 +52,7 @@ public class AllinpaySyncService extends AbstractSyncService2 implements Allinpa
 		// super.setModeUpdate(MODE_UPDATE);
 		// 人员信息中未提供岗位id
 		super.setIsPosIdProvided(false);
-		super.setLogger(LOGGER);
+		super.setSyncServiceName(this.getClass().getSimpleName());
 	}
 
 	/**
