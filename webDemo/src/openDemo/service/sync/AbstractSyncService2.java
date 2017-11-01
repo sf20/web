@@ -262,6 +262,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		if (modeFull.equals(mode)) {
 			logger.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
 			syncAddUserOneByOne(newList, islink);
+
+			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
+			// if (expiredUsers.size() > 0) {
+			// syncDeleteUserOneByOne(expiredUsers);
+			// }
 		}
 		// 增量模式
 		else {
@@ -280,7 +285,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 			List<UserInfoModel> usersToDelete = map.get(MAPKEY_USER_SYNC_DELETE);
 			if (usersToDelete != null && usersToDelete.size() > 0) {
-				syncDeleteOneByOne(usersToDelete);
+				syncDeleteUserOneByOne(usersToDelete);
 			}
 		}
 
@@ -312,7 +317,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 						if (newPosNo.equals(fullPos.getpNo())) {
 							String newPosName = newPos.getpNames();
 							// 岗位名发生更新
-							if (!newPosName.equals(fullPos.getpNames())) {
+							if (newPosName != null && !newPosName.equals(fullPos.getpNames())) {
 								posToSyncUpdate.add(newPos);
 							}
 							break;
@@ -600,15 +605,18 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * @param mode
 	 */
 	protected void removeExpiredUsers(List<UserInfoModel> list, String mode) {
+		// List<UserInfoModel> expiredUsers = new ArrayList<UserInfoModel>();
 		// 仅全量模式下执行
 		if (modeFull.equals(mode)) {
 			for (Iterator<UserInfoModel> iterator = list.iterator(); iterator.hasNext();) {
 				UserInfoModel user = iterator.next();
 				if (isUserExpired(user)) {
+					// expiredUsers.add(user);
 					iterator.remove();
 				}
 			}
 		}
+		// return expiredUsers;
 	}
 
 	/**
@@ -860,7 +868,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 
 	 * @param usersToDelete
 	 */
-	protected void syncDeleteOneByOne(List<UserInfoModel> usersToDelete) {
+	protected void syncDeleteUserOneByOne(List<UserInfoModel> usersToDelete) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToDelete) {
