@@ -878,7 +878,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					userInfoList.remove(user);
-					userInfoList.add(user);
 				} else {
 					printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
 				}
