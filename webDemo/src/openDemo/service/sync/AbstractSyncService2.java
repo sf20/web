@@ -126,7 +126,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			opPosSync(modeUpdate);
 		} else {
 			// 岗位全量同步
-			opPosSync(modeFull);
+			// opPosSync(modeFull);
 		}
 
 		int orgCount = ouInfoList.size();
@@ -251,7 +251,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	public void opUserSync(String mode, boolean islink) throws Exception {
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
 
-		removeExpiredUsers(newList, mode);
+		List<UserInfoModel> expiredUsers = removeExpiredUsers(newList, mode);
 		changePropValues(newList);
 		if (!isPosIdProvided) {
 			setPositionNoToUser(newList);
@@ -264,9 +264,10 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			syncAddUserOneByOne(newList, islink);
 
 			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
-			// if (expiredUsers.size() > 0) {
-			// syncDeleteUserOneByOne(expiredUsers);
-			// }
+			if (expiredUsers.size() > 0) {
+				logger.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
+				syncDeleteUserOneByOne(expiredUsers);
+			}
 		}
 		// 增量模式
 		else {
@@ -603,20 +604,21 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 
 	 * @param list
 	 * @param mode
+	 * @return
 	 */
-	protected void removeExpiredUsers(List<UserInfoModel> list, String mode) {
-		// List<UserInfoModel> expiredUsers = new ArrayList<UserInfoModel>();
+	protected List<UserInfoModel> removeExpiredUsers(List<UserInfoModel> list, String mode) {
+		List<UserInfoModel> expiredUsers = new ArrayList<UserInfoModel>();
 		// 仅全量模式下执行
 		if (modeFull.equals(mode)) {
 			for (Iterator<UserInfoModel> iterator = list.iterator(); iterator.hasNext();) {
 				UserInfoModel user = iterator.next();
 				if (isUserExpired(user)) {
-					// expiredUsers.add(user);
+					expiredUsers.add(user);
 					iterator.remove();
 				}
 			}
 		}
-		// return expiredUsers;
+		return expiredUsers;
 	}
 
 	/**
