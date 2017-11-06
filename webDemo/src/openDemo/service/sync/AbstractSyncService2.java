@@ -161,6 +161,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opPosSync(String mode) throws Exception {
 		List<PositionModel> newList = getPositionModelList(mode);
+		logger.info("岗位同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		removeExpiredPos(newList);
 		if (!isPosIdProvided) {
@@ -171,7 +172,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		}
 		setFullPosNames(newList);
 
-		logger.info("岗位同步[" + syncServiceName + "]Total Size: " + newList.size());
 		// 全量模式
 		if (modeFull.equals(mode)) {
 			logger.info("岗位同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -207,11 +207,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opOrgSync(String mode, boolean isBaseInfo) throws Exception {
 		List<OuInfoModel> newList = getOuInfoModelList(mode);
+		logger.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		removeExpiredOrgs(newList, mode);
 		setRootOrgParentId(newList);
 
-		logger.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
 		// 全量模式
 		if (modeFull.equals(mode)) {
 			logger.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -250,24 +250,25 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opUserSync(String mode, boolean islink) throws Exception {
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
+		logger.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 
+		// 此处先将需要删除的用户从集合中去除 提升同步效率
 		List<UserInfoModel> expiredUsers = removeExpiredUsers(newList, mode);
 		changePropValues(newList);
 		if (!isPosIdProvided) {
 			setPositionNoToUser(newList);
 		}
 
-		logger.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 		// 全量模式
 		if (modeFull.equals(mode)) {
-			logger.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
-			syncAddUserOneByOne(newList, islink);
-
 			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
 			if (expiredUsers.size() > 0) {
 				logger.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
 				syncDeleteUserOneByOne(expiredUsers);
 			}
+
+			logger.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
+			syncAddUserOneByOne(newList, islink);
 		}
 		// 增量模式
 		else {
@@ -874,7 +875,13 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToDelete) {
-			tempList.add(user.getUserName());
+			// 用户名是admin时忽略不删除
+			String userName = user.getUserName();
+			if ("admin".equals(userName)) {
+				continue;
+			}
+
+			tempList.add(userName);
 
 			try {
 				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, baseUrl);
