@@ -264,7 +264,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
 			if (expiredUsers.size() > 0) {
 				logger.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
-				syncDeleteUserOneByOne(expiredUsers);
+				// syncDeleteUserOneByOne(expiredUsers);
 			}
 
 			logger.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
