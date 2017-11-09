@@ -218,7 +218,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// 此处再次同步删除过期组织
 			if (expiredOrgs.size() > 0) {
 				logger.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
-				syncDeleteOrgOneByOne(expiredOrgs);
+				// syncDeleteOrgOneByOne(expiredOrgs);
 			}
 
 			logger.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
