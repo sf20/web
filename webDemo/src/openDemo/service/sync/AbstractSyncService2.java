@@ -209,11 +209,18 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		List<OuInfoModel> newList = getOuInfoModelList(mode);
 		logger.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
 
-		removeExpiredOrgs(newList, mode);
+		// 此处将需要删除的组织从集合中去除 提升同步新增效率
+		List<OuInfoModel> expiredOrgs = removeExpiredOrgs(newList, mode);
 		setRootOrgParentId(newList);
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
+			// 此处再次同步删除过期组织
+			if (expiredOrgs.size() > 0) {
+				logger.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
+				syncDeleteOrgOneByOne(expiredOrgs);
+			}
+
 			logger.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
 			// 进行多次同步
 			for (int i = 0; i < 5; i++) {
@@ -252,7 +259,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
 		logger.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 
-		// 此处先将需要删除的用户从集合中去除 提升同步效率
+		// 此处将需要删除的用户从集合中去除 提升同步新增效率
 		List<UserInfoModel> expiredUsers = removeExpiredUsers(newList, mode);
 		changePropValues(newList);
 		if (!isPosIdProvided) {
@@ -585,19 +592,23 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 
 	 * @param list
 	 * @param mode
+	 * @return
 	 */
-	protected void removeExpiredOrgs(List<OuInfoModel> list, String mode) {
+	protected List<OuInfoModel> removeExpiredOrgs(List<OuInfoModel> list, String mode) {
+		List<OuInfoModel> expiredOrgs = new ArrayList<OuInfoModel>();
 		// 仅全量模式下执行
 		if (modeFull.equals(mode)) {
 			for (Iterator<OuInfoModel> iterator = list.iterator(); iterator.hasNext();) {
 				OuInfoModel org = iterator.next();
 				if (isOrgExpired(org)) {
+					expiredOrgs.add(org);
 					iterator.remove();
 					// logger.info("删除了过期组织：" + org.getOuName());
 				}
 			}
 
 		}
+		return expiredOrgs;
 	}
 
 	/**
