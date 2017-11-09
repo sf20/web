@@ -120,15 +120,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * @throws Exception
 	 */
 	public void sync() throws Exception {
-		int posCount = positionList.size();
-		if (posCount > 0) {
-			// 岗位增量同步
-			opPosSync(modeUpdate);
-		} else {
-			// 岗位全量同步
-			// opPosSync(modeFull);
-		}
-
 		int orgCount = ouInfoList.size();
 		if (orgCount > 0) {
 			// 组织增量同步
@@ -136,6 +127,15 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		} else {
 			// 组织全量同步
 			// opOrgSync(modeFull, false);
+		}
+
+		int posCount = positionList.size();
+		if (posCount > 0) {
+			// 岗位增量同步
+			opPosSync(modeUpdate);
+		} else {
+			// 岗位全量同步
+			// opPosSync(modeFull);
 		}
 
 		int userCount = userInfoList.size();
@@ -147,8 +147,8 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// opUserSync(modeFull, true);
 		}
 		// TODO to delete
-		logger.info("同步后岗位size:" + positionList.size());
 		logger.info("同步后组织size:" + ouInfoList.size());
+		logger.info("同步后岗位size:" + positionList.size());
 		logger.info("同步后人员size:" + userInfoList.size());
 		logger.info("同步service类名:" + syncServiceName);
 	}
@@ -570,6 +570,25 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 		// 最后是岗位名
 		return arr[len - 1];
+	}
+
+	/**
+	 * 不同组织存在同岗位名时调用该方法获取岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有组织id)
+	 * 
+	 * @param orgId
+	 * @return
+	 */
+	protected String getPositionNameClassFromOrgs(String orgId) {
+		String pNameClass = null;
+		if (orgId != null) {
+			for (OuInfoModel org : ouInfoList) {
+				if (orgId.equals(org.getID())) {
+					pNameClass = org.getOuName();
+					break;
+				}
+			}
+		}
+		return pNameClass;
 	}
 
 	/**
