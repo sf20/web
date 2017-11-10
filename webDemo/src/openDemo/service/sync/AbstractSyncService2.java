@@ -47,6 +47,8 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	public static final String POSITION_CLASS_SEPARATOR = ";";
 	// 日期格式化用
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	// 记录日志
+	public static Logger LOGGER = LogManager.getLogger(AbstractSyncService2.class);
 
 	// 请求同步接口的service
 	@Autowired
@@ -73,8 +75,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	private boolean isOrgSyncExecuted = false;
 	// 子类同步service的类名
 	private String syncServiceName;
-	// 记录日志
-	private Logger logger = LogManager.getLogger(AbstractSyncService2.class);
 
 	public void setApikey(String apikey) {
 		this.apikey = apikey;
@@ -102,11 +102,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 	public void setSyncServiceName(String syncServiceName) {
 		this.syncServiceName = syncServiceName;
-	}
-
-	// 服务器上调用该方法无法修改logger
-	public void setLogger(Logger logger) {
-		this.logger = logger;
 	}
 
 	@Override
@@ -147,10 +142,10 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// opUserSync(modeFull, true);
 		}
 		// TODO to delete
-		logger.info("同步后组织size:" + ouInfoList.size());
-		logger.info("同步后岗位size:" + positionList.size());
-		logger.info("同步后人员size:" + userInfoList.size());
-		logger.info("同步service类名:" + syncServiceName);
+		LOGGER.info("同步后组织size:" + ouInfoList.size());
+		LOGGER.info("同步后岗位size:" + positionList.size());
+		LOGGER.info("同步后人员size:" + userInfoList.size());
+		LOGGER.info("同步service类名:" + syncServiceName);
 	}
 
 	/**
@@ -161,7 +156,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opPosSync(String mode) throws Exception {
 		List<PositionModel> newList = getPositionModelList(mode);
-		logger.info("岗位同步[" + syncServiceName + "]Total Size: " + newList.size());
+		LOGGER.info("岗位同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		removeExpiredPos(newList);
 		if (!isPosIdProvided) {
@@ -174,7 +169,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
-			logger.info("岗位同步[" + syncServiceName + "]新增Size: " + newList.size());
+			LOGGER.info("岗位同步[" + syncServiceName + "]新增Size: " + newList.size());
 			syncAddPosOneByOne(newList);
 		}
 		// 增量模式
@@ -207,7 +202,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opOrgSync(String mode, boolean isBaseInfo) throws Exception {
 		List<OuInfoModel> newList = getOuInfoModelList(mode);
-		logger.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
+		LOGGER.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		// 此处将需要删除的组织从集合中去除 提升同步新增效率
 		List<OuInfoModel> expiredOrgs = removeExpiredOrgs(newList, mode);
@@ -217,11 +212,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		if (modeFull.equals(mode)) {
 			// 此处再次同步删除过期组织
 			if (expiredOrgs.size() > 0) {
-				logger.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
+				LOGGER.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
 				// syncDeleteOrgOneByOne(expiredOrgs);
 			}
 
-			logger.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
+			LOGGER.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
 			// 进行多次同步
 			for (int i = 0; i < 5; i++) {
 				syncAddOrgOneByOne1(newList, isBaseInfo);
@@ -257,7 +252,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 */
 	public void opUserSync(String mode, boolean islink) throws Exception {
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
-		logger.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		// 此处将需要删除的用户从集合中去除 提升同步新增效率
 		List<UserInfoModel> expiredUsers = removeExpiredUsers(newList, mode);
@@ -270,11 +265,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		if (modeFull.equals(mode)) {
 			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
 			if (expiredUsers.size() > 0) {
-				logger.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
+				LOGGER.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
 				// syncDeleteUserOneByOne(expiredUsers);
 			}
 
-			logger.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
+			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
 			syncAddUserOneByOne(newList, islink);
 		}
 		// 增量模式
@@ -338,8 +333,8 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 		map.put(MAPKEY_POS_SYNC_ADD, posToSyncAdd);
 		map.put(MAPKEY_POS_SYNC_UPDATE, posToSyncUpdate);
-		logger.info("岗位同步[" + syncServiceName + "]新增Size: " + posToSyncAdd.size());
-		logger.info("岗位同步[" + syncServiceName + "]更新Size: " + posToSyncUpdate.size());
+		LOGGER.info("岗位同步[" + syncServiceName + "]新增Size: " + posToSyncAdd.size());
+		LOGGER.info("岗位同步[" + syncServiceName + "]更新Size: " + posToSyncUpdate.size());
 
 		return map;
 	}
@@ -381,7 +376,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		}
 
 		map.put(MAPKEY_POS_SYNC_ADD, posToSyncAdd);
-		logger.info("岗位同步[" + syncServiceName + "]新增Size: " + posToSyncAdd.size());
+		LOGGER.info("岗位同步[" + syncServiceName + "]新增Size: " + posToSyncAdd.size());
 
 		return map;
 	}
@@ -428,9 +423,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		map.put(MAPKEY_ORG_SYNC_UPDATE, orgsToSyncUpdate);
 		map.put(MAPKEY_ORG_SYNC_DELETE, orgsToSyncDelete);
 
-		logger.info("组织同步[" + syncServiceName + "]新增Size: " + orgsToSyncAdd.size());
-		logger.info("组织同步[" + syncServiceName + "]更新Size: " + orgsToSyncUpdate.size());
-		logger.info("组织同步[" + syncServiceName + "]删除Size: " + orgsToSyncDelete.size());
+		LOGGER.info("组织同步[" + syncServiceName + "]新增Size: " + orgsToSyncAdd.size());
+		LOGGER.info("组织同步[" + syncServiceName + "]更新Size: " + orgsToSyncUpdate.size());
+		LOGGER.info("组织同步[" + syncServiceName + "]删除Size: " + orgsToSyncDelete.size());
 
 		return map;
 	}
@@ -477,9 +472,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		map.put(MAPKEY_USER_SYNC_UPDATE, usersToSyncUpdate);
 		map.put(MAPKEY_USER_SYNC_DELETE, usersToSyncDelete);
 
-		logger.info("用户同步[" + syncServiceName + "]新增Size: " + usersToSyncAdd.size());
-		logger.info("用户同步[" + syncServiceName + "]更新Size: " + usersToSyncUpdate.size());
-		logger.info("用户同步[" + syncServiceName + "]删除Size: " + usersToSyncDelete.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + usersToSyncAdd.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]更新Size: " + usersToSyncUpdate.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]删除Size: " + usersToSyncDelete.size());
 
 		return map;
 	}
@@ -672,7 +667,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("岗位同步[" + syncServiceName + "]新增失败 ", pos.getpNames(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("岗位同步[" + syncServiceName + "]新增失败 " + pos.getpNames(), e);
+				LOGGER.error("岗位同步[" + syncServiceName + "]新增失败 " + pos.getpNames(), e);
 			}
 
 			tempList.clear();
@@ -699,7 +694,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("岗位同步[" + syncServiceName + "]更新失败 ", pos.getpNames(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("岗位同步[" + syncServiceName + "]更新失败 " + pos.getpNames(), e);
+				LOGGER.error("岗位同步[" + syncServiceName + "]更新失败 " + pos.getpNames(), e);
 			}
 
 		}
@@ -728,7 +723,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					}
 				}
 			} catch (IOException e) {
-				logger.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
+				LOGGER.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
 			}
 
 			tempList.clear();
@@ -757,7 +752,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("组织同步[" + syncServiceName + "]新增失败 ", org.getOuName(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
+				LOGGER.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
 			}
 
 			tempList.clear();
@@ -785,7 +780,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("组织同步[" + syncServiceName + "]更新失败 ", org.getOuName(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("组织同步[" + syncServiceName + "]更新失败 " + org.getOuName(), e);
+				LOGGER.error("组织同步[" + syncServiceName + "]更新失败 " + org.getOuName(), e);
 			}
 
 			tempList.clear();
@@ -812,7 +807,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("组织同步[" + syncServiceName + "]删除失败 ", org.getOuName(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("组织同步[" + syncServiceName + "]删除失败 " + org.getOuName(), e);
+				LOGGER.error("组织同步[" + syncServiceName + "]删除失败 " + org.getOuName(), e);
 			}
 
 			tempList.clear();
@@ -849,7 +844,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					}
 				}
 			} catch (IOException e) {
-				logger.error("用户同步[" + syncServiceName + "]新增失败 " + user.getID(), e);
+				LOGGER.error("用户同步[" + syncServiceName + "]新增失败 " + user.getID(), e);
 			}
 
 			tempList.clear();
@@ -888,7 +883,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					}
 				}
 			} catch (Exception e) {
-				logger.error("用户同步[" + syncServiceName + "]更新失败 " + user.getID(), e);
+				LOGGER.error("用户同步[" + syncServiceName + "]更新失败 " + user.getID(), e);
 			}
 
 			tempList.clear();
@@ -921,7 +916,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 					printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
 				}
 			} catch (IOException e) {
-				logger.error("用户同步[" + syncServiceName + "]删除失败 " + user.getID(), e);
+				LOGGER.error("用户同步[" + syncServiceName + "]删除失败 " + user.getID(), e);
 			}
 
 			tempList.clear();
@@ -1008,7 +1003,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * @param resultEntity
 	 */
 	protected void printLog(String type, String errKey, ResultEntity resultEntity) {
-		logger.error(type + "ID：" + errKey + " 错误信息：" + resultEntity.getCode() + "-" + resultEntity.getMessage());
+		LOGGER.error(type + "ID：" + errKey + " 错误信息：" + resultEntity.getCode() + "-" + resultEntity.getMessage());
 	}
 
 	/**
