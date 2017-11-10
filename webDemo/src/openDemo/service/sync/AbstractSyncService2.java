@@ -1012,20 +1012,20 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	}
 
 	/**
-	 * 判断岗位是否过期
-	 * 
-	 * @param pos
-	 * @return
-	 */
-	protected abstract boolean isPosExpired(PositionModel pos);
-
-	/**
 	 * 判断组织是否过期
 	 * 
 	 * @param org
 	 * @return
 	 */
 	protected abstract boolean isOrgExpired(OuInfoModel org);
+
+	/**
+	 * 判断岗位是否过期
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	protected abstract boolean isPosExpired(PositionModel pos);
 
 	/**
 	 * 判断用户是否过期
@@ -1050,20 +1050,20 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	protected abstract void changePropValues(List<UserInfoModel> newList);
 
 	/**
-	 * 获取岗位对象集合
-	 * 
-	 * @param mode
-	 * @return
-	 */
-	protected abstract List<PositionModel> getPositionModelList(String mode) throws Exception;
-
-	/**
 	 * 获取组织对象集合
 	 * 
 	 * @param mode
 	 * @return
 	 */
 	protected abstract List<OuInfoModel> getOuInfoModelList(String mode) throws Exception;
+
+	/**
+	 * 获取岗位对象集合
+	 * 
+	 * @param mode
+	 * @return
+	 */
+	protected abstract List<PositionModel> getPositionModelList(String mode) throws Exception;
 
 	/**
 	 * 获取用户对象集合
