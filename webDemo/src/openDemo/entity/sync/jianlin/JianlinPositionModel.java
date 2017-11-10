@@ -7,6 +7,7 @@ public class JianlinPositionModel {
 	private String pNames;
 	private String pNameClass;
 	private String status;
+	private String orgBelongsTo;// 所属部门
 
 	@XmlElement(name = "E0101")
 	public String getpNo() {
@@ -41,6 +42,15 @@ public class JianlinPositionModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@XmlElement(name = "DEPT_ID")
+	public String getOrgBelongsTo() {
+		return orgBelongsTo;
+	}
+
+	public void setOrgBelongsTo(String orgBelongsTo) {
+		this.orgBelongsTo = orgBelongsTo;
 	}
 
 }

@@ -129,10 +129,10 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 
 	@Override
 	protected boolean isPosExpired(PositionModel pos) {
-		// Disable 作废标志 1启用0停用
+		// Disable 作废标志 0启用1停用
 		String status = pos.getStatus();
-		// 状态为0停用的场合 岗位过期
-		if ("0".equals(status)) {
+		// 状态为1停用的场合 岗位过期
+		if ("1".equals(status)) {
 			return true;
 		} else {
 			return false;
@@ -187,6 +187,12 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 	protected List<PositionModel> getPositionModelList(String mode) throws Exception {
 		List<JianlinPositionModel> dataModelList = (List<JianlinPositionModel>) getDataModelList(mode,
 				JianlinPositionModel.class);
+
+		// 岗位数据存在同岗位名不同岗位id（不同部门存在相同岗位名） 将部门名称设置为岗位类别名
+		for (JianlinPositionModel pos : dataModelList) {
+			pos.setpNameClass(getPositionNameClassFromOrgs(pos.getOrgBelongsTo()));
+		}
+
 		List<PositionModel> newList = copyCreateEntityList(dataModelList, PositionModel.class);
 
 		return newList;
@@ -211,7 +217,8 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 	}
 
 	public static void main(String[] args) throws Exception {
-		JianlinSyncService service = new JianlinSyncService();
+		// JianlinSyncService service = new JianlinSyncService();
+		// Logger logger = LogManager.getLogger();
 
 		// List<UserInfoModel> userInfoModelList =
 		// service.getUserInfoModelList(MODE_FULL);
@@ -230,7 +237,7 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 		// service.removeExpiredPos(positionModelList);
 		// for (PositionModel pos : positionModelList) {
 		// logger.info(pos.getpNo() + "=" + pos.getpNames() + "=" +
-		// pos.getStatus());
+		// pos.getStatus() + "=" + pos.getpNameClass());
 		// }
 		// System.out.println(positionModelList.size());
 
