@@ -213,7 +213,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// 此处再次同步删除过期组织
 			if (expiredOrgs.size() > 0) {
 				LOGGER.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
-				// syncDeleteOrgOneByOne(expiredOrgs);
+				syncDeleteOrgOneByOne(expiredOrgs, false);
 			}
 
 			LOGGER.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -226,6 +226,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 		else {
 			Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoList, newList);
 
+			List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
+			if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
+				syncDeleteOrgOneByOne(orgsToSyncDelete, true);
+			}
+
 			List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
 			if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
 				syncAddOrgOneByOne2(orgsToSyncAdd, isBaseInfo);
@@ -234,11 +239,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
 			if (orgsToSyncUpdate != null && orgsToSyncUpdate.size() > 0) {
 				syncUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
-			}
-
-			List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
-			if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
-				syncDeleteOrgOneByOne(orgsToSyncDelete);
 			}
 		}
 	}
@@ -266,7 +266,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
 			if (expiredUsers.size() > 0) {
 				LOGGER.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
-				// syncDeleteUserOneByOne(expiredUsers);
+				syncDeleteUserOneByOne(expiredUsers, false);
 			}
 
 			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -277,6 +277,11 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			// 与增量list进行比较
 			Map<String, List<UserInfoModel>> map = compareUserList(userInfoList, newList);
 
+			List<UserInfoModel> usersToDelete = map.get(MAPKEY_USER_SYNC_DELETE);
+			if (usersToDelete != null && usersToDelete.size() > 0) {
+				syncDeleteUserOneByOne(usersToDelete, true);
+			}
+
 			List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
 			if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
 				syncAddUserOneByOne(usersToSyncAdd, islink);
@@ -285,11 +290,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
 			if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
 				syncUpdateUserOneByOne(usersToSyncUpdate, islink);
-			}
-
-			List<UserInfoModel> usersToDelete = map.get(MAPKEY_USER_SYNC_DELETE);
-			if (usersToDelete != null && usersToDelete.size() > 0) {
-				syncDeleteUserOneByOne(usersToDelete);
 			}
 		}
 
@@ -791,8 +791,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 逐个组织同步删除
 	 * 
 	 * @param orgsToSyncDelete
+	 * @param ifPringLog
 	 */
-	protected void syncDeleteOrgOneByOne(List<OuInfoModel> orgsToSyncDelete) {
+	protected void syncDeleteOrgOneByOne(List<OuInfoModel> orgsToSyncDelete, boolean ifPringLog) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (OuInfoModel org : orgsToSyncDelete) {
@@ -804,7 +805,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					ouInfoList.remove(org);
 				} else {
-					printLog("组织同步[" + syncServiceName + "]删除失败 ", org.getOuName(), resultEntity);
+					if (ifPringLog) {
+						printLog("组织同步[" + syncServiceName + "]删除失败 ", org.getOuName(), resultEntity);
+					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("组织同步[" + syncServiceName + "]删除失败 " + org.getOuName(), e);
@@ -895,8 +898,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	 * 逐个用户同步删除
 	 * 
 	 * @param usersToDelete
+	 * @param ifPringLog
 	 */
-	protected void syncDeleteUserOneByOne(List<UserInfoModel> usersToDelete) {
+	protected void syncDeleteUserOneByOne(List<UserInfoModel> usersToDelete, boolean ifPringLog) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToDelete) {
@@ -913,7 +917,9 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					userInfoList.remove(user);
 				} else {
-					printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
+					if (ifPringLog) {
+						printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
+					}
 				}
 			} catch (IOException e) {
 				LOGGER.error("用户同步[" + syncServiceName + "]删除失败 " + user.getID(), e);
