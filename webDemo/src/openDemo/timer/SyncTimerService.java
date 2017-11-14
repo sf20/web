@@ -25,13 +25,14 @@ import openDemo.service.sync.opple.OppleSyncService;
 public class SyncTimerService {
 	// 定时器间隔执行时间 单位毫秒
 	private static final long PERIOD = 60 * 60 * 1000;// 60 * 60 * 1000
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final Logger logger = LogManager.getLogger(SyncTimerService.class);
+
 	// 每次定时器执行时间参数
 	private int timerExecHour = 23;
 	private int timerExecMinute = 00;
 	private int timerExecSecond = 00;
-
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static final Logger logger = LogManager.getLogger(SyncTimerService.class);
 
 	// 用于执行定时任务的定时器
 	private ScheduledExecutorService executor;
@@ -106,7 +107,7 @@ public class SyncTimerService {
 					// 继续设置下一个定时任务
 					executor.schedule(this, delay, TimeUnit.MILLISECONDS);
 				} catch (Exception e) {
-					shutdowmAndPrintLog(executor, e, className);
+					shutdownAndPrintLog(className, e);
 				}
 			}
 		};
@@ -210,14 +211,19 @@ public class SyncTimerService {
 	/**
 	 * 关闭定时器同时记录异常日志
 	 * 
-	 * @param executor
-	 *            定时器执行器
-	 * @param e
 	 * @param className
+	 * @param e
 	 */
-	private void shutdowmAndPrintLog(ScheduledExecutorService executor, Exception e, String className) {
-		executor.shutdown();
+	private void shutdownAndPrintLog(String className, Exception e) {
+		shutdownExecutor();
 		logger.info("发生异常::定时器[" + className + "]已停止");
 		logger.error("定时同步[" + className + "]出现异常", e);
+	}
+
+	public void shutdownExecutor() {
+		if (executor != null) {
+			executor.shutdown();
+			logger.info("线程执行器已关闭");
+		}
 	}
 }
