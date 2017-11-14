@@ -71,8 +71,6 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	private String modeUpdate = "2";// 默认为2
 	// 是否提供岗位id标志
 	private boolean isPosIdProvided = true;// 默认为已提供
-	// 组织多次同步去重标志
-	private boolean isOrgSyncExecuted = false;
 	// 子类同步service的类名
 	private String syncServiceName;
 
@@ -219,7 +217,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			LOGGER.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
 			// 进行多次同步
 			for (int i = 0; i < 5; i++) {
-				syncAddOrgOneByOne1(newList, isBaseInfo);
+				syncAddOrUpdateOrgOneByOne(newList, isBaseInfo);
 			}
 		}
 		// 增量模式
@@ -233,12 +231,12 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 			List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
 			if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
-				syncAddOrgOneByOne2(orgsToSyncAdd, isBaseInfo);
+				syncAddOrUpdateOrgOneByOne(orgsToSyncAdd, isBaseInfo);
 			}
 
 			List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
 			if (orgsToSyncUpdate != null && orgsToSyncUpdate.size() > 0) {
-				syncUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
+				syncAddOrUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
 			}
 		}
 	}
@@ -270,7 +268,7 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 			}
 
 			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
-			syncAddUserOneByOne(newList, islink);
+			syncAddOrUpdateUserOneByOne(newList, islink);
 		}
 		// 增量模式
 		else {
@@ -284,12 +282,12 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 
 			List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
 			if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
-				syncAddUserOneByOne(usersToSyncAdd, islink);
+				syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink);
 			}
 
 			List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
 			if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
-				syncUpdateUserOneByOne(usersToSyncUpdate, islink);
+				syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
 			}
 		}
 
@@ -701,86 +699,33 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	}
 
 	/**
-	 * 逐个组织同步新增(全量同步用)
+	 * 逐个组织同步新增或更新
 	 * 
-	 * @param orgsToSyncAdd
+	 * @param orgsToSyncAddOrUpdate
 	 * @param isBaseInfo
 	 */
-	protected void syncAddOrgOneByOne1(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo) {
+	protected void syncAddOrUpdateOrgOneByOne(List<OuInfoModel> orgsToSyncAddOrUpdate, boolean isBaseInfo) {
 		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
 		ResultEntity resultEntity = null;
-		for (OuInfoModel org : orgsToSyncAdd) {
+		for (OuInfoModel org : orgsToSyncAddOrUpdate) {
 			tempList.add(org);
 
 			try {
 				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
-				// 全量组织同步会循环执行5次 集合数据只需保存一次
-				if (!isOrgSyncExecuted) {
-					if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+					if (!ouInfoList.contains(org)) {
+						// 同步新增场合
 						ouInfoList.add(org);
 					} else {
-						printLog("组织同步[" + syncServiceName + "]新增失败 ", org.getOuName(), resultEntity);
+						// 同步更新场合
+						ouInfoList.remove(org);
+						ouInfoList.add(org);
 					}
-				}
-			} catch (IOException e) {
-				LOGGER.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
-			}
-
-			tempList.clear();
-		}
-		// 全量组织同步已执行
-		isOrgSyncExecuted = true;
-	}
-
-	/**
-	 * 逐个组织同步新增(增量同步用)
-	 * 
-	 * @param orgsToSyncAdd
-	 * @param isBaseInfo
-	 */
-	protected void syncAddOrgOneByOne2(List<OuInfoModel> orgsToSyncAdd, boolean isBaseInfo) {
-		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
-		ResultEntity resultEntity = null;
-		for (OuInfoModel org : orgsToSyncAdd) {
-			tempList.add(org);
-
-			try {
-				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					ouInfoList.add(org);
 				} else {
-					printLog("组织同步[" + syncServiceName + "]新增失败 ", org.getOuName(), resultEntity);
+					printLog("组织同步[" + syncServiceName + "]失败 ", org.getOuName(), resultEntity);
 				}
 			} catch (IOException e) {
-				LOGGER.error("组织同步[" + syncServiceName + "]新增失败 " + org.getOuName(), e);
-			}
-
-			tempList.clear();
-		}
-	}
-
-	/**
-	 * 逐个组织同步更新
-	 * 
-	 * @param orgsToSyncUpdate
-	 * @param isBaseInfo
-	 */
-	protected void syncUpdateOrgOneByOne(List<OuInfoModel> orgsToSyncUpdate, boolean isBaseInfo) {
-		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
-		ResultEntity resultEntity = null;
-		for (OuInfoModel org : orgsToSyncUpdate) {
-			tempList.add(org);
-
-			try {
-				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					ouInfoList.remove(org);
-					ouInfoList.add(org);
-				} else {
-					printLog("组织同步[" + syncServiceName + "]更新失败 ", org.getOuName(), resultEntity);
-				}
-			} catch (IOException e) {
-				LOGGER.error("组织同步[" + syncServiceName + "]更新失败 " + org.getOuName(), e);
+				LOGGER.error("组织同步[" + syncServiceName + "]失败 " + org.getOuName(), e);
 			}
 
 			tempList.clear();
@@ -819,79 +764,53 @@ public abstract class AbstractSyncService2 implements CustomTimerTask {
 	}
 
 	/**
-	 * 逐个用户同步新增
+	 * 逐个用户同步新增/更新
 	 * 
-	 * @param usersToSyncAdd
+	 * @param usersToSyncAddOrUpdate
 	 * @param islink
 	 */
-	protected void syncAddUserOneByOne(List<UserInfoModel> usersToSyncAdd, boolean islink) {
+	protected void syncAddOrUpdateUserOneByOne(List<UserInfoModel> usersToSyncAddOrUpdate, boolean islink) {
 		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
 		ResultEntity resultEntity = null;
-		for (UserInfoModel user : usersToSyncAdd) {
+		for (UserInfoModel user : usersToSyncAddOrUpdate) {
 			tempList.add(user);
 
 			try {
 				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					userInfoList.add(user);
+					if (!userInfoList.contains(user)) {
+						// 同步新增场合
+						userInfoList.add(user);
+					} else {
+						// 同步更新场合
+						userInfoList.remove(user);
+						userInfoList.add(user);
+					}
 				} else {
 					// 忽略邮箱再同步一次
 					user.setMail(null);
 					tempList.set(0, user);
 					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
 					if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-						userInfoList.add(user);
+						if (!userInfoList.contains(user)) {
+							// 同步新增场合
+							userInfoList.add(user);
+						} else {
+							// 同步更新场合
+							userInfoList.remove(user);
+							userInfoList.add(user);
+						}
 						// logger.warn("该用户邮箱异常未同步：" + user.getID());
 					} else {
-						printLog("用户同步[" + syncServiceName + "]新增失败 ", user.getID(), resultEntity);
+						printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
 					}
 				}
 			} catch (IOException e) {
-				LOGGER.error("用户同步[" + syncServiceName + "]新增失败 " + user.getID(), e);
+				LOGGER.error("用户同步[" + syncServiceName + "]失败 " + user.getID(), e);
 			}
 
 			tempList.clear();
 		}
-	}
-
-	/**
-	 * 逐个用户同步更新
-	 * 
-	 * @param usersToSyncUpdate
-	 * @param islink
-	 */
-	protected void syncUpdateUserOneByOne(List<UserInfoModel> usersToSyncUpdate, boolean islink) {
-		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
-		ResultEntity resultEntity = null;
-
-		for (UserInfoModel user : usersToSyncUpdate) {
-			tempList.add(user);
-
-			try {
-				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					userInfoList.remove(user);
-					userInfoList.add(user);
-				} else {
-					// 忽略邮箱再同步一次
-					user.setMail(null);
-					tempList.set(0, user);
-					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
-					if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-						userInfoList.remove(user);
-						userInfoList.add(user);
-						// logger.warn("该用户邮箱异常未同步：" + user.getID());
-					} else {
-						printLog("用户同步[" + syncServiceName + "]更新失败 ", user.getID(), resultEntity);
-					}
-				}
-			} catch (Exception e) {
-				LOGGER.error("用户同步[" + syncServiceName + "]更新失败 " + user.getID(), e);
-			}
-
-			tempList.clear();
-		}
-
 	}
 
 	/**
