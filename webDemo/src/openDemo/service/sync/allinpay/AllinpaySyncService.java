@@ -178,10 +178,8 @@ public class AllinpaySyncService extends AbstractSyncService2 implements Allinpa
 		String status = user.getStatus();
 		// 是否被删除（0/否;1/是）
 		String deleteStatus = user.getDeleteStatus();
-		// 同步AD域用户组织（id为10432）下的用户不同步
-		String deptId = user.getOrgOuCode();
 
-		if ("0".equals(status) || "1".equals(deleteStatus) || "10432".equals(deptId)) {
+		if ("0".equals(status) || "1".equals(deleteStatus)) {
 			return true;
 		} else {
 			return false;
@@ -274,6 +272,11 @@ public class AllinpaySyncService extends AbstractSyncService2 implements Allinpa
 			tempStrArr = line.split(SEPARATOR_REGEX);
 
 			if (tempStrArr.length != 12) {
+				continue;
+			}
+
+			// 同步AD域用户组织（id为10432）下的用户不同步
+			if ("10432".equals(tempStrArr[5])) {
 				continue;
 			}
 
