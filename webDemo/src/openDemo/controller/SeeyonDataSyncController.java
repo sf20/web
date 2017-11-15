@@ -16,7 +16,7 @@ public class SeeyonDataSyncController implements InitializingBean, DisposableBea
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		// syncTimerService = new SyncTimerService(20, 30);
+		// syncTimerService = new SyncTimerService(06, 30);
 		// syncTimerService.singleAddTimingService(seeyonSyncService);
 	}
 
