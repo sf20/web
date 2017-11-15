@@ -15,6 +15,12 @@ public class LeoPositionModel {
 	private String pNo;
 
 	/*
+	 * 岗位类别
+	 */
+	@JsonProperty("code")
+	private String pNameClass;
+
+	/*
 	 * 一级类别；二级类别；岗位 (最后是岗位)
 	 */
 	@JsonProperty("name")
@@ -38,6 +44,14 @@ public class LeoPositionModel {
 
 	public void setpNo(String pNo) {
 		this.pNo = pNo;
+	}
+
+	public String getpNameClass() {
+		return pNameClass;
+	}
+
+	public void setpNameClass(String pNameClass) {
+		this.pNameClass = pNameClass;
 	}
 
 	public String getpNames() {
