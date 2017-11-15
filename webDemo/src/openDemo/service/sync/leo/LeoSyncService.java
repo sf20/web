@@ -13,6 +13,7 @@ import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -30,6 +31,7 @@ import openDemo.entity.sync.leo.LeoUserInfoModel;
 import openDemo.service.sync.AbstractSyncService2;
 import openDemo.utils.HttpClientUtil4Sync;
 
+@Service
 public class LeoSyncService extends AbstractSyncService2 implements LeoConfig {
 	// 用户接口请求参数值
 	private static final String REQUEST_EMP_URL = "https://open.leo.cn/v1/hr/employees/last-updated";
