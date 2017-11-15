@@ -16,7 +16,7 @@ public class JianlinDataSyncController implements InitializingBean, DisposableBe
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		// SyncTimerService syncTimerService = new SyncTimerService(20, 30);
+		// syncTimerService = new SyncTimerService(20, 30);
 		// syncTimerService.singleAddTimingService(jianlinSyncService);
 	}
 

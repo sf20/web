@@ -5,19 +5,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import openDemo.service.sync.seeyon.SeeyonSyncService;
+import openDemo.service.sync.leo.LeoSyncService;
 import openDemo.timer.SyncTimerService;
 
 @Controller
-public class SeeyonDataSyncController implements InitializingBean, DisposableBean {
+public class LeoDataSyncController implements InitializingBean, DisposableBean {
 	@Autowired
-	private SeeyonSyncService seeyonSyncService;
+	private LeoSyncService leoSyncService;
 	private SyncTimerService syncTimerService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// syncTimerService = new SyncTimerService(20, 30);
-		// syncTimerService.singleAddTimingService(seeyonSyncService);
+		// syncTimerService.singleAddTimingService(leoSyncService);
 	}
 
 	@Override
