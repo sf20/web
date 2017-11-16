@@ -1,7 +1,5 @@
 package openDemo.entity.sync.opple;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -33,12 +31,6 @@ public class OpUserInfoModel {
 	private String cnName;
 
 	/**
-	 * 密码备注：如果用MD5或者CMD5加密则必须使用标准MD5 32位小写加密的字符串（如果不传使用平台配置的默认密码）
-	 */
-	@JsonIgnore
-	private String password;
-
-	/**
 	 * 性别
 	 */
 	@JsonProperty("Gender")
@@ -64,12 +56,6 @@ public class OpUserInfoModel {
 	private String orgOuCode;
 
 	/**
-	 * 密码加密方式： YXT(云学堂加密默认)、MD5 (密码MD5加密)、CMD5(用户名+密码MD5加密)
-	 */
-	@JsonIgnore
-	private String encryptionType;
-
-	/**
 	 * 岗位编号
 	 */
 	// TODO @JsonProperty("PositionCode")
@@ -86,19 +72,19 @@ public class OpUserInfoModel {
 	 * 入职日期
 	 */
 	@JsonProperty("EnterDate")
-	private Date entryTime;
+	private String entryTime;
 
 	/**
 	 * 出生日期
 	 */
 	@JsonIgnore
-	private Date birthday;
+	private String birthday;
 
 	/**
 	 * 过期日期
 	 */
 	@JsonProperty("LeaveDate")
-	private Date expireDate;
+	private String expireDate;
 
 	/**
 	 * 扩展字段 1~10
@@ -155,14 +141,6 @@ public class OpUserInfoModel {
 		this.cnName = cnName;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public String getSex() {
 		return sex;
 	}
@@ -195,14 +173,6 @@ public class OpUserInfoModel {
 		this.orgOuCode = orgOuCode;
 	}
 
-	public String getEncryptionType() {
-		return encryptionType;
-	}
-
-	public void setEncryptionType(String encryptionType) {
-		this.encryptionType = encryptionType;
-	}
-
 	public String getPostionNo() {
 		return postionNo;
 	}
@@ -219,27 +189,27 @@ public class OpUserInfoModel {
 		this.postionName = postionName;
 	}
 
-	public Date getEntryTime() {
+	public String getEntryTime() {
 		return entryTime;
 	}
 
-	public void setEntryTime(Date entryTime) {
+	public void setEntryTime(String entryTime) {
 		this.entryTime = entryTime;
 	}
 
-	public Date getBirthday() {
+	public String getBirthday() {
 		return birthday;
 	}
 
-	public void setBirthday(Date birthday) {
+	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}
 
-	public Date getExpireDate() {
+	public String getExpireDate() {
 		return expireDate;
 	}
 
-	public void setExpireDate(Date expireDate) {
+	public void setExpireDate(String expireDate) {
 		this.expireDate = expireDate;
 	}
 
