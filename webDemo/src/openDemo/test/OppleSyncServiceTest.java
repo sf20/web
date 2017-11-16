@@ -40,7 +40,7 @@ public class OppleSyncServiceTest {
 		// Map<String, String> paramAdded = new HashMap<>();
 		// paramAdded.put("OpUserId", "OP050279");
 		OppleSyncService syncService = new OppleSyncService();
-		String jsonString = syncService.getJsonPost(syncService.buildReqJson(serviceOperation, mode, paramAdded));
+		String jsonString = syncService.getJsonPost(syncService.buildReqJson(serviceOperation, mode));
 		System.out.println(jsonString);
 
 		// printOpUserInfoModel(jsonString);
