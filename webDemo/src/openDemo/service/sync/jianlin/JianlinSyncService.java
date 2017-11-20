@@ -2,7 +2,6 @@ package openDemo.service.sync.jianlin;
 
 import java.io.StringReader;
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,18 +21,16 @@ import openDemo.entity.sync.jianlin.JianlinResDeptData;
 import openDemo.entity.sync.jianlin.JianlinResEmpData;
 import openDemo.entity.sync.jianlin.JianlinResPosData;
 import openDemo.entity.sync.jianlin.JianlinUserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @Service
-public class JianlinSyncService extends AbstractSyncService2 implements JianlinConfig {
+public class JianlinSyncService extends AbstractSyncService implements JianlinConfig {
 	// 全量增量区分
 	private static final String MODE_FULL = "0";
 	private static final String MODE_UPDATE = "1";
 	// 登录参数
 	private static final String LOGIN_PARAM_S1 = "yunxt";
 	private static final String LOGIN_PARAM_S2 = "yunxt321";
-	// 用户接口要求时间格式
-	private static final SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
 	private WebServiceLocator locator = new WebServiceLocator();
 
@@ -62,7 +59,7 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 				count = service.orgBeginGetPosition(sessionID, MODE_FULL, null);
 			} else {
 				count = service.orgBeginGetPosition(sessionID, MODE_UPDATE,
-						CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
+						YYMMDD_DATE_FORMAT.format(getYesterdayDate(new Date())));
 			}
 
 			if (count > 0) {
@@ -82,7 +79,7 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 				count = service.orgBeginGetDept(sessionID, MODE_FULL, null);
 			} else {
 				count = service.orgBeginGetDept(sessionID, MODE_UPDATE,
-						CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
+						YYMMDD_DATE_FORMAT.format(getYesterdayDate(new Date())));
 			}
 
 			if (count > 0) {
@@ -102,7 +99,7 @@ public class JianlinSyncService extends AbstractSyncService2 implements JianlinC
 				count = service.empBeginGetEmployee(sessionID, MODE_FULL, null);
 			} else {
 				count = service.empBeginGetEmployee(sessionID, MODE_UPDATE,
-						CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
+						YYMMDD_DATE_FORMAT.format(getYesterdayDate(new Date())));
 			}
 
 			if (count > 0) {

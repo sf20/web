@@ -2,7 +2,6 @@ package openDemo.service.sync.elion;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,10 +35,10 @@ import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RES;
 import openDemo.entity.sync.elion.EL_INT_JOBCD_SYNC_RESLine;
 import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RES;
 import openDemo.entity.sync.elion.EL_INT_PER_SYNC_RESLine;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @org.springframework.stereotype.Service
-public class ElionSyncService extends AbstractSyncService2 implements ElionConfig {
+public class ElionSyncService extends AbstractSyncService implements ElionConfig {
 	// 用户接口请求参数值
 	// 请求webservice的TargetEndpointAddress参数
 	private static String ENDPOINT_ADDRESS = "http://ehr.elion.com.cn/PSIGW/PeopleSoftServiceListeningConnector/PSFT_HR";
@@ -85,8 +84,6 @@ public class ElionSyncService extends AbstractSyncService2 implements ElionConfi
 	// 全量增量区分
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
-	// 日期格式化用
-	private static final SimpleDateFormat CUSTOMER_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	// 记录日志
 	private static final Logger logger = LogManager.getLogger(ElionSyncService.class);
 
@@ -126,8 +123,8 @@ public class ElionSyncService extends AbstractSyncService2 implements ElionConfi
 			req.setParam2(DATA_TO_INDEX);
 		} else {
 			Date today = new Date();
-			req.setBeginDate(CUSTOMER_DATE_FORMAT.format(getYesterdayDate(today)));
-			req.setEndDate(CUSTOMER_DATE_FORMAT.format(today));
+			req.setBeginDate(YYMMDD_DATE_FORMAT.format(getYesterdayDate(today)));
+			req.setEndDate(YYMMDD_DATE_FORMAT.format(today));
 		}
 
 		Object[] lines = null;
@@ -369,7 +366,7 @@ public class ElionSyncService extends AbstractSyncService2 implements ElionConfi
 			String entryTime = tempModel.getEntryTime();
 			if (StringUtils.isNotEmpty(entryTime)) {
 				try {
-					tempModel.setEntryTime(DATE_FORMAT.format(CUSTOMER_DATE_FORMAT.parse(entryTime)));
+					tempModel.setEntryTime(DATE_FORMAT.format(YYMMDD_DATE_FORMAT.parse(entryTime)));
 				} catch (ParseException e) {
 					logger.warn("日期格式有误 " + tempModel.getID() + "：" + entryTime);
 				}
@@ -379,7 +376,7 @@ public class ElionSyncService extends AbstractSyncService2 implements ElionConfi
 			String birthday = tempModel.getBirthday();
 			if (StringUtils.isNotEmpty(birthday)) {
 				try {
-					tempModel.setBirthday(DATE_FORMAT.format(CUSTOMER_DATE_FORMAT.parse(birthday)));
+					tempModel.setBirthday(DATE_FORMAT.format(YYMMDD_DATE_FORMAT.parse(birthday)));
 				} catch (ParseException e) {
 					logger.warn("日期格式有误 " + tempModel.getID() + "：" + birthday);
 				}

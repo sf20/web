@@ -19,10 +19,10 @@ import com.jcraft.jsch.Session;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @Service
-public class AllinpaySyncService extends AbstractSyncService2 implements AllinpayConfig {
+public class AllinpaySyncService extends AbstractSyncService implements AllinpayConfig {
 	// 登录参数
 	private static final String HOST = "116.228.64.54";
 	private static final int PORT = 8002;

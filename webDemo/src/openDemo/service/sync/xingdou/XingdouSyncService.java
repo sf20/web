@@ -2,7 +2,6 @@ package openDemo.service.sync.xingdou;
 
 import java.io.StringReader;
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,10 +20,10 @@ import openDemo.entity.sync.xingdou.XingdouOuInfoModel;
 import openDemo.entity.sync.xingdou.XingdouResDeptData;
 import openDemo.entity.sync.xingdou.XingdouResEmpData;
 import openDemo.entity.sync.xingdou.XingdouUserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @Service
-public class XingdouSyncService extends AbstractSyncService2 implements XingdouConfig {
+public class XingdouSyncService extends AbstractSyncService implements XingdouConfig {
 	// 全量增量区分
 	private static final String MODE_FULL = "0";
 	private static final String MODE_UPDATE = "1";
@@ -33,8 +32,6 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 	private static final String LOGIN_PARAM_S2 = "yun.koi";
 	// 生效状态
 	private static final String EFFECTIVE_STATUS = "0";
-	// 用户接口要求时间格式
-	private static final SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
 	private WebServiceLocator locator = new WebServiceLocator();
 	private List<UserInfoModel> sharedModelList;
@@ -64,7 +61,7 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 				count = service.orgBeginGetDept2(sessionID, MODE_FULL, null);
 			} else {
 				count = service.orgBeginGetDept2(sessionID, MODE_UPDATE,
-						CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
+						YYMMDD_DATE_FORMAT.format(getYesterdayDate(new Date())));
 			}
 
 			if (count > 0) {
@@ -84,7 +81,7 @@ public class XingdouSyncService extends AbstractSyncService2 implements XingdouC
 				count = service.empBeginGetEmployee2(sessionID, MODE_FULL, null);
 			} else {
 				count = service.empBeginGetEmployee2(sessionID, MODE_UPDATE,
-						CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
+						YYMMDD_DATE_FORMAT.format(getYesterdayDate(new Date())));
 			}
 
 			if (count > 0) {

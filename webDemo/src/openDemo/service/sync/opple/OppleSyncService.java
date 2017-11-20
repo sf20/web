@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,10 +43,10 @@ import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.opple.OpOuInfoModel;
 import openDemo.entity.sync.opple.OpResJsonModel;
 import openDemo.entity.sync.opple.OpUserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @Service
-public class OppleSyncService extends AbstractSyncService2 implements OppleConfig {
+public class OppleSyncService extends AbstractSyncService implements OppleConfig {
 	// 用户接口请求参数名
 	private static final String REQUESTID = "RequestId";
 	private static final String SERVICENAME = "ServiceName";
@@ -72,8 +71,7 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 	// 客户提供接口返回的json数据中组织数据和员工数据的key
 	private static final String ORG_RES_DATA_KEY = "SapMiddleOrg";
 	private static final String EMP_RES_DATA_KEY = "SapMiddleEmp";
-	// 日期格式化用
-	private static final SimpleDateFormat YYMMDD_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+
 	// 记录日志
 	private static final Logger logger = LogManager.getLogger(OppleSyncService.class);
 

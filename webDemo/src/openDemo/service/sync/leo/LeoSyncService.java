@@ -28,11 +28,11 @@ import openDemo.entity.sync.leo.LeoPositionModel;
 import openDemo.entity.sync.leo.LeoResData;
 import openDemo.entity.sync.leo.LeoResJsonModel;
 import openDemo.entity.sync.leo.LeoUserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 import openDemo.utils.HttpClientUtil4Sync;
 
 @Service
-public class LeoSyncService extends AbstractSyncService2 implements LeoConfig {
+public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	// 用户接口请求参数值
 	private static final String REQUEST_EMP_URL = "https://open.leo.cn/v1/hr/employees/last-updated";
 	private static final String REQUEST_ORG_URL = "https://open.leo.cn/v1/hr/origizations/last-updated";

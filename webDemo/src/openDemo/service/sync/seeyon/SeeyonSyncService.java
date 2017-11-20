@@ -16,10 +16,10 @@ import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.seeyon.SeeyonOuInfoModel;
 import openDemo.entity.sync.seeyon.SeeyonPositionModel;
 import openDemo.entity.sync.seeyon.SeeyonUserInfoModel;
-import openDemo.service.sync.AbstractSyncService2;
+import openDemo.service.sync.AbstractSyncService;
 
 @Service
-public class SeeyonSyncService extends AbstractSyncService2 implements SeeyonConfig {
+public class SeeyonSyncService extends AbstractSyncService implements SeeyonConfig {
 	// 请求数据接口地址
 	private static String REQUEST_ADDRESS = "http://oa.lonch.com.cn:8081";
 	// 定义REST动态客户机
