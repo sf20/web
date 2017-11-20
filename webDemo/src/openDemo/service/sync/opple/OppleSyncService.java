@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -92,6 +93,8 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 		mapper = new ObjectMapper();
 		// 忽略json中多余的属性字段
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		// json字符串的日期格式
+		mapper.setDateFormat(YYMMDD_DATE_FORMAT);
 	}
 
 	/**
@@ -133,8 +136,6 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 				HttpClientUtils.closeQuietly(httpResponse);
 			}
 		}
-		// TODO to delete
-		logger.info("请求用户接口返回数据：" + responseStr);
 		return responseStr;
 	}
 
@@ -242,18 +243,13 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 
 	@Override
 	protected boolean isOrgExpired(OuInfoModel org) {
-		// 除了编号为 00000001 之外的所有无parentcode的部门都不同步
-		if (org.getParentID() == null && Integer.parseInt(org.getID()) != 1) {
+		// 组织废止日期
+		Date endDate = org.getEndDate();
+		if (endDate == null) {
 			return true;
 		} else {
-			// 组织废止日期
-			Date endDate = org.getEndDate();
-			if (endDate == null) {
-				return true;
-			} else {
-				// 组织废止日期比当前时间早的视为过期
-				return endDate.compareTo(new Date()) < 0;
-			}
+			// 组织废止日期比当前时间早的视为过期
+			return endDate.compareTo(new Date()) < 0;
 		}
 	}
 
@@ -266,8 +262,9 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 	protected boolean isUserExpired(UserInfoModel user) {
 		if (user.getExpireDate() != null) {
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	@Override
@@ -306,12 +303,21 @@ public class OppleSyncService extends AbstractSyncService2 implements OppleConfi
 		String jsonString = getJsonPost(buildReqJson(SERVICEOPERATION_ORG, MODE_FULL));// Org只有全量模式
 
 		// 将json字符串转为组织单位json对象数据模型
-		OpResJsonModel<OpOuInfoModel> modle = mapper.readValue(jsonString,
+		OpResJsonModel<OpOuInfoModel> model = mapper.readValue(jsonString,
 				new TypeReference<OpResJsonModel<OpOuInfoModel>>() {
 				});
 
-		List<OuInfoModel> newList = copyCreateEntityList(modle.getEsbResData().get(ORG_RES_DATA_KEY),
+		List<OuInfoModel> newList = copyCreateEntityList(model.getEsbResData().get(ORG_RES_DATA_KEY),
 				OuInfoModel.class);
+
+		// 从集合中删除不需要同步的组织
+		for (Iterator<OuInfoModel> iterator = newList.iterator(); iterator.hasNext();) {
+			OuInfoModel org = iterator.next();
+			// 除了编号为 00000001 之外的所有无parentcode的部门都不同步
+			if (org.getParentID() == null && Integer.parseInt(org.getID()) != 1) {
+				iterator.remove();
+			}
+		}
 
 		return newList;
 	}
