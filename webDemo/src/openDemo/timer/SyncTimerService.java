@@ -25,7 +25,7 @@ public class SyncTimerService {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final Logger LOGGER = LogManager.getLogger(SyncTimerService.class);
 
-	// 每次定时器执行时间参数
+	// 每次定时器执行时间参数默认值
 	private int timerExecHour = 23;
 	private int timerExecMinute = 00;
 	private int timerExecSecond = 00;
