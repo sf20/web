@@ -114,6 +114,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * @throws Exception
 	 */
 	public void sync() throws Exception {
+		LOGGER.info("定时同步[" + syncServiceName + "]开始");
 		int orgCount = ouInfoList.size();
 		if (orgCount > 0) {
 			// 组织增量同步
@@ -140,6 +141,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// 用户全量同步
 			// opUserSync(modeFull, true);
 		}
+		LOGGER.info("定时同步[" + syncServiceName + "]结束");
 		// TODO to delete
 		LOGGER.info("同步后组织size:" + ouInfoList.size());
 		LOGGER.info("同步后岗位size:" + positionList.size());
