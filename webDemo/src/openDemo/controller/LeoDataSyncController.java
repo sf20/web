@@ -1,27 +1,22 @@
 package openDemo.controller;
 
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import openDemo.service.sync.leo.LeoSyncService;
-import openDemo.timer.SyncTimerService;
 
 @Controller
-public class LeoDataSyncController implements InitializingBean, DisposableBean {
+@RequestMapping("leo")
+public class LeoDataSyncController {
 	@Autowired
 	private LeoSyncService leoSyncService;
-	private SyncTimerService syncTimerService;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// syncTimerService = new SyncTimerService(06, 30);
-		// syncTimerService.singleAddTimingService(leoSyncService);
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		syncTimerService.shutdownExecutor();
+	@RequestMapping(value = "/datasync", method = RequestMethod.GET)
+	@ResponseBody
+	public void dataSync() throws Exception {
+		leoSyncService.execute();
 	}
 }
