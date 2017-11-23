@@ -38,7 +38,15 @@ public class AlignSyncService implements AlignConfig, CustomTimerTask {
 	private UserInfoDao userDao = new UserInfoDao();
 
 	@Override
-	public void execute() throws Exception {
+	public void execute() {
+		try {
+			sync();
+		} catch (Exception e) {
+			logger.error("定时同步[" + this.getClass().getSimpleName() + "]出现异常", e);
+		}
+	}
+
+	private void sync() throws Exception {
 		List<String> stage1UserNames = new ArrayList<String>();
 		List<String> stage2UserNames = new ArrayList<String>();
 

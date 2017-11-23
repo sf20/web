@@ -25,10 +25,14 @@ public class TimerTest implements CustomTimerTask {
 	}
 
 	@Override
-	public void execute() throws Exception {
+	public void execute() {
 		// 模拟任务执行耗时
 		long randomTime = randomTime();
 		logger.info("本次执行需要：" + randomTime / 1000 + "秒");
-		Thread.sleep(randomTime);
+		try {
+			Thread.sleep(randomTime);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

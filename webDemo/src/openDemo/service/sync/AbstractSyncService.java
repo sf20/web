@@ -104,8 +104,12 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	@Override
-	public void execute() throws Exception {
-		sync();
+	public void execute() {
+		try {
+			sync();
+		} catch (Exception e) {
+			LOGGER.error("定时同步[" + syncServiceName + "]出现异常", e);
+		}
 	}
 
 	/**
