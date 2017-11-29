@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -150,12 +151,10 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
-		// STATUS 人员状态：担任 兼任
-		String status = user.getStatus();
 		// a0191 人员类别：在职人员 实习生 派遣人员 残疾人员 退休返聘 离职人员 临时工
 		String deleteStatus = user.getDeleteStatus();
-		// 人员状态为兼任或者人员类别为离职人员/临时工的场合 员工不同步
-		if ("兼任".equals(status) || "离职人员".equals(deleteStatus) || "临时工".equals(deleteStatus)) {
+		// 人员类别为离职人员/临时工的场合 员工过期
+		if ("离职人员".equals(deleteStatus) || "临时工".equals(deleteStatus)) {
 			return true;
 		} else {
 			return false;
@@ -177,6 +176,9 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 			} else if ("1".equals(sex)) {
 				tempModel.setSex("女");
 			}
+
+			// ID <= userName 使用登录名作为ID
+			tempModel.setID(tempModel.getUserName());
 		}
 	}
 
@@ -208,6 +210,16 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 		List<JianlinUserInfoModel> dataModelList = (List<JianlinUserInfoModel>) getDataModelList(mode,
 				JianlinUserInfoModel.class);
+
+		// 从集合中删除不需要同步的人员数据
+		for (Iterator<JianlinUserInfoModel> iterator = dataModelList.iterator(); iterator.hasNext();) {
+			JianlinUserInfoModel user = iterator.next();
+			// 人员状态为兼任的员工不同步
+			if ("兼任".equals(user.getStatus())) {
+				iterator.remove();
+			}
+		}
+
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
 
 		return newList;

@@ -14,7 +14,8 @@ public class JianlinUserInfoModel {
 	private String status;
 	private String deleteStatus;
 
-	@XmlElement(name = "a0188")
+	// 使用userName作为ID,此处同一XmlElement无法映射到两个属性值
+	// @XmlElement(name = "a0190")
 	public String getID() {
 		return ID;
 	}
