@@ -70,7 +70,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	// 全量增量区分
 	private String modeFull = "1";// 默认为1
 	private String modeUpdate = "2";// 默认为2
-	// 是否提供岗位id标志
+	// 是否提供岗位id标志（客户未提供岗位数据或者提供了岗位数据但人员数据中关联的只有岗位名时需设置该值为false）
 	private boolean isPosIdProvided = true;// 默认为已提供
 	// 子类同步service的类名
 	private String syncServiceName;
@@ -95,10 +95,20 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		this.modeUpdate = modeUpdate;
 	}
 
+	/**
+	 * 客户未提供岗位数据或者提供了岗位数据但人员数据中关联的只有岗位名时需设置该值为false
+	 * 
+	 * @param isPosIdProvided
+	 */
 	public void setIsPosIdProvided(boolean isPosIdProvided) {
 		this.isPosIdProvided = isPosIdProvided;
 	}
 
+	/**
+	 * 设置子类同步service的类名
+	 * 
+	 * @param syncServiceName
+	 */
 	public void setSyncServiceName(String syncServiceName) {
 		this.syncServiceName = syncServiceName;
 	}
@@ -157,6 +167,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 岗位同步
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @throws Exception
 	 */
 	public void opPosSync(String mode) throws Exception {
@@ -202,7 +213,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 组织同步
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @param isBaseInfo
+	 *            同步接口需传字段
 	 * @throws Exception
 	 */
 	public void opOrgSync(String mode, boolean isBaseInfo) throws Exception {
@@ -252,7 +265,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 用户同步
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @param islink
+	 *            是否同步用户基本信息
 	 * @throws Exception
 	 */
 	public void opUserSync(String mode, boolean islink) throws Exception {
@@ -323,6 +338,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 				String newPosNo = newPos.getpNo();
 				if (newPosNo != null) {
 					for (PositionModel fullPos : fullList) {
+						// 根据岗位编号进行比较
 						if (newPosNo.equals(fullPos.getpNo())) {
 							String newPosName = newPos.getpNames();
 							// 岗位名发生更新
@@ -366,7 +382,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 				boolean isPosNameExist = false;
 
 				for (PositionModel fullPos : fullList) {
-					// 岗位名比较
+					// 根据岗位名进行比较
 					if (newPosName.equals(fullPos.getpNames())) {
 						isPosNameExist = true;
 						break;
@@ -485,7 +501,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 根据用户集合生成岗位对象集合
+	 * 根据用户数据集合生成岗位对象集合（客户未提供岗位数据仅提供包含了岗位名的人员数据时调用该方法）
 	 * 
 	 * @param userModelList
 	 * @return
@@ -501,6 +517,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		PositionModel temp = null;
 		for (String posName : posNames) {
 			temp = new PositionModel();
+			// 随机生成岗位编号
 			temp.setpNo(UUID.randomUUID().toString());
 			temp.setpNames(posName);
 			list.add(temp);
@@ -510,7 +527,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 关联岗位到用户
+	 * 关联岗位编号到用户（人员数据中只有岗位名没有岗位id数据）
 	 * 
 	 * @param newList
 	 */
@@ -527,9 +544,6 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 						break;
 					}
 				}
-			} else {
-				// 岗位名为null时岗位编号设置为null
-				// user.setPostionNo(null);
 			}
 		}
 	}
@@ -542,6 +556,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected void setFullPosNames(List<PositionModel> newList) {
 		String prefix = POSITION_CLASS_DEFAULT + POSITION_CLASS_SEPARATOR;
 		for (PositionModel pos : newList) {
+			// 岗位类别名
 			String pNameClass = pos.getpNameClass();
 			if (StringUtils.isBlank(pNameClass)) {
 				pos.setpNames(prefix + pos.getpNames());
@@ -573,7 +588,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 不同组织存在同岗位名时调用该方法获取岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有组织id)
+	 * 不同组织存在同岗位名时调用该方法获取组织名作为岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有组织id)
 	 * 
 	 * @param orgId
 	 * @return
@@ -611,7 +626,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 
 	 * @param list
 	 * @param mode
-	 * @return
+	 * @return 过期组织集合
 	 */
 	protected List<OuInfoModel> removeExpiredOrgs(List<OuInfoModel> list, String mode) {
 		List<OuInfoModel> expiredOrgs = new ArrayList<OuInfoModel>();
@@ -635,7 +650,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 
 	 * @param list
 	 * @param mode
-	 * @return
+	 * @return 过期员工集合
 	 */
 	protected List<UserInfoModel> removeExpiredUsers(List<UserInfoModel> list, String mode) {
 		List<UserInfoModel> expiredUsers = new ArrayList<UserInfoModel>();
@@ -1015,6 +1030,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 获取组织对象集合
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @return
 	 */
 	protected abstract List<OuInfoModel> getOuInfoModelList(String mode) throws Exception;
@@ -1023,6 +1039,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 获取岗位对象集合
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @return
 	 */
 	protected abstract List<PositionModel> getPositionModelList(String mode) throws Exception;
@@ -1031,6 +1048,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 获取用户对象集合
 	 * 
 	 * @param mode
+	 *            全量增量区分
 	 * @return
 	 */
 	protected abstract List<UserInfoModel> getUserInfoModelList(String mode) throws Exception;
