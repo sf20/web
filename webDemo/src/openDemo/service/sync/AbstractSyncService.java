@@ -34,7 +34,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	// 自定义map的key
 	public static final String MAPKEY_USER_SYNC_ADD = "userSyncAdd";
 	public static final String MAPKEY_USER_SYNC_UPDATE = "userSyncUpdate";
-	public static final String MAPKEY_USER_SYNC_DELETE = "userSyncDelete";
+	public static final String MAPKEY_USER_SYNC_DISABLE = "userSyncDisable";
 	public static final String MAPKEY_ORG_SYNC_ADD = "orgSyncAdd";
 	public static final String MAPKEY_ORG_SYNC_UPDATE = "orgSyncUpdate";
 	public static final String MAPKEY_ORG_SYNC_DELETE = "orgSyncDelete";
@@ -259,19 +259,19 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
 		LOGGER.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 
+		changePropValues(newList);
 		// 此处将需要删除的用户从集合中去除 提升同步新增效率
 		List<UserInfoModel> expiredUsers = removeExpiredUsers(newList, mode);
-		changePropValues(newList);
 		if (!isPosIdProvided) {
 			setPositionNoToUser(newList);
 		}
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
-			// 此处再次同步删除过期用户 用于解决用户删除状态修改后既有用户无法删除的问题
+			// 同步禁用过期用户
 			if (expiredUsers.size() > 0) {
-				LOGGER.info("用户同步[" + syncServiceName + "]删除Size: " + expiredUsers.size());
-				syncDeleteUserOneByOne(expiredUsers, false);
+				LOGGER.info("用户同步[" + syncServiceName + "]禁用Size: " + expiredUsers.size());
+				syncDisableUserOneByOne(expiredUsers, false);
 			}
 
 			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -282,9 +282,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// 与增量list进行比较
 			Map<String, List<UserInfoModel>> map = compareUserList(userInfoList, newList);
 
-			List<UserInfoModel> usersToDelete = map.get(MAPKEY_USER_SYNC_DELETE);
-			if (usersToDelete != null && usersToDelete.size() > 0) {
-				syncDeleteUserOneByOne(usersToDelete, true);
+			List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
+			if (usersToDisable != null && usersToDisable.size() > 0) {
+				syncDisableUserOneByOne(usersToDisable, true);
 			}
 
 			List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
@@ -442,7 +442,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 *            全量用户数据集合
 	 * @param newList
 	 *            最新获取用户数据集合
-	 * @return 包含 同步新增、更新、删除等用户集合的Map对象
+	 * @return 包含 同步新增、更新、禁用等用户集合的Map对象
 	 */
 	protected Map<String, List<UserInfoModel>> compareUserList(List<UserInfoModel> fullList,
 			List<UserInfoModel> newList) {
@@ -450,7 +450,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 		List<UserInfoModel> usersToSyncAdd = new ArrayList<UserInfoModel>();
 		List<UserInfoModel> usersToSyncUpdate = new ArrayList<UserInfoModel>();
-		List<UserInfoModel> usersToSyncDelete = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncDisable = new ArrayList<UserInfoModel>();
 
 		for (UserInfoModel newUser : newList) {
 			// 待新增用户
@@ -464,8 +464,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// 已经存在的用户比较
 			else {
 				if (isUserExpired(newUser)) {
-					// 用户过期删除
-					usersToSyncDelete.add(newUser);
+					// 用户过期禁用
+					usersToSyncDisable.add(newUser);
 				} else {
 					// 存在用户更新
 					usersToSyncUpdate.add(newUser);
@@ -475,11 +475,11 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 		map.put(MAPKEY_USER_SYNC_ADD, usersToSyncAdd);
 		map.put(MAPKEY_USER_SYNC_UPDATE, usersToSyncUpdate);
-		map.put(MAPKEY_USER_SYNC_DELETE, usersToSyncDelete);
+		map.put(MAPKEY_USER_SYNC_DISABLE, usersToSyncDisable);
 
 		LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + usersToSyncAdd.size());
 		LOGGER.info("用户同步[" + syncServiceName + "]更新Size: " + usersToSyncUpdate.size());
-		LOGGER.info("用户同步[" + syncServiceName + "]删除Size: " + usersToSyncDelete.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]禁用Size: " + usersToSyncDisable.size());
 
 		return map;
 	}
@@ -821,7 +821,42 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 逐个用户同步删除
+	 * 逐个用户同步禁用
+	 * 
+	 * @param usersToDisable
+	 * @param ifPringLog
+	 */
+	protected void syncDisableUserOneByOne(List<UserInfoModel> usersToDisable, boolean ifPringLog) {
+		List<String> tempList = new ArrayList<String>();
+		ResultEntity resultEntity = null;
+		for (UserInfoModel user : usersToDisable) {
+			// 用户名是admin时忽略
+			String userName = user.getUserName();
+			if ("admin".equals(userName)) {
+				continue;
+			}
+
+			tempList.add(userName);
+
+			try {
+				resultEntity = userService.disabledusersSync(tempList, apikey, secretkey, baseUrl);
+				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+					userInfoList.remove(user);
+				} else {
+					if (ifPringLog) {
+						printLog("用户同步[" + syncServiceName + "]禁用失败 ", user.getID(), resultEntity);
+					}
+				}
+			} catch (IOException e) {
+				LOGGER.error("用户同步[" + syncServiceName + "]禁用失败 " + user.getID(), e);
+			}
+
+			tempList.clear();
+		}
+	}
+
+	/**
+	 * 逐个用户同步删除（用户被删除后学习记录等数据会被清空且不可恢复，已改为禁用）
 	 * 
 	 * @param usersToDelete
 	 * @param ifPringLog
