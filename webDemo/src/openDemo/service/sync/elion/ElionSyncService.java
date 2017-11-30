@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -334,14 +335,10 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
-		String userName = user.getUserName();
 		String status = user.getStatus();
-		// 该字段在请求到客户接口数据时已关联EmployeeRecord字段
-		String deleteStatus = user.getDeleteStatus();
 		String expireDate = user.getExpireDate();
-		// UserName为空或者用户状态为非生效或者非主岗或者已经离职的场合下过期
-		if (StringUtils.isBlank(userName) || !EFFECTIVE_STATUS.equals(status) || !EMPLOYEE_RECORD.equals(deleteStatus)
-				|| StringUtils.isNotEmpty(expireDate)) {
+		// 用户状态为非生效或者已经离职的场合下过期
+		if (!EFFECTIVE_STATUS.equals(status) || StringUtils.isNotEmpty(expireDate)) {
 			return true;
 		} else {
 			return false;
@@ -411,6 +408,16 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 	@Override
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 		List<EL_INT_PER_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_PER_SYNC_RESLine.class);
+
+		// 从集合中删除不需要同步的人员数据
+		for (Iterator<EL_INT_PER_SYNC_RESLine> iterator = modelList.iterator(); iterator.hasNext();) {
+			EL_INT_PER_SYNC_RESLine user = iterator.next();
+			// UserName为空或者非主岗用户帐号不同步（EmployeeRecord=0为主岗）
+			if (StringUtils.isBlank(user.getUserName()) || !EMPLOYEE_RECORD.equals(user.getDeleteStatus())) {
+				iterator.remove();
+			}
+		}
+
 		List<UserInfoModel> newList = copyCreateEntityList(modelList, UserInfoModel.class);
 
 		return newList;
