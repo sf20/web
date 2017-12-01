@@ -153,8 +153,8 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 	protected boolean isUserExpired(UserInfoModel user) {
 		// a0191 人员类别：在职人员 实习生 派遣人员 残疾人员 退休返聘 离职人员 临时工
 		String deleteStatus = user.getDeleteStatus();
-		// 人员类别为离职人员/临时工的场合 员工过期
-		if ("离职人员".equals(deleteStatus) || "临时工".equals(deleteStatus)) {
+		// 人员类别为离职人员的场合 员工过期
+		if ("离职人员".equals(deleteStatus)) {
 			return true;
 		} else {
 			return false;
@@ -214,8 +214,8 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 		// 从集合中删除不需要同步的人员数据
 		for (Iterator<JianlinUserInfoModel> iterator = dataModelList.iterator(); iterator.hasNext();) {
 			JianlinUserInfoModel user = iterator.next();
-			// 人员状态为兼任的员工不同步
-			if ("兼任".equals(user.getStatus())) {
+			// 人员状态为兼任/人员类别为临时工的员工不同步
+			if ("兼任".equals(user.getStatus()) || "临时工".equals(user.getDeleteStatus())) {
 				iterator.remove();
 			}
 		}
