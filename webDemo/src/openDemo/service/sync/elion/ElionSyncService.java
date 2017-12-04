@@ -409,16 +409,16 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 		List<EL_INT_PER_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_PER_SYNC_RESLine.class);
 
+		List<UserInfoModel> newList = copyCreateEntityList(modelList, UserInfoModel.class);
+
 		// 从集合中删除不需要同步的人员数据
-		for (Iterator<EL_INT_PER_SYNC_RESLine> iterator = modelList.iterator(); iterator.hasNext();) {
-			EL_INT_PER_SYNC_RESLine user = iterator.next();
+		for (Iterator<UserInfoModel> iterator = newList.iterator(); iterator.hasNext();) {
+			UserInfoModel user = iterator.next();
 			// UserName为空或者非主岗用户帐号不同步（EmployeeRecord=0为主岗）
 			if (StringUtils.isBlank(user.getUserName()) || !EMPLOYEE_RECORD.equals(user.getDeleteStatus())) {
 				iterator.remove();
 			}
 		}
-
-		List<UserInfoModel> newList = copyCreateEntityList(modelList, UserInfoModel.class);
 
 		return newList;
 	}
