@@ -37,10 +37,10 @@ public class LeoSyncServiceTest {
 		mapper.setDateFormat(JSON_DATE_FORMAT);
 	}
 
-	public static void main(String[] args) throws UnsupportedOperationException, IOException {
-		// getEmps();
-		// getOrgs();
-		// getPoss();
+	public static void main(String[] args) throws UnsupportedOperationException, Exception {
+		getEmps();
+		getOrgs();
+		getPoss();
 		// readJson();
 		leoSyncServiceTest();
 	}
@@ -97,38 +97,38 @@ public class LeoSyncServiceTest {
 		}
 	}
 
-	static void getEmps() throws IOException {
+	static void getEmps() throws Exception {
 		String url = "https://open.leo.cn/v1/hr/employees/last-updated";
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("from", FROM_TIMESTAMP);
-		System.out.println(HttpClientUtil4Sync.doGet(url, map, getAuthHeader()));
+		System.out.println(HttpClientUtil4Sync.doSSLGet(url, null, map, getAuthHeader()));
 	}
 
-	static void getOrgs() throws IOException {
+	static void getOrgs() throws Exception {
 		String url = "https://open.leo.cn/v1/hr/origizations/last-updated";
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("from", FROM_TIMESTAMP);
-		System.out.println(HttpClientUtil4Sync.doGet(url, map, getAuthHeader()));
+		System.out.println(HttpClientUtil4Sync.doSSLGet(url, null, map, getAuthHeader()));
 	}
 
-	static void getPoss() throws IOException {
+	static void getPoss() throws Exception {
 		String url = "https://open.leo.cn/v1/hr/job-positions/last-updated";
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("from", FROM_TIMESTAMP);
-		System.out.println(HttpClientUtil4Sync.doGet(url, map, getAuthHeader()));
+		System.out.println(HttpClientUtil4Sync.doSSLGet(url, null, map, getAuthHeader()));
 	}
 
-	private static String getToken() throws IOException {
+	private static String getToken() throws Exception {
 		String url = "https://open.leo.cn/v1/authentication/oauth2/get-token";
 
 		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("access_key", "oleo_42db6ee396eb8765435e44446befad8e");
 		paramMap.put("secret_key", "5f81f9a50e7c4043efece652b7a82be2d0d90839b9b550b66c1fb865480a6aad");
 
-		JsonNode jsonNode = mapper.readTree(HttpClientUtil4Sync.doPost(url, paramMap));
+		JsonNode jsonNode = mapper.readTree(HttpClientUtil4Sync.doSSLPost(url, null, paramMap));
 		String token = jsonNode.get("data").get("token").asText();
 		String exp = jsonNode.get("data").get("exp").asText();
 		System.out.println(exp);
@@ -136,7 +136,7 @@ public class LeoSyncServiceTest {
 		return token;
 	}
 
-	private static List<Header> getAuthHeader() throws IOException {
+	private static List<Header> getAuthHeader() throws Exception {
 		List<Header> headers = new ArrayList<>();
 		headers.add(new BasicHeader("Authorization", "Bearer " + getToken()));
 		return headers;

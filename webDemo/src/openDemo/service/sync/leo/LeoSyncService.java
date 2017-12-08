@@ -113,7 +113,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 	 */
 	private <T> Map<Integer, List<T>> requestGetData(String requestUrl, Map<String, Object> paramMap,
 			List<Header> headers, Class<T> classType) throws IOException {
-		String jsonString = HttpClientUtil4Sync.doGet(requestUrl, paramMap, headers);
+		String jsonString = HttpClientUtil4Sync.doSSLGet(requestUrl, null, paramMap, headers);
 		// logger.info(jsonString);
 
 		// 将json字符串转为用户json对象数据模型
@@ -221,7 +221,7 @@ public class LeoSyncService extends AbstractSyncService implements LeoConfig {
 		paramMap.put("secret_key", "5f81f9a50e7c4043efece652b7a82be2d0d90839b9b550b66c1fb865480a6aad");
 
 		// 从json字符串中解析token
-		JsonNode jsonNode = mapper.readTree(HttpClientUtil4Sync.doPost(url, paramMap));
+		JsonNode jsonNode = mapper.readTree(HttpClientUtil4Sync.doSSLPost(url, null, paramMap));
 		String token = jsonNode.get("data").get("token").asText();
 
 		return token;

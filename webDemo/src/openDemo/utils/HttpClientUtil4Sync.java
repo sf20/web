@@ -66,7 +66,8 @@ public class HttpClientUtil4Sync {
 				.setSocketTimeout(10000).build();
 
 		// 重试次数，默认是3次，没有开启。已有默认值无需设置！！！
-		// httpClientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler());
+		// httpClientBuilder.setRetryHandler(new
+		// DefaultHttpRequestRetryHandler());
 		// 保持长连接配置，需要在头添加Keep-Alive
 		// httpClientBuilder.setKeepAliveStrategy(new
 		// DefaultConnectionKeepAliveStrategy());
@@ -229,12 +230,20 @@ public class HttpClientUtil4Sync {
 	 * @throws IOException
 	 */
 	public static String doSSLGet(String url, String protocol) throws IOException {
-		return doSSLGet(url, protocol, null);
+		return doSSLGet(url, protocol, null, null);
 	}
 
-	public static String doSSLGet(String url, String protocol, Map<String, Object> params) throws IOException {
+	public static String doSSLGet(String url, String protocol, Map<String, Object> params, List<Header> headers)
+			throws IOException {
 		CloseableHttpClient httpClient = getSSLHttpClient(protocol);
 		HttpGet httpGet = new HttpGet(url + buildGetParams(params));
+		// 增加请求头
+		if (headers != null && headers.size() > 0) {
+			for (Header header : headers) {
+				httpGet.addHeader(header);
+			}
+		}
+
 		CloseableHttpResponse response = null;
 		String retStr = null;
 		try {
@@ -254,8 +263,7 @@ public class HttpClientUtil4Sync {
 		return retStr;
 	}
 
-	private static String sslPost(String url, String protocol, HttpEntity httpEntity)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	private static String sslPost(String url, String protocol, HttpEntity httpEntity) throws IOException {
 		CloseableHttpClient httpClient = getSSLHttpClient(protocol);
 		HttpPost httpPost = new HttpPost(url);
 		if (httpEntity != null) {
@@ -281,18 +289,15 @@ public class HttpClientUtil4Sync {
 		return retStr;
 	}
 
-	public static String doSSLPost(String url, String protocol)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPost(String url, String protocol) throws IOException {
 		return sslPost(url, protocol, null);
 	}
 
-	public static String doSSLPost(String url, String protocol, String jsonParams)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPost(String url, String protocol, String jsonParams) throws IOException {
 		return sslPost(url, protocol, getHttpEntity(jsonParams));
 	}
 
-	public static String doSSLPost(String url, String protocol, Map<String, Object> params)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPost(String url, String protocol, Map<String, Object> params) throws IOException {
 		return sslPost(url, protocol, getHttpEntity(params));
 	}
 
@@ -337,8 +342,7 @@ public class HttpClientUtil4Sync {
 		return postUsePool(url, getHttpEntity(params));
 	}
 
-	private static String sslPostUsePool(String url, String protocol, HttpEntity httpEntity)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	private static String sslPostUsePool(String url, String protocol, HttpEntity httpEntity) throws IOException {
 		HttpClient httpClient = getPoolingSSLHttpClient(protocol);
 		HttpPost httpPost = new HttpPost(url);
 		if (httpEntity != null) {
@@ -347,18 +351,15 @@ public class HttpClientUtil4Sync {
 		return httpClient.execute(httpPost, responseHandler);
 	}
 
-	public static String doSSLPostUsePool(String url, String protocol)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPostUsePool(String url, String protocol) throws IOException {
 		return sslPostUsePool(url, protocol, null);
 	}
 
-	public static String doSSLPostUsePool(String url, String jsonParams, String protocol)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPostUsePool(String url, String jsonParams, String protocol) throws IOException {
 		return sslPostUsePool(url, protocol, getHttpEntity(jsonParams));
 	}
 
-	public static String doSSLPostUsePool(String url, Map<String, Object> params, String protocol)
-			throws IOException, KeyManagementException, NoSuchAlgorithmException {
+	public static String doSSLPostUsePool(String url, Map<String, Object> params, String protocol) throws IOException {
 		return sslPostUsePool(url, protocol, getHttpEntity(params));
 	}
 
