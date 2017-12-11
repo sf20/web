@@ -13,6 +13,8 @@ public class JianlinUserInfoModel {
 	private String entryTime;
 	private String status;
 	private String deleteStatus;
+	private String site;// 对应厂别字段
+	private String grade;// 对应职等字段
 
 	// 使用userName作为ID,此处同一XmlElement无法映射到两个属性值
 	// @XmlElement(name = "a0190")
@@ -103,4 +105,23 @@ public class JianlinUserInfoModel {
 	public void setDeleteStatus(String deleteStatus) {
 		this.deleteStatus = deleteStatus;
 	}
+
+	@XmlElement(name = "A01138")
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
+	}
+
+	@XmlElement(name = "A01201")
+	public String getGrade() {
+		return grade;
+	}
+
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+
 }
