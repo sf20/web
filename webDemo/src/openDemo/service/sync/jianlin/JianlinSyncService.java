@@ -11,6 +11,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import openDemo.entity.OuInfoModel;
@@ -214,10 +216,18 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 		// 从集合中删除不需要同步的人员数据
 		for (Iterator<JianlinUserInfoModel> iterator = dataModelList.iterator(); iterator.hasNext();) {
 			JianlinUserInfoModel user = iterator.next();
-			// 人员状态为兼任/人员类别为临时工的员工不同步
-			if ("兼任".equals(user.getStatus()) || "临时工".equals(user.getDeleteStatus())) {
+
+			int grade = 0;
+			try {
+				grade = Integer.parseInt(user.getGrade());
+			} catch (Exception e) {
+			}
+
+			// 人员状态为兼任的员工不同步 后期修改：只开通除宁波厂（08）外的2职等（含）以上的人员账号
+			if ("兼任".equals(user.getStatus()) || "08".equals(user.getSite()) || grade < 2) {
 				iterator.remove();
 			}
+
 		}
 
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
@@ -226,20 +236,20 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 	}
 
 	public static void main(String[] args) throws Exception {
-		// JianlinSyncService service = new JianlinSyncService();
-		// Logger logger = LogManager.getLogger();
+		JianlinSyncService service = new JianlinSyncService();
+		Logger logger = LogManager.getLogger();
 
-		// List<UserInfoModel> userInfoModelList =
-		// service.getUserInfoModelList(MODE_FULL);
-		// service.removeExpiredUsers(userInfoModelList, MODE_FULL);
+		List<UserInfoModel> userInfoModelList = service.getUserInfoModelList(MODE_FULL);
+		service.removeExpiredUsers(userInfoModelList, MODE_FULL);
 		// for (UserInfoModel user : userInfoModelList) {
 		// logger.info(user.getID() + "=" + user.getUserName() + "=" +
 		// user.getCnName() + "=" + user.getSex() + "="
 		// + user.getMail() + "=" + user.getOrgOuCode() + "=" +
 		// user.getPostionNo() + "=" + user.getStatus()
-		// + "=" + user.getDeleteStatus());
+		// + "=" + user.getDeleteStatus() + "=" + user.getSite() + "=" +
+		// user.getGrade());
 		// }
-		// System.out.println(userInfoModelList.size());
+		System.out.println(userInfoModelList.size());
 
 		// List<PositionModel> positionModelList =
 		// service.getPositionModelList(MODE_FULL);
