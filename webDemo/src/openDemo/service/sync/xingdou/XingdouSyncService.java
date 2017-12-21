@@ -124,12 +124,12 @@ public class XingdouSyncService extends AbstractSyncService implements XingdouCo
 
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
-		// 员工类型：1是正职 2是实习生 3是非全日制
+		// 员工类型：正职/实习生/非全日制
 		String status = user.getStatus();
 		// 员工在/离职状态： 1是在职 5是离职
 		String deleteStatus = user.getDeleteStatus();
 		// 非全日制或者已离职的场合 员工过期
-		if ("3".equals(StringUtils.trim(status)) || "5".equals(StringUtils.trim(deleteStatus))) {
+		if ("非全日制".equals(StringUtils.trim(status)) || "5".equals(StringUtils.trim(deleteStatus))) {
 			return true;
 		} else {
 			return false;
@@ -156,13 +156,7 @@ public class XingdouSyncService extends AbstractSyncService implements XingdouCo
 				tempModel.setBirthday(birthday.substring(0, 10));// yyyy-MM-dd共10位
 			}
 
-			// 性别字符串转换 1：男 2：女
-			String sex = tempModel.getSex();
-			if ("1".equals(sex)) {
-				tempModel.setSex("男");
-			} else if ("2".equals(sex)) {
-				tempModel.setSex("女");
-			}
+			// 性别字符串转换 1：男 2：女  后期客户接口已修改无须替换
 		}
 	}
 
