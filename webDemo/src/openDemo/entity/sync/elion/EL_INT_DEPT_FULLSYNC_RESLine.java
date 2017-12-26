@@ -40,6 +40,10 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
 
     private java.lang.String sequenceNbr;
 
+    private java.lang.String departmentLv2ID;
+
+    private java.lang.String departmentLv2Descr;
+
     public EL_INT_DEPT_FULLSYNC_RESLine() {
     }
 
@@ -59,7 +63,9 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
            java.lang.String companyDescr,
            java.lang.String managerId,
            java.lang.String managerName,
-           java.lang.String sequenceNbr) {
+           java.lang.String sequenceNbr,
+           java.lang.String departmentLv2ID,
+           java.lang.String departmentLv2Descr) {
            this.setID = setID;
            this.deptId = deptId;
            this.effectiveDate = effectiveDate;
@@ -76,6 +82,8 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
            this.managerId = managerId;
            this.managerName = managerName;
            this.sequenceNbr = sequenceNbr;
+           this.departmentLv2ID = departmentLv2ID;
+           this.departmentLv2Descr = departmentLv2Descr;
     }
 
     // =====BeanUtils复制属性用=====
@@ -415,6 +423,46 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
         this.sequenceNbr = sequenceNbr;
     }
 
+
+    /**
+     * Gets the departmentLv2ID value for this EL_INT_DEPT_FULLSYNC_RESLine.
+     * 
+     * @return departmentLv2ID
+     */
+    public java.lang.String getDepartmentLv2ID() {
+        return departmentLv2ID;
+    }
+
+
+    /**
+     * Sets the departmentLv2ID value for this EL_INT_DEPT_FULLSYNC_RESLine.
+     * 
+     * @param departmentLv2ID
+     */
+    public void setDepartmentLv2ID(java.lang.String departmentLv2ID) {
+        this.departmentLv2ID = departmentLv2ID;
+    }
+
+
+    /**
+     * Gets the departmentLv2Descr value for this EL_INT_DEPT_FULLSYNC_RESLine.
+     * 
+     * @return departmentLv2Descr
+     */
+    public java.lang.String getDepartmentLv2Descr() {
+        return departmentLv2Descr;
+    }
+
+
+    /**
+     * Sets the departmentLv2Descr value for this EL_INT_DEPT_FULLSYNC_RESLine.
+     * 
+     * @param departmentLv2Descr
+     */
+    public void setDepartmentLv2Descr(java.lang.String departmentLv2Descr) {
+        this.departmentLv2Descr = departmentLv2Descr;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof EL_INT_DEPT_FULLSYNC_RESLine)) return false;
@@ -474,7 +522,13 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
               this.managerName.equals(other.getManagerName()))) &&
             ((this.sequenceNbr==null && other.getSequenceNbr()==null) || 
              (this.sequenceNbr!=null &&
-              this.sequenceNbr.equals(other.getSequenceNbr())));
+              this.sequenceNbr.equals(other.getSequenceNbr()))) &&
+            ((this.departmentLv2ID==null && other.getDepartmentLv2ID()==null) || 
+             (this.departmentLv2ID!=null &&
+              this.departmentLv2ID.equals(other.getDepartmentLv2ID()))) &&
+            ((this.departmentLv2Descr==null && other.getDepartmentLv2Descr()==null) || 
+             (this.departmentLv2Descr!=null &&
+              this.departmentLv2Descr.equals(other.getDepartmentLv2Descr())));
         __equalsCalc = null;
         return _equals;
     }
@@ -533,6 +587,12 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
         }
         if (getSequenceNbr() != null) {
             _hashCode += getSequenceNbr().hashCode();
+        }
+        if (getDepartmentLv2ID() != null) {
+            _hashCode += getDepartmentLv2ID().hashCode();
+        }
+        if (getDepartmentLv2Descr() != null) {
+            _hashCode += getDepartmentLv2Descr().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -637,6 +697,18 @@ public class EL_INT_DEPT_FULLSYNC_RESLine  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("sequenceNbr");
         elemField.setXmlName(new javax.xml.namespace.QName("", "SequenceNbr"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("departmentLv2ID");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "DepartmentLv2ID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("departmentLv2Descr");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "DepartmentLv2Descr"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
