@@ -12,16 +12,12 @@ import openDemo.entity.StudyPlanDetail;
 import openDemo.entity.UserInfoModel;
 
 public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
-
-	@Override
-	String getTableNamePrefix() {
-		return TABLENAME_PREFIX_USERINFO;
-	}
+	public static final String TABLENAME_USERINFO = "userinfo";
 
 	@Override
 	String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("INSERT INTO ").append(generateTableName());
+		buffer.append("INSERT INTO ").append(TABLENAME_USERINFO);
 		buffer.append(
 				"(ID, UserName, CnName, Password, Sex, Mobile, Mail, OrgOuCode, EncryptionType, PostionNo, Entrytime,");
 		buffer.append(
@@ -35,7 +31,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	@Override
 	String generateUpdateSql() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("UPDATE ").append(generateTableName()).append(" SET ");
+		buffer.append("UPDATE ").append(TABLENAME_USERINFO).append(" SET ");
 		buffer.append("UserName = ?,");
 		buffer.append("CnName = ?,");
 		buffer.append("Password = ?,");

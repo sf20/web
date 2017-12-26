@@ -11,16 +11,9 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
-import openDemo.common.Config;
 import openDemo.common.JdbcUtil;
 
 public abstract class GenericDaoImpl<T> implements GenericDao<T> {
-	public static final String TABLENAME_PREFIX_OUINFO = "ouinfo";
-	public static final String TABLENAME_PREFIX_POSITION = "position";
-	public static final String TABLENAME_PREFIX_USERINFO = "userinfo";
-	public static final String TABLENAME_SEPARATOR = "_";
-	public static final String TABLENAME_SUFFIX = Config.apikey;
-
 	protected static DataSource dataSource;
 	private Class<T> entityClass;
 
@@ -126,13 +119,12 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 	String generateTableName() {
 		StringBuffer tableName = new StringBuffer();
 		// 表名前后加"`"
-		tableName.append("`").append(getTableNamePrefix()).append(TABLENAME_SEPARATOR).append(TABLENAME_SUFFIX)
-				.append("`");
+		tableName.append("`").append("`");
 
 		return tableName.toString();
 	}
 
-	abstract String getTableNamePrefix();
+	// abstract String getTableNamePrefix();
 
 	abstract String generateInsertSql();
 

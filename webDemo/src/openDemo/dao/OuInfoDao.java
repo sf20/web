@@ -3,16 +3,12 @@ package openDemo.dao;
 import openDemo.entity.OuInfoModel;
 
 public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
-
-	@Override
-	String getTableNamePrefix() {
-		return TABLENAME_PREFIX_OUINFO;
-	}
+	public static final String TABLENAME_OUINFO = "ouinfo";
 
 	@Override
 	String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("INSERT INTO ").append(generateTableName());
+		buffer.append("INSERT INTO ").append(TABLENAME_OUINFO);
 		buffer.append("(ID, OuName, ParentID, Description, Users, isSub, OrderIndex)");
 		buffer.append(" VALUES(?, ?, ?, ?, ?, ?, ?)");
 
@@ -22,7 +18,7 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	@Override
 	String generateUpdateSql() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("UPDATE ").append(generateTableName()).append(" SET ");
+		buffer.append("UPDATE ").append(TABLENAME_OUINFO).append(" SET ");
 		buffer.append("OuName = ?,");
 		buffer.append("ParentID = ?,");
 		buffer.append("Description = ?,");
