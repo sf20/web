@@ -25,11 +25,14 @@ public class OpenDemoTest implements Config {
 	}
 
 	public OpenDemoTest() throws IOException {
+		// 交换同步出错的账号
+		exchangeUserAccount();
+		
 		// 添加到指定的学习计划测试
 		// addPersonToPlan();
 		
 		// 岗位同步
-		posTest();
+		// posTest();
 
 		// //1.单点登录:el/sso
 		// ssoTest();
@@ -66,6 +69,77 @@ public class OpenDemoTest implements Config {
 		//
 		// //12.同步用户移除(角色)组: el/sync/removeusersfromrole
 		// removeusersfromroleTest();
+	}
+
+	private void exchangeUserAccount() throws IOException {
+		String userNameA = "26923";
+		String cnNameA = "林亚彬";
+		String userNameB = "28782";
+		String cnNameB = "赖海伟";
+		SyncUserService userService = new SyncUserService();
+		List<UserInfoModel> users = new ArrayList<UserInfoModel>();
+		UserInfoModel userEntity = new UserInfoModel();
+		// A->tempA
+		String tempUserNameA = userNameA + "_asdf";
+		userEntity.setID(tempUserNameA);
+		userEntity.setUserName(userNameA);
+		userEntity.setCnName(cnNameB);
+		users.add(userEntity);
+		ResultEntity resultEntity1 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity1);
+		users.clear();
+		
+		userEntity.setID(tempUserNameA);
+		userEntity.setUserName(tempUserNameA);
+		userEntity.setCnName(cnNameB);
+		users.add(userEntity);
+		ResultEntity resultEntity2 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity2);
+		users.clear();
+		
+		// B->tempB
+		String tempUserNameB = userNameB + "_qwer";
+		userEntity.setID(tempUserNameB);
+		userEntity.setUserName(userNameB);
+		userEntity.setCnName(cnNameA);
+		users.add(userEntity);
+		ResultEntity resultEntity3 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity3);
+		users.clear();
+		
+		// tempB->A
+		userEntity.setID(tempUserNameB);
+		userEntity.setUserName(userNameA);
+		userEntity.setCnName(cnNameA);
+		users.add(userEntity);
+		ResultEntity resultEntity4 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity4);
+		users.clear();
+		
+		userEntity.setID(userNameA);
+		userEntity.setUserName(userNameA);
+		userEntity.setCnName(cnNameA);
+		users.add(userEntity);
+		ResultEntity resultEntity5 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity5);
+		users.clear();
+		
+		// tempA->B
+		userEntity.setID(userNameB);
+		userEntity.setUserName(tempUserNameA);
+		userEntity.setCnName(cnNameB);
+		users.add(userEntity);
+		ResultEntity resultEntity6 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity6);
+		users.clear();
+		
+		userEntity.setID(userNameB);
+		userEntity.setUserName(userNameB);
+		userEntity.setCnName(cnNameB);
+		users.add(userEntity);
+		ResultEntity resultEntity7 = userService.userSync(true, users, apikey, secretkey, baseUrl);
+		print("同步用户", resultEntity7);
+		users.clear();
 	}
 
 	void addPersonToPlan() throws IOException {
