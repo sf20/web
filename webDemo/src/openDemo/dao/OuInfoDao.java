@@ -6,6 +6,11 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	public static final String TABLENAME_OUINFO = "ouinfo";
 
 	@Override
+	String generateTableName() {
+		return TABLENAME_OUINFO;
+	}
+	
+	@Override
 	String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("INSERT INTO ").append(TABLENAME_OUINFO);

@@ -15,15 +15,20 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	public static final String TABLENAME_USERINFO = "userinfo";
 
 	@Override
+	String generateTableName() {
+		return TABLENAME_USERINFO;
+	}
+
+	@Override
 	String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("INSERT INTO ").append(TABLENAME_USERINFO);
 		buffer.append(
 				"(ID, UserName, CnName, Password, Sex, Mobile, Mail, OrgOuCode, EncryptionType, PostionNo, Entrytime,");
 		buffer.append(
-				" Birthday, ExpireDate, Spare1, Spare2, Spare3, Spare4, Spare5, Spare6, Spare7, Spare8, Spare9, Spare10)");
+				" Birthday, ExpireDate, Spare1, Spare2, Spare3, Spare4, Spare5, Spare6, Spare7, Spare8, Spare9, Spare10, status, deleteStatus)");
 		buffer.append(" VALUES ");
-		buffer.append("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		buffer.append("(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 		return buffer.toString();
 	}
@@ -65,7 +70,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 				user.getMobile(), user.getMail(), user.getOrgOuCode(), user.getEncryptionType(), user.getPostionNo(),
 				user.getEntryTime(), user.getBirthday(), user.getExpireDate(), user.getSpare1(), user.getSpare2(),
 				user.getSpare3(), user.getSpare4(), user.getSpare5(), user.getSpare6(), user.getSpare7(),
-				user.getSpare8(), user.getSpare9(), user.getSpare10() };
+				user.getSpare8(), user.getSpare9(), user.getSpare10(), user.getStatus(), user.getDeleteStatus() };
 		return params;
 	}
 
@@ -82,7 +87,8 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	@Override
 	String generateGetAllSql() {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT ID, USERNAME FROM CORE_USERPROFILE WHERE ORGID = '71028353-7246-463f-ab12-995144fb4cb2' AND ISADMIN = 0 AND STATUS = 1 ORDER BY CREATEDATE DESC");
+		sql.append(
+				"SELECT ID, USERNAME FROM CORE_USERPROFILE WHERE ORGID = '71028353-7246-463f-ab12-995144fb4cb2' AND ISADMIN = 0 AND STATUS = 1 ORDER BY CREATEDATE DESC");
 		return sql.toString();
 	}
 
@@ -117,8 +123,8 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 			sql.append(" and executoruserid=? ");
 			params.add(userID);
 		}
-		sql.append(" ) userplan").append(
-				"       JOIN (SELECT splan.id, splan.name planname,splan.createusername,splanphase.name phasename, ")
+		sql.append(" ) userplan")
+				.append("       JOIN (SELECT splan.id, splan.name planname,splan.createusername,splanphase.name phasename, ")
 				.append("             CASE WHEN splancontent.mastertype <>'' THEN splancontent.masterid ")
 				.append("               ELSE splancontent.id END masterid,")
 				.append("             splancontent.mastertitle, splancontent.filetype,rownum orderindex ")

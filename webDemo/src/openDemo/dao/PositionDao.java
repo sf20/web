@@ -6,6 +6,11 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	public static final String TABLENAME_POSITION = "position";
 
 	@Override
+	String generateTableName() {
+		return TABLENAME_POSITION;
+	};
+	
+	@Override
 	String generateGetByIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM ").append(TABLENAME_POSITION).append(" WHERE pNo = ?");
@@ -56,5 +61,6 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 		sql.append(
 				"SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0");
 		return sql.toString();
-	};
+	}
+
 }

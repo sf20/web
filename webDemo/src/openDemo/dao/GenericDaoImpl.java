@@ -116,15 +116,15 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 		return sql.toString();
 	};
 
-	String generateTableName() {
-		StringBuffer tableName = new StringBuffer();
-		// 表名前后加"`"
-		tableName.append("`").append("`");
+	// String generateTableName() {
+	// StringBuffer tableName = new StringBuffer();
+	// // 表名前后加"`"
+	// tableName.append("`").append("`");
+	//
+	// return tableName.toString();
+	// }
 
-		return tableName.toString();
-	}
-
-	// abstract String getTableNamePrefix();
+	abstract String generateTableName();
 
 	abstract String generateInsertSql();
 
