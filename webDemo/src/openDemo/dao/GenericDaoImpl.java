@@ -92,25 +92,25 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 		new QueryRunner(dataSource).batch(generateDeleteByIdSql(), params);
 	}
 
-	String generateGetByIdSql() {
+	public String generateGetByIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM ").append(generateTableName()).append(" WHERE ID = ?");
 		return sql.toString();
 	};
 
-	String generateGetAllSql() {
+	public String generateGetAllSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM ").append(generateTableName());
 		return sql.toString();
 	};
 
-	String generateGetAllCountSql() {
+	public String generateGetAllCountSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT count(*) FROM ").append(generateTableName());
 		return sql.toString();
 	};
 
-	String generateDeleteByIdSql() {
+	public String generateDeleteByIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("DELETE FROM ").append(generateTableName()).append(" WHERE ID = ?");
 		return sql.toString();
@@ -124,11 +124,11 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 	// return tableName.toString();
 	// }
 
-	abstract String generateTableName();
+	public abstract String generateTableName();
 
-	abstract String generateInsertSql();
+	public abstract String generateInsertSql();
 
-	abstract String generateUpdateSql();
+	public abstract String generateUpdateSql();
 
 	/**
 	 * 批量化新增的参数数组
@@ -136,7 +136,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 	 * @param t
 	 * @return
 	 */
-	abstract Object[] getInsertObjectParamArray(T t);
+	public abstract Object[] getInsertObjectParamArray(T t);
 
 	/**
 	 * 批量化更新的参数数组
@@ -144,6 +144,6 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 	 * @param t
 	 * @return
 	 */
-	abstract Object[] getUpdateObjectParamArray(T t);
+	public abstract Object[] getUpdateObjectParamArray(T t);
 
 }

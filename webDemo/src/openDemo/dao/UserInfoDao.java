@@ -15,12 +15,12 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	public static final String TABLENAME_USERINFO = "userinfo";
 
 	@Override
-	String generateTableName() {
+	public String generateTableName() {
 		return TABLENAME_USERINFO;
 	}
 
 	@Override
-	String generateInsertSql() {
+	public String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("INSERT INTO ").append(TABLENAME_USERINFO);
 		buffer.append(
@@ -34,7 +34,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	}
 
 	@Override
-	String generateUpdateSql() {
+	public String generateUpdateSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("UPDATE ").append(TABLENAME_USERINFO).append(" SET ");
 		buffer.append("UserName = ?,");
@@ -65,7 +65,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	}
 
 	@Override
-	Object[] getInsertObjectParamArray(UserInfoModel user) {
+	public Object[] getInsertObjectParamArray(UserInfoModel user) {
 		Object[] params = { user.getID(), user.getUserName(), user.getCnName(), user.getPassword(), user.getSex(),
 				user.getMobile(), user.getMail(), user.getOrgOuCode(), user.getEncryptionType(), user.getPostionNo(),
 				user.getEntryTime(), user.getBirthday(), user.getExpireDate(), user.getSpare1(), user.getSpare2(),
@@ -75,7 +75,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	}
 
 	@Override
-	Object[] getUpdateObjectParamArray(UserInfoModel user) {
+	public Object[] getUpdateObjectParamArray(UserInfoModel user) {
 		Object[] params = { user.getUserName(), user.getCnName(), user.getPassword(), user.getSex(), user.getMobile(),
 				user.getMail(), user.getOrgOuCode(), user.getEncryptionType(), user.getPostionNo(), user.getEntryTime(),
 				user.getBirthday(), user.getExpireDate(), user.getSpare1(), user.getSpare2(), user.getSpare3(),
@@ -85,7 +85,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	}
 
 	@Override
-	String generateGetAllSql() {
+	public String generateGetAllSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append(
 				"SELECT ID, USERNAME FROM CORE_USERPROFILE WHERE ORGID = '71028353-7246-463f-ab12-995144fb4cb2' AND ISADMIN = 0 AND STATUS = 1 ORDER BY CREATEDATE DESC");

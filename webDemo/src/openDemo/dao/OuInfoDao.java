@@ -6,12 +6,12 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	public static final String TABLENAME_OUINFO = "ouinfo";
 
 	@Override
-	String generateTableName() {
+	public String generateTableName() {
 		return TABLENAME_OUINFO;
 	}
 	
 	@Override
-	String generateInsertSql() {
+	public String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("INSERT INTO ").append(TABLENAME_OUINFO);
 		buffer.append("(ID, OuName, ParentID, Description, Users, isSub, OrderIndex)");
@@ -21,7 +21,7 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	}
 
 	@Override
-	String generateUpdateSql() {
+	public String generateUpdateSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("UPDATE ").append(TABLENAME_OUINFO).append(" SET ");
 		buffer.append("OuName = ?,");
@@ -36,14 +36,14 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	}
 
 	@Override
-	Object[] getInsertObjectParamArray(OuInfoModel org) {
+	public Object[] getInsertObjectParamArray(OuInfoModel org) {
 		Object[] params = { org.getID(), org.getOuName(), org.getParentID(), org.getDescription(), org.getUsers(),
 				org.getIsSub(), org.getOrderIndex() };
 		return params;
 	}
 
 	@Override
-	Object[] getUpdateObjectParamArray(OuInfoModel org) {
+	public Object[] getUpdateObjectParamArray(OuInfoModel org) {
 		Object[] params = { org.getOuName(), org.getParentID(), org.getDescription(), org.getUsers(), org.getIsSub(),
 				org.getOrderIndex(), org.getID() };
 		return params;

@@ -6,26 +6,26 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	public static final String TABLENAME_POSITION = "position";
 
 	@Override
-	String generateTableName() {
+	public String generateTableName() {
 		return TABLENAME_POSITION;
 	};
 	
 	@Override
-	String generateGetByIdSql() {
+	public String generateGetByIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM ").append(TABLENAME_POSITION).append(" WHERE pNo = ?");
 		return sql.toString();
 	}
 
 	@Override
-	String generateDeleteByIdSql() {
+	public String generateDeleteByIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("DELETE FROM ").append(TABLENAME_POSITION).append(" WHERE pNo = ?");
 		return sql.toString();
 	}
 
 	@Override
-	String generateInsertSql() {
+	public String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("INSERT INTO ").append(TABLENAME_POSITION);
 		buffer.append("(pNo, pNames) VALUES(?, ?)");
@@ -34,7 +34,7 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	}
 
 	@Override
-	String generateUpdateSql() {
+	public String generateUpdateSql() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("UPDATE ").append(TABLENAME_POSITION).append(" SET ");
 		buffer.append("pNames = ?");
@@ -44,19 +44,19 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	}
 
 	@Override
-	Object[] getInsertObjectParamArray(PositionModel position) {
+	public Object[] getInsertObjectParamArray(PositionModel position) {
 		Object[] params = { position.getpNo(), position.getpNames() };
 		return params;
 	}
 
 	@Override
-	Object[] getUpdateObjectParamArray(PositionModel position) {
+	public Object[] getUpdateObjectParamArray(PositionModel position) {
 		Object[] params = { position.getpNames(), position.getpNo() };
 		return params;
 	}
 
 	@Override
-	String generateGetAllSql() {
+	public String generateGetAllSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append(
 				"SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0");
