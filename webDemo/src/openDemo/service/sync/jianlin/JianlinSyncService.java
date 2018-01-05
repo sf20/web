@@ -223,8 +223,8 @@ public class JianlinSyncService extends AbstractSyncService implements JianlinCo
 			} catch (Exception e) {
 			}
 
-			// 人员状态为兼任的员工不同步 后期修改：只开通除宁波厂（08）外的2职等（含）以上的人员账号
-			if ("兼任".equals(user.getStatus()) || "08".equals(user.getSite()) || grade < 2) {
+			// 人员状态为兼任的员工不同步 后期修改：只开通除宁波厂（08）外的1职等（含）以上的人员账号
+			if ("兼任".equals(user.getStatus()) || "08".equals(user.getSite()) || grade < 1) {
 				iterator.remove();
 			}
 
