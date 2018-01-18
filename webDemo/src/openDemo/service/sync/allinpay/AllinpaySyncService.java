@@ -1,25 +1,16 @@
 package openDemo.service.sync.allinpay;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
+import openDemo.utils.SftpDownloadUtil;
 
 @Service
 public class AllinpaySyncService extends AbstractSyncService implements AllinpayConfig {
@@ -39,9 +30,6 @@ public class AllinpaySyncService extends AbstractSyncService implements Allinpay
 	private static final String SEPARATOR = "|";
 	// 分隔符正则转译
 	private static final String SEPARATOR_REGEX = "\\|";
-	// sftp连接对象
-	private Session session;
-	private ChannelSftp channelSftp;
 
 	public AllinpaySyncService() {
 		super.setApikey(apikey);
@@ -53,106 +41,6 @@ public class AllinpaySyncService extends AbstractSyncService implements Allinpay
 		// 人员信息中未提供岗位id
 		super.setIsPosIdProvided(false);
 		super.setSyncServiceName(this.getClass().getSimpleName());
-	}
-
-	/**
-	 * 连接到sftp服务器
-	 * 
-	 * @param host
-	 * @param port
-	 * @param username
-	 * @param password
-	 * @throws JSchException
-	 */
-	private void sftpConnect(String host, int port, String username, String password) throws JSchException {
-		try {
-			if (session == null || !session.isConnected()) {
-				JSch jsch = new JSch();
-				session = jsch.getSession(username, host, port);
-				session.setPassword(password);
-				Properties sshConfig = new Properties();
-				sshConfig.put("StrictHostKeyChecking", "no");
-				session.setConfig(sshConfig);
-				session.connect();
-			}
-
-			if (channelSftp == null || channelSftp.isClosed() || !channelSftp.isConnected()) {
-				channelSftp = (ChannelSftp) session.openChannel("sftp");
-				channelSftp.connect();
-			}
-		} catch (JSchException e) {
-			sftpDisconnect();
-			throw e;
-		}
-	}
-
-	/**
-	 * 与sftp服务器断开连接 释放资源
-	 */
-	private void sftpDisconnect() {
-		if (channelSftp != null && channelSftp.isConnected()) {
-			channelSftp.disconnect();
-		}
-
-		if (session != null && session.isConnected()) {
-			session.disconnect();
-		}
-	}
-
-	/**
-	 * 下载sftp上的文件
-	 * 
-	 * @param fileName
-	 * @return
-	 * @throws Exception
-	 */
-	private List<String> downloadAsString(String fileName) throws Exception {
-		List<String> lines = null;
-		try {
-			// 建立连接
-			sftpConnect(HOST, PORT, USERNAME, PASSWORD);
-			// 获取文件
-			lines = readLines(channelSftp.get(fileName), CHARSET_GBK, CHARSET_UTF8);
-		} finally {
-			// 断开连接
-			sftpDisconnect();
-		}
-
-		return lines;
-	}
-
-	/**
-	 * 读取文件流并获得行字符串集合
-	 * 
-	 * @param in
-	 *            文件字节流
-	 * @param fromCharset
-	 *            文件原来的字符集编码
-	 * @param toCharset
-	 *            同步用的字符集编码
-	 * @return
-	 * @throws IOException
-	 */
-	private List<String> readLines(InputStream in, String fromCharset, String toCharset) throws IOException {
-		List<String> lines = new ArrayList<String>();
-		BufferedReader reader = null;
-		try {
-			// 文件为GBK编码
-			reader = new BufferedReader(new InputStreamReader(in, fromCharset));
-
-			String tempLine = null;
-			// 一次读一行
-			while ((tempLine = reader.readLine()) != null) {
-				// 转为UTF-8编码
-				lines.add(new String(tempLine.getBytes(), toCharset));
-			}
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-
-		return lines;
 	}
 
 	@Override
@@ -213,7 +101,8 @@ public class AllinpaySyncService extends AbstractSyncService implements Allinpay
 	@Override
 	public List<PositionModel> getPositionModelList(String mode) throws Exception {
 		List<PositionModel> modelList = new ArrayList<PositionModel>();
-		List<String> lines = downloadAsString(POSITION_FILE);
+		List<String> lines = SftpDownloadUtil.downloadAsString(HOST, PORT, USERNAME, PASSWORD, POSITION_FILE,
+				CHARSET_GBK, CHARSET_UTF8);
 
 		String[] tempStrArr = null;
 		for (String line : lines) {
@@ -235,7 +124,8 @@ public class AllinpaySyncService extends AbstractSyncService implements Allinpay
 	@Override
 	public List<OuInfoModel> getOuInfoModelList(String mode) throws Exception {
 		List<OuInfoModel> modelList = new ArrayList<OuInfoModel>();
-		List<String> lines = downloadAsString(OUINFO_FILE);
+		List<String> lines = SftpDownloadUtil.downloadAsString(HOST, PORT, USERNAME, PASSWORD, OUINFO_FILE, CHARSET_GBK,
+				CHARSET_UTF8);
 
 		String[] tempStrArr = null;
 		for (String line : lines) {
@@ -262,7 +152,8 @@ public class AllinpaySyncService extends AbstractSyncService implements Allinpay
 	@Override
 	public List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 		List<UserInfoModel> modelList = new ArrayList<UserInfoModel>();
-		List<String> lines = downloadAsString(USERINFO_FILE);
+		List<String> lines = SftpDownloadUtil.downloadAsString(HOST, PORT, USERNAME, PASSWORD, USERINFO_FILE,
+				CHARSET_GBK, CHARSET_UTF8);
 
 		String[] tempStrArr = null;
 		for (String line : lines) {
