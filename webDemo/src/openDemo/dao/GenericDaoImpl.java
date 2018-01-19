@@ -35,8 +35,8 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 		return new QueryRunner(dataSource).query(generateGetAllSql(), new BeanListHandler<>(entityClass));
 	}
 
-	public List<T> getAllById(String orgId) throws SQLException {
-		return new QueryRunner(dataSource).query(generateGetAllSql(), new BeanListHandler<>(entityClass), orgId);
+	public List<T> getAllByOrgId(String orgId) throws SQLException {
+		return new QueryRunner(dataSource).query(generateGetAllByOrgIdSql(), new BeanListHandler<>(entityClass), orgId);
 	}
 
 	@Override
@@ -129,6 +129,8 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
 	public abstract String generateInsertSql();
 
 	public abstract String generateUpdateSql();
+
+	public abstract String generateGetAllByOrgIdSql();
 
 	/**
 	 * 批量化新增的参数数组

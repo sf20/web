@@ -40,4 +40,10 @@ public class CSVTestModelDao extends GenericDaoImpl<CSVTestModel> {
 		return null;
 	}
 
+	@Override
+	public String generateGetAllByOrgIdSql() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

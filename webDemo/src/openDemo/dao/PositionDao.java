@@ -3,13 +3,13 @@ package openDemo.dao;
 import openDemo.entity.PositionModel;
 
 public class PositionDao extends GenericDaoImpl<PositionModel> {
-	public static final String TABLENAME_POSITION = "position";
+	public static final String TABLENAME_POSITION = "CORE_POSITIONINFO";
 
 	@Override
 	public String generateTableName() {
 		return TABLENAME_POSITION;
 	};
-	
+
 	@Override
 	public String generateGetByIdSql() {
 		StringBuffer sql = new StringBuffer();
@@ -44,6 +44,14 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	}
 
 	@Override
+	public String generateGetAllByOrgIdSql() {
+		StringBuffer sql = new StringBuffer();
+		sql.append(
+				"SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0");
+		return sql.toString();
+	}
+
+	@Override
 	public Object[] getInsertObjectParamArray(PositionModel position) {
 		Object[] params = { position.getpNo(), position.getpNames() };
 		return params;
@@ -53,14 +61,6 @@ public class PositionDao extends GenericDaoImpl<PositionModel> {
 	public Object[] getUpdateObjectParamArray(PositionModel position) {
 		Object[] params = { position.getpNames(), position.getpNo() };
 		return params;
-	}
-
-	@Override
-	public String generateGetAllSql() {
-		StringBuffer sql = new StringBuffer();
-		sql.append(
-				"SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0");
-		return sql.toString();
 	}
 
 }

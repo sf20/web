@@ -92,6 +92,14 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 		return sql.toString();
 	}
 
+	@Override
+	public String generateGetAllByOrgIdSql() {
+		StringBuffer sql = new StringBuffer();
+		sql.append(
+				"SELECT THIRDSYSTEMUSERNO AS ID, USERNAME AS userName, CNNAME AS cnName FROM CORE_USERPROFILE WHERE ORGID = ?");
+		return sql.toString();
+	}
+
 	public List<StudyPlanDetail> getStudyPlanDetailByUserIdPlanID(String orgID, String planID, String userID,
 			String kngType) throws SQLException {
 		StringBuffer sql = new StringBuffer();

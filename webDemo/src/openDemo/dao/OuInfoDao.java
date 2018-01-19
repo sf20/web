@@ -3,13 +3,13 @@ package openDemo.dao;
 import openDemo.entity.OuInfoModel;
 
 public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
-	public static final String TABLENAME_OUINFO = "ouinfo";
+	public static final String TABLENAME_OUINFO = "CORE_ORGOUINFO";
 
 	@Override
 	public String generateTableName() {
 		return TABLENAME_OUINFO;
 	}
-	
+
 	@Override
 	public String generateInsertSql() {
 		StringBuffer buffer = new StringBuffer();
@@ -33,6 +33,13 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 		buffer.append(" WHERE ID = ?");
 
 		return buffer.toString();
+	}
+
+	@Override
+	public String generateGetAllByOrgIdSql() {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT DISTINCT OUCODE AS ID, OUNAME AS ouName FROM CORE_ORGOUINFO WHERE ORGID = ?");
+		return sql.toString();
 	}
 
 	@Override
