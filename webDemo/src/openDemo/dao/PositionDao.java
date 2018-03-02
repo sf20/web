@@ -1,7 +1,10 @@
 package openDemo.dao;
 
+import org.springframework.stereotype.Repository;
+
 import openDemo.entity.PositionModel;
 
+@Repository
 public class PositionDao extends GenericDaoImpl<PositionModel> {
 	public static final String TABLENAME_POSITION = "CORE_POSITIONINFO";
 

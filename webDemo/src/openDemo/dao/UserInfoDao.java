@@ -7,10 +7,12 @@ import java.util.List;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Repository;
 
 import openDemo.entity.StudyPlanDetail;
 import openDemo.entity.UserInfoModel;
 
+@Repository
 public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	public static final String TABLENAME_USERINFO = "userinfo";
 

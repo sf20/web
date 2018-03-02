@@ -1,7 +1,10 @@
 package openDemo.dao;
 
+import org.springframework.stereotype.Repository;
+
 import openDemo.entity.OuInfoModel;
 
+@Repository
 public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	public static final String TABLENAME_OUINFO = "CORE_ORGOUINFO";
 
