@@ -1,5 +1,9 @@
 package openDemo.service.sync.aia;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,12 +21,21 @@ import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
+import openDemo.service.sync.leo.LeoConfig;
 
+/**
+ * 友邦保险同步Service
+ * 
+ * @author MKT-28
+ *
+ */
 @Service
-public class AIASyncService extends AbstractSyncService implements AIAConfig {
+public class AIASyncService extends AbstractSyncService implements LeoConfig {
 	// 文件名标准
 	private static final String FILE_NAME_PREFIX_OUINFO = "dept_info_";
 	private static final String FILE_NAME_PREFIX_USERINFO = "staff_info_";
+	// 字符集编码
+	private static final String CHARSET_UTF8 = "UTF-8";
 	// 分隔符
 	private static final String SEPARATOR = "|";
 	// 分隔符正则转译
@@ -110,6 +124,67 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 	}
 
 	/**
+	 * 异步处理上传文件
+	 * 
+	 * @param fileItems
+	 */
+	public void asyncProcess(List<FileItem> fileItems) {
+
+		for (FileItem fileItem : fileItems) {
+			// fileItem中封装的是上传文件
+			if (!fileItem.isFormField()) {
+				try {
+					String fileName = fileItem.getName();
+					// 数据同步
+					syncDataFromFile(fileName, readLines(fileItem, CHARSET_UTF8, CHARSET_UTF8));
+				} catch (Exception e) {
+					LOGGER.error("定时同步[" + syncServiceName + "]出现异常", e);
+					return;
+				}
+			}
+		}
+	}
+
+	/**
+	 * 读取文件并获得行字符串集合
+	 * 
+	 * @param fileItem
+	 *            上传的文件
+	 * @param fromCharset
+	 *            文件原来的字符集编码
+	 * @param toCharset
+	 *            同步用的字符集编码
+	 * @return
+	 * @throws IOException
+	 */
+	private List<String> readLines(FileItem fileItem, String fromCharset, String toCharset) throws IOException {
+		List<String> lines = new ArrayList<String>();
+		BufferedReader reader = null;
+		InputStream ins = null;
+		try {
+			ins = fileItem.getInputStream();
+			// 要读取文件的编码
+			reader = new BufferedReader(new InputStreamReader(ins, fromCharset));
+
+			String tempLine = null;
+			// 一次读一行
+			while ((tempLine = reader.readLine()) != null) {
+				// 转为需要的编码
+				lines.add(new String(tempLine.getBytes(), toCharset));
+			}
+		} finally {
+			if (ins != null) {
+				ins.close();
+			}
+			if (reader != null) {
+				reader.close();
+			}
+		}
+
+		return lines;
+	}
+
+	/**
 	 * 读取文件进行数据同步
 	 * 
 	 * @param fileName
@@ -117,7 +192,7 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 	 *            文件行记录字符串集合
 	 * @throws Exception
 	 */
-	public void syncDataFromFile(String fileName, List<String> lines) throws Exception {
+	private void syncDataFromFile(String fileName, List<String> lines) throws Exception {
 
 		if (fileName.contains(FILE_NAME_PREFIX_OUINFO)) {
 			// 组织同步 部门状态全为有效
