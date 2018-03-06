@@ -944,7 +944,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		List<PositionModel> positionListDB = new ArrayList<PositionModel>();
 		// 获取数据库岗位数据
 		PositionDao dao = new PositionDao();
-		positionListDB = dao.getAllById(apiKey);
+		positionListDB = dao.getAllByOrgId(apiKey);
 
 		for (PositionModel newPos : newList) {
 			String newPosNames = newPos.getpNames();
@@ -973,7 +973,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected static Date getYesterdayDate(Date date) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
-		c.add(Calendar.DAY_OF_MONTH, -1);
+		// 修改为返回三天前的日期，防止出现异常造成单日数据漏同步
+		c.add(Calendar.DAY_OF_MONTH, -3);
 		return c.getTime();
 	}
 
