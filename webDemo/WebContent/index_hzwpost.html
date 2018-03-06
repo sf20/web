@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		var url = "http://localhost:8080/qidacustomapi/v1/hzwretail";
+		// getlist
+		$(".getlist").click(function() {
+			getdata(null, url + $(this).text(), successHandle, errorHandle);
+		});
+		// uploadimage
+		$("#uploadimage").click(function() {
+			getdata(null, url + $(this).text(), successHandle, errorHandle);
+		});
+		// setbaseinfo
+		$("#setbaseinfo").click(function() {
+			var params = {};
+			params.id = $("#pid").val();
+			params.projectName = "测试申请项更新";
+			params.startDate = "2017-12-21";
+			params.endDate = "2017-12-23";
+			params.description = "描述说明更新";
+			params.imgUrl = "picimgurl更新";
+			getdata(params, url + $(this).text(), returnIdHandle, errorHandle);
+		});
+		// setcondition
+		$("#setcondition").click(function() {
+			var params = {};
+			params.id = $("#pid").val();
+			params.positions = "开发；销售；管理";
+			params.levels = "初级；中级；高级";
+			getdata(params, url + $(this).text(), returnIdHandle, errorHandle);
+		});
+		// addconditionview
+		$("#addconditionview").click(function() {
+			getdata(null, url + $(this).text(), successHandle, errorHandle);
+		});
+		// addcondition
+		$("#addcondition").click(function() {
+			var params = {};
+			params.projectID = $("#pid").val();
+			params.examID = "";
+			params.examName = "";
+			params.examTimeSpan = "";
+			getdata(params, url + $(this).text(), successHandle, errorHandle);
+		});
+		// removecondition
+		$("#removecondition").click(function() {
+			var params = {};
+			params.projectID = "";
+			params.examID = "";
+			getdata(params, url + $(this).text(), successHandle, errorHandle);
+		});
+		// addtaskview
+		$("#addtaskview").click(function() {
+			getdata(null, url + $(this).text(), successHandle, errorHandle);
+		});
+		// addmixtrainview
+		$("#addmixtrainview").click(function() {
+			getdata(null, url + $(this).text(), successHandle, errorHandle);
+		});
+		// addtask
+		$("#addtask").click(function() {
+			var params = {};
+			params.projectID = $("#pid").val();
+			params.taskID = "";
+			params.taskName = "";
+			params.TaskType = "";
+			params.StartDate = "";
+			params.EndDate = "";
+			getdata(params, url + $(this).text(), successHandle, errorHandle);
+		});
+		// removetask
+		$("#removetask").click(function() {
+			var params = {};
+			params.projectID = "";
+			params.taskID = "";
+			getdata(params, url + $(this).text(), successHandle, errorHandle);
+		});
+		// publish
+		$("#publish").click(function() {
+			var pid = "";
+			getdata(null, url + $(this).text() + "/" + pid, successHandle, errorHandle);
+			// 清除隐藏域中id
+			$("#pid").val("");
+		});
+		// saveorcancel
+		$("#saveorcancel").click(function() {
+			var pid = "";
+			getdata(null, url + $(this).text() + "/" + pid, successHandle, errorHandle);
+			// 清除隐藏域中id
+			$("#pid").val("");
+		});
+		// delete
+		$("#delete").click(function() {
+			var pid = "";
+			getdata(null, url + $(this).text() + "/" + pid, successHandle, errorHandle);
+		});
+		// detail
+		$("#detail").click(function() {
+			var pid = "";
+			getdata(null, url + $(this).text() + "/" + pid, successHandle, errorHandle);
+		});
+		// pagelist
+		$("#pagelist").click(function() {
+			var params = {};
+			// 0：未发布，1：进行中，2：已结束
+			params.status = "0";
+			params.projectName = "申请项";
+			params.orderBy = "startdate";
+			getdata(params, url + $(this).text(), successHandle, errorHandle);
+		});
+	});
+
+	function test() {
+		alert("test");
+	}
+
+	function returnIdHandle(result) {
+		$("#pid").val(result.projectID);
+		$("#restext").text(result.projectID);
+	}
+	
+	function successHandle(result) {
+		$("#restext").text(JSON.stringify(result));
+	}
+
+	function errorHandle(errMsg) {
+		if (errMsg.responseJSON) {
+			alert(errMsg.responseJSON.error.message);
+		} else {
+			alert(JSON.stringify(errMsg));
+		}
+	}
+
+	function getdata(params, url, successfunc, errorfunc) {
+		jQuery
+				.ajax({
+					type : "POST",
+					headers : {
+						Accept : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+						Source : 501,
+						Token : "$FunctionLabel.MyProfile.Tokens"
+					},
+					contentType : "application/json",
+					url : url,
+					xhrFields : {
+						withCredentials : true
+					},
+					dataType : "json",
+					data : JSON.stringify(params),
+					cache : false,
+					success : function(result) {
+						if (result) {
+							successfunc(result);
+						}
+					},
+					error : function(errMsg) {
+						errorfunc(errMsg);
+					}
+				});
+	}
+</script>
+</head>
+<body>
+	<div id="req_url">
+		<ul>
+			<li><a href="javascript:void(0);" id="uploadimage">/project/uploadimage</a></li>
+			<li><a href="javascript:void(0);" id="setbaseinfo">/project/setbaseinfo</a></li>
+			<li><a href="javascript:void(0);" id="addconditionview">/project/addconditionview</a></li>
+			<li><a href="javascript:void(0);" id="setcondition">/project/setcondition</a></li>
+			<li><a href="javascript:void(0);" id="addcondition">/project/addcondition</a></li>
+			<li><a href="javascript:void(0);" id="removecondition">/project/removecondition</a></li>
+			<li><a href="javascript:void(0);" id="addtaskview">/project/addtaskview</a></li>
+			<li><a href="javascript:void(0);" id="addmixtrainview">/project/addmixtrainview</a></li>
+			<li><a href="javascript:void(0);" id="addtask">/project/addtask</a></li>
+			<li><a href="javascript:void(0);" id="removetask">/project/removetask</a></li>
+			<li><a href="javascript:void(0);" id="publish">/project/publish</a></li>
+			<li><a href="javascript:void(0);" id="saveorcancel">/project/saveorcancel</a></li>
+			<li><a href="javascript:void(0);" id="delete">/project/delete</a></li>
+			<li><a href="javascript:void(0);" id="detail">/project/detail</a></li>
+			<li><a href="javascript:void(0);" id="pagelist">/projects/pagelist</a></li>
+		</ul>
+	</div>
+	<input id="pid" type="hidden"/>
+	<div id="restext"></div>
+</body>
+</html>
