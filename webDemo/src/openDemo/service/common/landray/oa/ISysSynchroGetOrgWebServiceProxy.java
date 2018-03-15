@@ -1,8 +1,8 @@
-package openDemo.service.sync.xnjz;
+package openDemo.service.common.landray.oa;
 
-public class ISysSynchroGetOrgWebServiceProxy implements openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService {
+public class ISysSynchroGetOrgWebServiceProxy implements openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService {
   private String _endpoint = null;
-  private openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService iSysSynchroGetOrgWebService = null;
+  private openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService iSysSynchroGetOrgWebService = null;
   
   public ISysSynchroGetOrgWebServiceProxy() {
     _initISysSynchroGetOrgWebServiceProxy();
@@ -15,7 +15,7 @@ public class ISysSynchroGetOrgWebServiceProxy implements openDemo.service.sync.x
   
   private void _initISysSynchroGetOrgWebServiceProxy() {
     try {
-      iSysSynchroGetOrgWebService = (new openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceServiceLocator()).getISysSynchroGetOrgWebServicePort();
+      iSysSynchroGetOrgWebService = (new openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceLocator()).getISysSynchroGetOrgWebServicePort();
       if (iSysSynchroGetOrgWebService != null) {
         if (_endpoint != null)
           ((javax.xml.rpc.Stub)iSysSynchroGetOrgWebService)._setProperty("javax.xml.rpc.service.endpoint.address", _endpoint);
@@ -38,67 +38,67 @@ public class ISysSynchroGetOrgWebServiceProxy implements openDemo.service.sync.x
     
   }
   
-  public openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebService() {
+  public openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebService() {
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService;
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgTokenResult getUpdatedElementsByToken(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoTokenContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgTokenResult getUpdatedElementsByToken(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoTokenContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getUpdatedElementsByToken(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleConfCateInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleConfCateInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getRoleConfCateInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getUpdatedElements(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getUpdatedElements(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getUpdatedElements(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleConfInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleConfInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getRoleConfInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getElementsBaseInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgBaseInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getElementsBaseInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgBaseInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getElementsBaseInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getRoleInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleLineDefaultRoleInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleLineDefaultRoleInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getRoleLineDefaultRoleInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleLineInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleLineInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getRoleLineInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getOrgGroupCateInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getOrgGroupCateInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getOrgGroupCateInfo(arg0);
   }
   
-  public openDemo.service.sync.xnjz.SysSynchroOrgResult getOrgStaffingLevelInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception{
+  public openDemo.service.common.landray.oa.SysSynchroOrgResult getOrgStaffingLevelInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception{
     if (iSysSynchroGetOrgWebService == null)
       _initISysSynchroGetOrgWebServiceProxy();
     return iSysSynchroGetOrgWebService.getOrgStaffingLevelInfo(arg0);

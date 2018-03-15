@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package openDemo.service.sync.xnjz;
+package openDemo.service.common.landray.oa;
 
-public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apache.axis.client.Stub implements openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService {
+public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apache.axis.client.Stub implements openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
@@ -25,11 +25,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getRoleConfCateInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -43,11 +43,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getUpdatedElementsByToken");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoTokenContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoTokenContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoTokenContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoTokenContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgTokenResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgTokenResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgTokenResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -61,11 +61,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getRoleConfInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -79,11 +79,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getUpdatedElements");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -97,11 +97,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getElementsBaseInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgBaseInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgBaseInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgBaseInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgBaseInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -115,11 +115,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getRoleInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -133,11 +133,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getRoleLineDefaultRoleInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -151,11 +151,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getRoleLineInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -169,11 +169,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getOrgGroupCateInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -187,11 +187,11 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getOrgStaffingLevelInfo");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "arg0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext"), openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult"));
-        oper.setReturnClass(openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+        oper.setReturnClass(openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
@@ -236,49 +236,49 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "Exception");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.Exception.class;
+            cls = openDemo.service.common.landray.oa.Exception.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgBaseInfoContext");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroGetOrgBaseInfoContext.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroGetOrgBaseInfoContext.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgContext");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroGetOrgContext.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroGetOrgContext.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoContext");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroGetOrgInfoTokenContext");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroGetOrgInfoTokenContext.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroGetOrgInfoTokenContext.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgResult");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroOrgResult.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroOrgResult.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
             qName = new javax.xml.namespace.QName("http://out.webservice.organization.sys.kmss.landray.com/", "sysSynchroOrgTokenResult");
             cachedSerQNames.add(qName);
-            cls = openDemo.service.sync.xnjz.SysSynchroOrgTokenResult.class;
+            cls = openDemo.service.common.landray.oa.SysSynchroOrgTokenResult.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -349,7 +349,7 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleConfCateInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleConfCateInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -373,9 +373,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -383,15 +383,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgTokenResult getUpdatedElementsByToken(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoTokenContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgTokenResult getUpdatedElementsByToken(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoTokenContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -415,9 +415,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgTokenResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgTokenResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgTokenResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgTokenResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgTokenResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgTokenResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -425,15 +425,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleConfInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleConfInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -457,9 +457,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -467,15 +467,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getUpdatedElements(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getUpdatedElements(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -499,9 +499,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -509,15 +509,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getElementsBaseInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgBaseInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getElementsBaseInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgBaseInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -541,9 +541,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -551,15 +551,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -583,9 +583,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -593,15 +593,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleLineDefaultRoleInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleLineDefaultRoleInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -625,9 +625,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -635,15 +635,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getRoleLineInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getRoleLineInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -667,9 +667,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -677,15 +677,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getOrgGroupCateInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getOrgGroupCateInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -709,9 +709,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -719,15 +719,15 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;
 }
     }
 
-    public openDemo.service.sync.xnjz.SysSynchroOrgResult getOrgStaffingLevelInfo(openDemo.service.sync.xnjz.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.sync.xnjz.Exception {
+    public openDemo.service.common.landray.oa.SysSynchroOrgResult getOrgStaffingLevelInfo(openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext arg0) throws java.rmi.RemoteException, openDemo.service.common.landray.oa.Exception {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -751,9 +751,9 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         else {
             extractAttachments(_call);
             try {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) _resp;
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) _resp;
             } catch (java.lang.Exception _exception) {
-                return (openDemo.service.sync.xnjz.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.sync.xnjz.SysSynchroOrgResult.class);
+                return (openDemo.service.common.landray.oa.SysSynchroOrgResult) org.apache.axis.utils.JavaUtils.convert(_resp, openDemo.service.common.landray.oa.SysSynchroOrgResult.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -761,8 +761,8 @@ public class ISysSynchroGetOrgWebServiceServiceSoapBindingStub extends org.apach
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
               throw (java.rmi.RemoteException) axisFaultException.detail;
          }
-        if (axisFaultException.detail instanceof openDemo.service.sync.xnjz.Exception) {
-              throw (openDemo.service.sync.xnjz.Exception) axisFaultException.detail;
+        if (axisFaultException.detail instanceof openDemo.service.common.landray.oa.Exception) {
+              throw (openDemo.service.common.landray.oa.Exception) axisFaultException.detail;
          }
    }
   throw axisFaultException;

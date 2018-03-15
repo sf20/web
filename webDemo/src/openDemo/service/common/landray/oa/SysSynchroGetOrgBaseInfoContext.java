@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package openDemo.service.sync.xnjz;
+package openDemo.service.common.landray.oa;
 
-public class SysSynchroGetOrgBaseInfoContext  extends openDemo.service.sync.xnjz.SysSynchroGetOrgContext  implements java.io.Serializable {
+public class SysSynchroGetOrgBaseInfoContext  extends openDemo.service.common.landray.oa.SysSynchroGetOrgContext  implements java.io.Serializable {
     private java.lang.String returnType;
 
     public SysSynchroGetOrgBaseInfoContext() {

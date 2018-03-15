@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package openDemo.service.sync.xnjz;
+package openDemo.service.common.landray.oa;
 
-public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.client.Service implements openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceService {
+public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.client.Service implements openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceService {
 
     public ISysSynchroGetOrgWebServiceServiceLocator() {
     }
@@ -22,7 +22,7 @@ public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.c
     }
 
     // Use to get a proxy class for ISysSynchroGetOrgWebServicePort
-    private java.lang.String ISysSynchroGetOrgWebServicePort_address = "http://ekpsrv.xnjz.com:8080/sys/webservice/sysSynchroGetOrgWebService";
+    private java.lang.String ISysSynchroGetOrgWebServicePort_address = "";
 
     public java.lang.String getISysSynchroGetOrgWebServicePortAddress() {
         return ISysSynchroGetOrgWebServicePort_address;
@@ -39,7 +39,7 @@ public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.c
         ISysSynchroGetOrgWebServicePortWSDDServiceName = name;
     }
 
-    public openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebServicePort() throws javax.xml.rpc.ServiceException {
+    public openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebServicePort() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(ISysSynchroGetOrgWebServicePort_address);
@@ -50,9 +50,9 @@ public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.c
         return getISysSynchroGetOrgWebServicePort(endpoint);
     }
 
-    public openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebServicePort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService getISysSynchroGetOrgWebServicePort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-            openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceServiceSoapBindingStub _stub = new openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceServiceSoapBindingStub(portAddress, this);
+            openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceSoapBindingStub _stub = new openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceSoapBindingStub(portAddress, this);
             _stub.setPortName(getISysSynchroGetOrgWebServicePortWSDDServiceName());
             return _stub;
         }
@@ -72,8 +72,8 @@ public class ISysSynchroGetOrgWebServiceServiceLocator extends org.apache.axis.c
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (openDemo.service.sync.xnjz.ISysSynchroGetOrgWebService.class.isAssignableFrom(serviceEndpointInterface)) {
-                openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceServiceSoapBindingStub _stub = new openDemo.service.sync.xnjz.ISysSynchroGetOrgWebServiceServiceSoapBindingStub(new java.net.URL(ISysSynchroGetOrgWebServicePort_address), this);
+            if (openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService.class.isAssignableFrom(serviceEndpointInterface)) {
+                openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceSoapBindingStub _stub = new openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceSoapBindingStub(new java.net.URL(ISysSynchroGetOrgWebServicePort_address), this);
                 _stub.setPortName(getISysSynchroGetOrgWebServicePortWSDDServiceName());
                 return _stub;
             }
