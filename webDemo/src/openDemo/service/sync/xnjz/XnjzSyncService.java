@@ -19,6 +19,10 @@ import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.xnjz.XnjzOuInfoModel;
 import openDemo.entity.sync.xnjz.XnjzPositionModel;
 import openDemo.entity.sync.xnjz.XnjzUserInfoModel;
+import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService;
+import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceLocator;
+import openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext;
+import openDemo.service.common.landray.oa.SysSynchroOrgResult;
 import openDemo.service.sync.AbstractSyncService;
 
 @Service
@@ -26,6 +30,8 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 	// 全量增量区分
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
+	// 客户接口
+	private static final String ENDPOINT_ADDRESS = "http://ekpsrv.xnjz.com:8080/sys/webservice/sysSynchroGetOrgWebService";
 	// 日期格式化用
 	private static final SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	// json解析用
@@ -139,6 +145,7 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 
 	private <T> List<T> getDataModelList(String mode, Class<T> classType) throws java.lang.Exception {
 		ISysSynchroGetOrgWebServiceServiceLocator locator = new ISysSynchroGetOrgWebServiceServiceLocator();
+		locator.setISysSynchroGetOrgWebServicePortEndpointAddress(ENDPOINT_ADDRESS);
 		ISysSynchroGetOrgWebService service = locator.getISysSynchroGetOrgWebServicePort();
 
 		SysSynchroGetOrgInfoContext reqParam = new SysSynchroGetOrgInfoContext();
