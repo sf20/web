@@ -205,6 +205,10 @@ public class HttpClientUtil4Sync {
 		return post(url, null, null);
 	}
 
+	public static String doPost(String url, List<Header> headers) throws IOException {
+		return post(url, null, headers);
+	}
+
 	public static String doPost(String url, String jsonParams) throws IOException {
 		return post(url, getHttpEntity(jsonParams), null);
 	}
@@ -263,13 +267,29 @@ public class HttpClientUtil4Sync {
 		return retStr;
 	}
 
-	private static String sslPost(String url, String protocol, HttpEntity httpEntity) throws IOException {
+	/**
+	 * SSL方式发送POST请求
+	 * 
+	 * @param url
+	 * @param protocol 协议方式，默认值为TLS
+	 * @param httpEntity
+	 * @param headers
+	 * @return
+	 * @throws IOException
+	 */
+	private static String sslPost(String url, String protocol, HttpEntity httpEntity, List<Header> headers) throws IOException {
 		CloseableHttpClient httpClient = getSSLHttpClient(protocol);
 		HttpPost httpPost = new HttpPost(url);
 		if (httpEntity != null) {
 			httpPost.setEntity(httpEntity);
 		}
 
+		if (headers != null && headers.size() > 0) {
+			for (Header header : headers) {
+				httpPost.addHeader(header);
+			}
+		}
+		
 		CloseableHttpResponse response = null;
 		String retStr = null;
 		try {
@@ -290,15 +310,27 @@ public class HttpClientUtil4Sync {
 	}
 
 	public static String doSSLPost(String url, String protocol) throws IOException {
-		return sslPost(url, protocol, null);
+		return sslPost(url, protocol, null, null);
 	}
 
+	public static String doSSLPost(String url, String protocol, List<Header> headers) throws IOException {
+		return sslPost(url, protocol, null, headers);
+	}
+	
 	public static String doSSLPost(String url, String protocol, String jsonParams) throws IOException {
-		return sslPost(url, protocol, getHttpEntity(jsonParams));
+		return sslPost(url, protocol, getHttpEntity(jsonParams), null);
 	}
 
 	public static String doSSLPost(String url, String protocol, Map<String, Object> params) throws IOException {
-		return sslPost(url, protocol, getHttpEntity(params));
+		return sslPost(url, protocol, getHttpEntity(params), null);
+	}
+
+	public static String doSSLPost(String url, String protocol, String jsonParams, List<Header> headers) throws IOException {
+		return sslPost(url, protocol, getHttpEntity(jsonParams), headers);
+	}
+
+	public static String doSSLPost(String url, String protocol, Map<String, Object> params, List<Header> headers) throws IOException {
+		return sslPost(url, protocol, getHttpEntity(params), headers);
 	}
 
 	/**
