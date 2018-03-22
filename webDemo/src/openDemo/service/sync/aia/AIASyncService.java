@@ -21,7 +21,6 @@ import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
-import openDemo.service.sync.leo.LeoConfig;
 
 /**
  * 友邦保险同步Service
@@ -30,7 +29,7 @@ import openDemo.service.sync.leo.LeoConfig;
  *
  */
 @Service
-public class AIASyncService extends AbstractSyncService implements LeoConfig {
+public class AIASyncService extends AbstractSyncService implements AIAConfig {
 	// 文件名标准
 	private static final String FILE_NAME_PREFIX_OUINFO = "dept_info_";
 	private static final String FILE_NAME_PREFIX_USERINFO = "staff_info_";
@@ -129,17 +128,59 @@ public class AIASyncService extends AbstractSyncService implements LeoConfig {
 	 * @param fileItems
 	 */
 	public void asyncProcess(List<FileItem> fileItems) {
+		try {
+			// 先同步人员 后同步组织
+			syncUserInfoDataFromFile(fileItems);
+			syncOuInfoDataFromFile(fileItems);
+		} catch (Exception e) {
+			LOGGER.error("定时同步[" + syncServiceName + "]出现异常", e);
+		}
+	}
 
+	/**
+	 * 同步部门数据文件
+	 * 
+	 * @param fileItems
+	 * @throws Exception
+	 */
+	private void syncOuInfoDataFromFile(List<FileItem> fileItems) throws Exception {
 		for (FileItem fileItem : fileItems) {
 			// fileItem中封装的是上传文件
 			if (!fileItem.isFormField()) {
-				try {
-					String fileName = fileItem.getName();
-					// 数据同步
-					syncDataFromFile(fileName, readLines(fileItem, CHARSET_UTF8, CHARSET_UTF8));
-				} catch (Exception e) {
-					LOGGER.error("定时同步[" + syncServiceName + "]出现异常", e);
-					return;
+				String fileName = fileItem.getName();
+				// 数据同步
+				if (fileName.contains(FILE_NAME_PREFIX_OUINFO)) {
+					// 组织同步 部门状态全为有效
+					List<String> lines = readLines(fileItem, CHARSET_UTF8, CHARSET_UTF8);
+					opOrgSync(null, false, mapLinesToOuInfoModelList(lines));
+
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * 同步人员数据文件
+	 * 
+	 * @param fileItems
+	 */
+	private void syncUserInfoDataFromFile(List<FileItem> fileItems) throws Exception {
+		for (FileItem fileItem : fileItems) {
+			// fileItem中封装的是上传文件
+			if (!fileItem.isFormField()) {
+				String fileName = fileItem.getName();
+				// 数据同步
+				if (fileName.contains(FILE_NAME_PREFIX_USERINFO)) {
+					List<String> lines = readLines(fileItem, CHARSET_UTF8, CHARSET_UTF8);
+					List<UserInfoModel> ouInfoModelList = mapLinesToUserInfoModelList(lines);
+					// 岗位同步
+					opPosSync(null, getPosListFromUsers(ouInfoModelList));
+
+					// 人员同步 职工全为在职职工
+					opUserSync(null, true, ouInfoModelList);
+
+					break;
 				}
 			}
 		}
@@ -182,31 +223,6 @@ public class AIASyncService extends AbstractSyncService implements LeoConfig {
 		}
 
 		return lines;
-	}
-
-	/**
-	 * 读取文件进行数据同步
-	 * 
-	 * @param fileName
-	 * @param lines
-	 *            文件行记录字符串集合
-	 * @throws Exception
-	 */
-	private void syncDataFromFile(String fileName, List<String> lines) throws Exception {
-
-		if (fileName.contains(FILE_NAME_PREFIX_OUINFO)) {
-			// 组织同步 部门状态全为有效
-			opOrgSync(null, false, mapLinesToOuInfoModelList(lines));
-
-		} else if (fileName.contains(FILE_NAME_PREFIX_USERINFO)) {
-			List<UserInfoModel> ouInfoModelList = mapLinesToUserInfoModelList(lines);
-			// 岗位同步
-			opPosSync(null, getPosListFromUsers(ouInfoModelList));
-
-			// 人员同步 职工全为在职职工
-			opUserSync(null, true, ouInfoModelList);
-		}
-
 	}
 
 	/**
@@ -295,6 +311,7 @@ public class AIASyncService extends AbstractSyncService implements LeoConfig {
 			OuInfoModel ouInfo = new OuInfoModel();
 			ouInfo.setID(tempStrArr[0]);
 			ouInfo.setOuName(tempStrArr[1]);
+			ouInfo.setManagerId(tempStrArr[2]);
 			ouInfo.setParentID(tempStrArr[6]);
 
 			modelList.add(ouInfo);
@@ -321,8 +338,8 @@ public class AIASyncService extends AbstractSyncService implements LeoConfig {
 			}
 			tempStrArr = lineRecord.split(SEPARATOR_REGEX);
 
-			// GlobalID|Cname|Pinyin|Firstname|Lastname|SEX|Jobtitle|GRADE|Email_Business|HIRE_DT|Z_CO_JOIN_DT|DEPTID|ClassID|Company_CN|Department_CN|Z_MANAGER_ID
-			if (tempStrArr.length != 16) {
+			// GlobalID|Cname|Pinyin|Firstname|Lastname|SEX|Jobtitle|GRADE|MobliePhone|Email_Business|HIRE_DT|Z_CO_JOIN_DT|DEPTID|ClassID|Company_CN|Department_CN|Z_MANAGER_ID
+			if (tempStrArr.length != 17) {
 				continue;
 			}
 
@@ -332,9 +349,11 @@ public class AIASyncService extends AbstractSyncService implements LeoConfig {
 			userInfo.setCnName(tempStrArr[1]);
 			userInfo.setSex(tempStrArr[5]);
 			userInfo.setPostionName(tempStrArr[6]);// tempStrArr[6]==null?null:tempStrArr[6].split(",")[1]
-			userInfo.setMail(tempStrArr[8]);
-			userInfo.setEntryTime(tempStrArr[10]);
-			userInfo.setOrgOuCode(tempStrArr[12]);
+			userInfo.setSpare1(tempStrArr[7]);
+			userInfo.setMobile(tempStrArr[8]);
+			userInfo.setMail(tempStrArr[9]);
+			userInfo.setEntryTime(tempStrArr[11]);
+			userInfo.setOrgOuCode(tempStrArr[13]);
 
 			modelList.add(userInfo);
 		}

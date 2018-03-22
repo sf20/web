@@ -116,4 +116,27 @@ public class SyncOrgService {
 		String result = HttpResultUtil.getResult(params, url);
 		return HttpResultUtil.getResult(result);
 	}
+	
+	/**
+	 * 设置部门主管
+	 * 
+	 * @param userNames
+	 * @param ouCode
+	 * @param isCancelManager
+	 * @param apikey
+	 * @param secretkey
+	 * @param baseUrl
+	 * @return
+	 * @throws IOException
+	 */
+	public ResultEntity setManager(String userNames, String ouCode, boolean isCancelManager, String apikey,
+			String secretkey, String baseUrl) throws IOException {
+		Map<String, Object> params = HttpResultUtil.getParamsMap(apikey, secretkey);
+		params.put("userNames", userNames);
+		params.put("ouCode", ouCode);
+		params.put("isCancelManager", isCancelManager);
+		String url = baseUrl + "el/sync/setmanager";
+		String result = HttpResultUtil.getResult(params, url);
+		return HttpResultUtil.getResult(result);
+	}
 }

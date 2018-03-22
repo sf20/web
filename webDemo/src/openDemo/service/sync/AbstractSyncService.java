@@ -743,6 +743,14 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 						ouInfoList.remove(org);
 						ouInfoList.add(org);
 					}
+					// 设置部门主管
+					if (StringUtils.isNotBlank(org.getManagerId())) {
+						resultEntity = orgService.setManager(org.getManagerId(), org.getID(), false, apikey, secretkey,
+								baseUrl);
+						if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+							printLog("设置部门主管[" + syncServiceName + "]失败 ", org.getOuName(), resultEntity);
+						}
+					}
 				} else {
 					printLog("组织同步[" + syncServiceName + "]失败 ", org.getOuName(), resultEntity);
 				}
