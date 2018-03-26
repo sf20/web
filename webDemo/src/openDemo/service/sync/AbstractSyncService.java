@@ -113,6 +113,18 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		this.syncServiceName = syncServiceName;
 	}
 
+	public List<PositionModel> getPositionList() {
+		return positionList;
+	}
+
+	public List<OuInfoModel> getOuInfoList() {
+		return ouInfoList;
+	}
+
+	public List<UserInfoModel> getUserInfoList() {
+		return userInfoList;
+	}
+
 	@Override
 	public void execute() {
 		try {

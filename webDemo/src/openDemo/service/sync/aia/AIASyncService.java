@@ -8,8 +8,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
@@ -133,7 +135,7 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 			syncUserInfoDataFromFile(fileItems);
 			syncOuInfoDataFromFile(fileItems);
 		} catch (Exception e) {
-			LOGGER.error("定时同步[" + syncServiceName + "]出现异常", e);
+			logger.error("定时同步[" + syncServiceName + "]出现异常", e);
 		}
 	}
 
@@ -240,11 +242,76 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 
 		setRootOrgParentId(dataList);
 
-		logger.info("组织同步[" + syncServiceName + "]新增Size: " + dataList.size());
-		// 进行多次同步
-		for (int i = 0; i < 3; i++) {
-			syncAddOrUpdateOrgOneByOne(dataList, isBaseInfo);
+		Map<String, List<OuInfoModel>> map = compareOrgList(getOuInfoList(), dataList);
+		List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
+		if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
+			syncDeleteOrgOneByOne(orgsToSyncDelete, true);
 		}
+
+		List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
+		if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
+			// 进行多次同步（上级部门需要先同步进平台，否则同步会失败）
+			for (int i = 0; i < 3; i++) {
+				syncAddOrUpdateOrgOneByOne(orgsToSyncAdd, isBaseInfo);
+			}
+		}
+
+		List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
+		if (orgsToSyncUpdate != null && orgsToSyncUpdate.size() > 0) {
+			syncAddOrUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
+		}
+	}
+
+	/**
+	 * 组织全量数据集合与最新获取组织数据集合进行比较
+	 * 
+	 * @param fullList
+	 *            全量组织数据集合
+	 * @param newList
+	 *            最新获取组织数据集合
+	 * @return 包含 同步新增、更新、 删除等组织集合的Map对象
+	 */
+	protected Map<String, List<OuInfoModel>> compareOrgList(List<OuInfoModel> fullList, List<OuInfoModel> newList) {
+		Map<String, List<OuInfoModel>> map = new HashMap<String, List<OuInfoModel>>();
+
+		List<OuInfoModel> orgsToSyncAdd = new ArrayList<OuInfoModel>();
+		List<OuInfoModel> orgsToSyncUpdate = new ArrayList<OuInfoModel>();
+		List<OuInfoModel> orgsToSyncDelete = new ArrayList<OuInfoModel>();
+
+		for (OuInfoModel newOrg : newList) {
+			OuInfoModel orgInFullList = null;
+			for (OuInfoModel fullOrg : fullList) {
+				if (fullOrg.equals(newOrg)) {
+					orgInFullList = fullOrg;
+					break;
+				}
+			}
+			// 待新增组织
+			if (orgInFullList == null) {
+				orgsToSyncAdd.add(newOrg);
+			}
+			// 存在组织更新
+			else {
+				orgsToSyncUpdate.add(newOrg);
+			}
+		}
+
+		// 被删除的组织
+		for (OuInfoModel oldOrg : fullList) {
+			if (!newList.contains(oldOrg)) {
+				orgsToSyncDelete.add(oldOrg);
+			}
+		}
+
+		map.put(MAPKEY_ORG_SYNC_ADD, orgsToSyncAdd);
+		map.put(MAPKEY_ORG_SYNC_UPDATE, orgsToSyncUpdate);
+		map.put(MAPKEY_ORG_SYNC_DELETE, orgsToSyncDelete);
+
+		logger.info("组织同步[" + syncServiceName + "]新增Size: " + orgsToSyncAdd.size());
+		logger.info("组织同步[" + syncServiceName + "]更新Size: " + orgsToSyncUpdate.size());
+		logger.info("组织同步[" + syncServiceName + "]删除Size: " + orgsToSyncDelete.size());
+
+		return map;
 	}
 
 	/**
@@ -281,8 +348,75 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 		changePropValues(dataList);
 		setPositionNoToUser(dataList);
 
-		logger.info("用户同步[" + syncServiceName + "]新增Size: " + dataList.size());
-		syncAddOrUpdateUserOneByOne(dataList, islink);
+		Map<String, List<UserInfoModel>> map = compareUserList(getUserInfoList(), dataList);
+		List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
+		if (usersToDisable != null && usersToDisable.size() > 0) {
+			// 此处直接删除
+			syncDeleteUserOneByOne(usersToDisable, true);
+		}
+
+		List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
+		if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
+			syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink);
+		}
+
+		List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
+		if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
+			syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
+		}
+	}
+
+	/**
+	 * 用户全量数据集合与最新获取用户数据集合进行比较
+	 * 
+	 * @param fullList
+	 *            全量用户数据集合
+	 * @param newList
+	 *            最新获取用户数据集合
+	 * @return 包含 同步新增、更新、禁用等用户集合的Map对象
+	 */
+	protected Map<String, List<UserInfoModel>> compareUserList(List<UserInfoModel> fullList,
+			List<UserInfoModel> newList) {
+		Map<String, List<UserInfoModel>> map = new HashMap<String, List<UserInfoModel>>();
+
+		List<UserInfoModel> usersToSyncAdd = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncUpdate = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncDisable = new ArrayList<UserInfoModel>();
+
+		for (UserInfoModel newUser : newList) {
+			UserInfoModel userInFullList = null;
+			for (UserInfoModel fullUser : fullList) {
+				if (fullUser.equals(newUser)) {
+					userInFullList = fullUser;
+					break;
+				}
+			}
+			// 待新增用户
+			if (userInFullList == null) {
+				usersToSyncAdd.add(newUser);
+			}
+			// 存在用户更新
+			else {
+				usersToSyncUpdate.add(newUser);
+			}
+		}
+
+		// 被删除的用户
+		for (UserInfoModel oldUser : fullList) {
+			if (!newList.contains(oldUser)) {
+				usersToSyncDisable.add(oldUser);
+			}
+		}
+
+		map.put(MAPKEY_USER_SYNC_ADD, usersToSyncAdd);
+		map.put(MAPKEY_USER_SYNC_UPDATE, usersToSyncUpdate);
+		map.put(MAPKEY_USER_SYNC_DISABLE, usersToSyncDisable);
+
+		logger.info("用户同步[" + syncServiceName + "]新增Size: " + usersToSyncAdd.size());
+		logger.info("用户同步[" + syncServiceName + "]更新Size: " + usersToSyncUpdate.size());
+		logger.info("用户同步[" + syncServiceName + "]禁用Size: " + usersToSyncDisable.size());
+
+		return map;
 	}
 
 	/**
