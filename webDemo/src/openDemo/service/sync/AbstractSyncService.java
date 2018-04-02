@@ -21,7 +21,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import openDemo.dao.OuInfoDao;
 import openDemo.dao.PositionDao;
+import openDemo.dao.UserInfoDao;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.ResultEntity;
@@ -1013,27 +1015,24 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 从数据库获取岗位数据
 	 */
 	protected List<PositionModel> getPositionsFromDB() throws SQLException {
-		// String sql = "SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0";
-
-		return null;// dbHelper.getBeanList(sql, PositionModel.class, apikey);
+		PositionDao dao = new PositionDao();
+		return dao.getAllByOrgId(apikey);
 	}
 
 	/**
 	 * 从数据库获取组织数据
 	 */
 	protected List<OuInfoModel> getOuInfoListFromDB() throws SQLException {
-		// String sql = "SELECT OUCODE AS ID, OUNAME AS ouName FROM CORE_ORGOUINFO WHERE ORGID = ? and ISDELETED = 0";
-
-		return null;// dbHelper.getBeanList(sql, OuInfoModel.class, apikey);
+		OuInfoDao dao = new OuInfoDao();
+		return dao.getAllByOrgId(apikey);
 	}
 
 	/**
 	 * 从数据库获取人员数据
 	 */
 	protected List<UserInfoModel> getUserInfoListFromDB() throws SQLException {
-		// String sql = "SELECT THIRDSYSTEMUSERNO AS ID, USERNAME AS userName, CNNAME AS cnName FROM CORE_USERPROFILE WHERE ORGID = ? AND STATUS = 1";
-
-		return null;// dbHelper.getBeanList(sql, UserInfoModel.class, apikey);
+		UserInfoDao dao = new UserInfoDao();
+		return dao.getAllByOrgId(apikey);
 	}
 
 	/**

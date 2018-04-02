@@ -98,7 +98,7 @@ public class UserInfoDao extends GenericDaoImpl<UserInfoModel> {
 	public String generateGetAllByOrgIdSql() {
 		StringBuffer sql = new StringBuffer();
 		sql.append(
-				"SELECT THIRDSYSTEMUSERNO AS ID, USERNAME AS userName, CNNAME AS cnName FROM CORE_USERPROFILE WHERE ORGID = ?");
+				"SELECT THIRDSYSTEMUSERNO AS ID, USERNAME AS userName, CNNAME AS cnName FROM CORE_USERPROFILE WHERE ORGID = ? AND STATUS = 1");
 		return sql.toString();
 	}
 

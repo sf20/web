@@ -41,7 +41,7 @@ public class OuInfoDao extends GenericDaoImpl<OuInfoModel> {
 	@Override
 	public String generateGetAllByOrgIdSql() {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT DISTINCT OUCODE AS ID, OUNAME AS ouName FROM CORE_ORGOUINFO WHERE ORGID = ?");
+		sql.append("SELECT OUCODE AS ID, OUNAME AS ouName FROM CORE_ORGOUINFO WHERE ORGID = ? AND ISDELETED = 0");
 		return sql.toString();
 	}
 
