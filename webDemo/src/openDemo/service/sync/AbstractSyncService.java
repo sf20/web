@@ -53,11 +53,11 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 	// 请求同步接口的service
 	@Autowired
-	private SyncPositionService positionService;
+	protected SyncPositionService positionService;
 	@Autowired
-	private SyncOrgService orgService;
+	protected SyncOrgService orgService;
 	@Autowired
-	private SyncUserService userService;
+	protected SyncUserService userService;
 	// 用于存放请求获取到的数据的集合
 	private List<PositionModel> positionList = new LinkedList<PositionModel>();
 	private List<OuInfoModel> ouInfoList = new LinkedList<OuInfoModel>();
@@ -70,7 +70,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	// 全量增量区分
 	private String modeFull = "1";// 默认为1
 	private String modeUpdate = "2";// 默认为2
-	// 是否提供岗位id标志（客户未提供岗位数据或者提供了岗位数据但人员数据中关联的只有岗位名时需设置该值为false）
+	// 是否提供岗位id标志（客户提供的岗位数据中没有岗位id或者提供了包含岗位id的岗位数据但人员数据中关联的只有岗位名时需设置该值为false）
 	private boolean isPosIdProvided = true;// 默认为已提供
 	// 子类同步service的类名
 	private String syncServiceName;
@@ -96,7 +96,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 客户未提供岗位数据或者提供了岗位数据但人员数据中关联的只有岗位名时需设置该值为false
+	 * 客户提供的岗位数据中没有岗位id或者提供了包含岗位id的岗位数据但人员数据中关联的只有岗位名时需设置该值为false
 	 * 
 	 * @param isPosIdProvided
 	 */
@@ -176,7 +176,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 岗位同步
+	 * 岗位同步 如不用同步岗位数据需用空实现覆盖此方法
 	 * 
 	 * @param mode
 	 *            全量增量区分
@@ -600,7 +600,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 不同组织存在同岗位名时调用该方法获取组织名作为岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有组织id)
+	 * 不同组织存在同岗位名时调用该方法获取组织名作为岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有所属组织id)
 	 * 
 	 * @param orgId
 	 * @return
@@ -1007,6 +1007,33 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 */
 	protected void printLog(String type, String errKey, ResultEntity resultEntity) {
 		LOGGER.error(type + "ID：" + errKey + " 错误信息：" + resultEntity.getCode() + "-" + resultEntity.getMessage());
+	}
+
+	/**
+	 * 从数据库获取岗位数据
+	 */
+	protected List<PositionModel> getPositionsFromDB() throws SQLException {
+		// String sql = "SELECT DISTINCT POSITIONNO AS pNo, POSITIONNAME AS pNames FROM CORE_POSITIONINFO WHERE ORGID = ? AND INFOTYPE = 'Item' and ISDELETED = 0";
+
+		return null;// dbHelper.getBeanList(sql, PositionModel.class, apikey);
+	}
+
+	/**
+	 * 从数据库获取组织数据
+	 */
+	protected List<OuInfoModel> getOuInfoListFromDB() throws SQLException {
+		// String sql = "SELECT OUCODE AS ID, OUNAME AS ouName FROM CORE_ORGOUINFO WHERE ORGID = ? and ISDELETED = 0";
+
+		return null;// dbHelper.getBeanList(sql, OuInfoModel.class, apikey);
+	}
+
+	/**
+	 * 从数据库获取人员数据
+	 */
+	protected List<UserInfoModel> getUserInfoListFromDB() throws SQLException {
+		// String sql = "SELECT THIRDSYSTEMUSERNO AS ID, USERNAME AS userName, CNNAME AS cnName FROM CORE_USERPROFILE WHERE ORGID = ? AND STATUS = 1";
+
+		return null;// dbHelper.getBeanList(sql, UserInfoModel.class, apikey);
 	}
 
 	/**
