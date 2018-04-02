@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,24 +12,29 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import openDemo.dao.OuInfoDao;
+import openDemo.dao.UserInfoDao;
 import openDemo.entity.OuInfoModel;
-import openDemo.entity.PositionModel;
 import openDemo.entity.ResultEntity;
 import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.jrtt.ToutiaoOuInfoModel;
 import openDemo.entity.sync.jrtt.ToutiaoResJsonModel;
 import openDemo.entity.sync.jrtt.ToutiaoUserInfoModel;
-import openDemo.service.sync.AbstractSyncService;
+import openDemo.service.SyncOrgService;
+import openDemo.service.SyncPositionService;
+import openDemo.service.SyncUserService;
 
 /**
  * 今日头条同步Service
@@ -37,69 +43,47 @@ import openDemo.service.sync.AbstractSyncService;
  *
  */
 @Service
-public class JrttSyncService extends AbstractSyncService implements JrttConfig {
-	// 文件名标准
-	private static final String FILE_NAME_PREFIX_OUINFO = "department";
-	private static final String FILE_NAME_PREFIX_USERINFO = "employee";
+public class JrttSyncService {
+	// 文件名标准 1=商业化的数据 2=CQC的数据
+	private static final String FILE_NAME_PREFIX_OUINFO1 = "department.1";
+	private static final String FILE_NAME_PREFIX_OUINFO2 = "department.2";
+	private static final String FILE_NAME_PREFIX_USERINFO1 = "employee.1";
+	private static final String FILE_NAME_PREFIX_USERINFO2 = "employee.2";
 	// 字符集编码
 	private static final String CHARSET_UTF8 = "UTF-8";
+	// 自定义map的key
+	private static final String MAPKEY_USER_SYNC_ADD = "userSyncAdd";
+	private static final String MAPKEY_USER_SYNC_UPDATE = "userSyncUpdate";
+	private static final String MAPKEY_USER_SYNC_DISABLE = "userSyncDisable";
+	private static final String MAPKEY_ORG_SYNC_ADD = "orgSyncAdd";
+	private static final String MAPKEY_ORG_SYNC_UPDATE = "orgSyncUpdate";
+	private static final String MAPKEY_ORG_SYNC_DELETE = "orgSyncDelete";
+	// 请求同步接口成功返回码
+	private static final String SYNC_CODE_SUCCESS = "0";
+	// TODO 正式环境/测试环境切换
+	private static final String BASE_URL = "http://api.qida.yunxuetang.com.cn/";
 	// 记录日志
 	private static final Logger logger = LogManager.getLogger(JrttSyncService.class);
+
+	// 请求同步接口的service
+	@Autowired
+	protected SyncPositionService positionService;
+	@Autowired
+	protected SyncOrgService orgService;
+	@Autowired
+	protected SyncUserService userService;
 
 	private String syncServiceName;
 	// json解析对象
 	private ObjectMapper mapper;
 
 	public JrttSyncService() {
-		super.setApikey(apikey);
-		super.setSecretkey(secretkey);
-		super.setBaseUrl(baseUrl);
 		syncServiceName = this.getClass().getSimpleName();
-		super.setSyncServiceName(syncServiceName);
 
 		// 创建用于json反序列化的对象
 		mapper = new ObjectMapper();
 		// 忽略json中多余的属性字段
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	}
-
-	@Override
-	protected boolean isPosExpired(PositionModel pos) {
-		return false;
-	}
-
-	@Override
-	protected boolean isOrgExpired(OuInfoModel org) {
-		return false;
-	}
-
-	@Override
-	protected boolean isUserExpired(UserInfoModel user) {
-		return false;
-	}
-
-	@Override
-	protected void setRootOrgParentId(List<OuInfoModel> dataList) {
-		// 无需设置
-	}
-
-	@Override
-	protected void changePropValues(List<UserInfoModel> dataList) {
-	}
-
-	@Override
-	public List<OuInfoModel> getOuInfoModelList(String mode) throws Exception {
-		return null;
-	}
-
-	@Override
-	public List<PositionModel> getPositionModelList(String mode) throws Exception {
-		return null;
-	}
-
-	@Override
-	public List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
-		return null;
 	}
 
 	/**
@@ -127,13 +111,15 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 			// fileItem中封装的是上传文件
 			if (!fileItem.isFormField()) {
 				String fileName = fileItem.getName();
-				// 数据同步
-				if (fileName.contains(FILE_NAME_PREFIX_OUINFO)) {
-					// 组织同步 部门状态全为有效
+				// 商业化数据同步
+				if (fileName.contains(FILE_NAME_PREFIX_OUINFO1)) {
 					String jsonString = readJsonString(fileItem, CHARSET_UTF8, CHARSET_UTF8);
-					opOrgSync(null, false, parseJsonToOuInfoModelList(jsonString));
-
-					break;
+					opOrgSync(false, parseJsonToOuInfoModelList(jsonString), JrttConfig1.apikey, JrttConfig1.secretkey);
+				}
+				// CQC数据同步
+				else if (fileName.contains(FILE_NAME_PREFIX_OUINFO2)) {
+					String jsonString = readJsonString(fileItem, CHARSET_UTF8, CHARSET_UTF8);
+					opOrgSync(false, parseJsonToOuInfoModelList(jsonString), JrttConfig2.apikey, JrttConfig2.secretkey);
 				}
 			}
 		}
@@ -170,15 +156,17 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 			// fileItem中封装的是上传文件
 			if (!fileItem.isFormField()) {
 				String fileName = fileItem.getName();
-				// 数据同步
-				if (fileName.contains(FILE_NAME_PREFIX_USERINFO)) {
+				// 商业化数据同步
+				if (fileName.contains(FILE_NAME_PREFIX_USERINFO1)) {
 					String jsonString = readJsonString(fileItem, CHARSET_UTF8, CHARSET_UTF8);
 					List<UserInfoModel> ouInfoModelList = parseJsonToUserInfoModelList(jsonString);
-
-					// 人员同步 职工全为在职职工
-					opUserSync(null, true, ouInfoModelList);
-
-					break;
+					opUserSync(true, ouInfoModelList, JrttConfig1.apikey, JrttConfig1.secretkey);
+				}
+				// CQC数据同步
+				else if (fileName.contains(FILE_NAME_PREFIX_USERINFO2)) {
+					String jsonString = readJsonString(fileItem, CHARSET_UTF8, CHARSET_UTF8);
+					List<UserInfoModel> ouInfoModelList = parseJsonToUserInfoModelList(jsonString);
+					opUserSync(true, ouInfoModelList, JrttConfig2.apikey, JrttConfig2.secretkey);
 				}
 			}
 		}
@@ -203,6 +191,34 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 		List<ToutiaoUserInfoModel> employees = resJsonModel.getEmployees();
 
 		return copyCreateEntityList(employees, UserInfoModel.class);
+	}
+
+	/**
+	 * 通过复制属性值的方法将数据模型集合转换为同步用的对象集合
+	 * 
+	 * @param fromList
+	 *            数据模型集合
+	 * @param toListClassType
+	 *            复制目标对象的类型
+	 * @return 复制后的对象集合
+	 * @throws ReflectiveOperationException
+	 */
+	protected <E, T> List<T> copyCreateEntityList(List<E> fromList, Class<T> toListClassType)
+			throws ReflectiveOperationException {
+		List<T> entityList = null;
+
+		if (fromList != null) {
+			int listSize = fromList.size();
+			entityList = new ArrayList<T>(listSize);
+
+			for (int i = 0; i < listSize; i++) {
+				T instance = toListClassType.newInstance();
+				BeanUtils.copyProperties(instance, fromList.get(i));
+				entityList.add(instance);
+			}
+		}
+
+		return entityList;
 	}
 
 	/**
@@ -247,40 +263,53 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	/**
 	 * 组织同步
 	 * 
-	 * @param mode
-	 *            全量增量区分
 	 * @param isBaseInfo
 	 *            同步接口需传字段
 	 * @param dataList
+	 * @param apiKey
+	 * @param secretKey
 	 * @throws Exception
 	 */
-	private void opOrgSync(String mode, boolean isBaseInfo, List<OuInfoModel> dataList) throws Exception {
+	private void opOrgSync(boolean isBaseInfo, List<OuInfoModel> dataList, String apiKey, String secretKey)
+			throws Exception {
 		logger.info("组织同步[" + syncServiceName + "]Total Size: " + dataList.size());
 
 		// 将上级部门数据先进行同步
 		sortOrgList(dataList);
 
-		List<OuInfoModel> ouInfoListFromDB = getOuInfoListFromDB();
+		List<OuInfoModel> ouInfoListFromDB = getOuInfoListFromDB(apiKey);
 		Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoListFromDB, dataList);
 		List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
 		if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
-			syncDeleteOrgOneByOne(orgsToSyncDelete, true);
+			syncDeleteOrgOneByOne(orgsToSyncDelete, true, apiKey, secretKey);
 		}
 
 		List<OuInfoModel> orgsToSyncAdd = map.get(MAPKEY_ORG_SYNC_ADD);
 		if (orgsToSyncAdd != null && orgsToSyncAdd.size() > 0) {
 			// 进行多次同步（上级部门需要先同步进平台，否则同步会失败）
 			for (int i = 0; i < 3; i++) {
-				syncAddOrUpdateOrgOneByOne(orgsToSyncAdd, isBaseInfo);
+				syncAddOrUpdateOrgOneByOne(orgsToSyncAdd, isBaseInfo, apiKey, secretKey);
 			}
 		}
 
 		List<OuInfoModel> orgsToSyncUpdate = map.get(MAPKEY_ORG_SYNC_UPDATE);
 		if (orgsToSyncUpdate != null && orgsToSyncUpdate.size() > 0) {
-			syncAddOrUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
+			syncAddOrUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo, apiKey, secretKey);
 		}
 
 		ouInfoListFromDB = null;
+	}
+
+	/**
+	 * 从数据库获取组织数据
+	 * 
+	 * @param apiKey
+	 * @return
+	 * @throws SQLException
+	 */
+	protected List<OuInfoModel> getOuInfoListFromDB(String apiKey) throws SQLException {
+		OuInfoDao dao = new OuInfoDao();
+		return dao.getAllByOrgId(apiKey);
 	}
 
 	/**
@@ -338,14 +367,15 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	/**
 	 * 用户同步
 	 * 
-	 * @param mode
-	 *            全量增量区分
 	 * @param islink
 	 *            是否同步用户基本信息
 	 * @param dataList
+	 * @param apiKey
+	 * @param secretKey
 	 * @throws Exception
 	 */
-	private void opUserSync(String mode, boolean islink, List<UserInfoModel> dataList) throws Exception {
+	private void opUserSync(boolean islink, List<UserInfoModel> dataList, String apiKey, String secretKey)
+			throws Exception {
 		logger.info("用户同步[" + syncServiceName + "]Total Size: " + dataList.size());
 
 		// id作为用户登录名
@@ -354,24 +384,36 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 			tempModel.setUserName(tempModel.getID());
 		}
 
-		List<UserInfoModel> userInfoListFromDB = getUserInfoListFromDB();
+		List<UserInfoModel> userInfoListFromDB = getUserInfoListFromDB(apiKey);
 		Map<String, List<UserInfoModel>> map = compareUserList(userInfoListFromDB, dataList);
 		List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
 		if (usersToDisable != null && usersToDisable.size() > 0) {
-			syncDisableUserOneByOne(usersToDisable, true);
+			syncDisableUserOneByOne(usersToDisable, true, apiKey, secretKey);
 		}
 
 		List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
 		if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
-			syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink);
+			syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink, apiKey, secretKey);
 		}
 
 		List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
 		if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
-			syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
+			syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink, apiKey, secretKey);
 		}
 
 		userInfoListFromDB = null;
+	}
+
+	/**
+	 * 从数据库获取人员数据
+	 * 
+	 * @param apiKey
+	 * @return
+	 * @throws SQLException
+	 */
+	protected List<UserInfoModel> getUserInfoListFromDB(String apiKey) throws SQLException {
+		UserInfoDao dao = new UserInfoDao();
+		return dao.getAllByOrgId(apiKey);
 	}
 
 	/**
@@ -433,15 +475,15 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	 * @param orgsToSyncAddOrUpdate
 	 * @param isBaseInfo
 	 */
-	@Override
-	protected void syncAddOrUpdateOrgOneByOne(List<OuInfoModel> orgsToSyncAddOrUpdate, boolean isBaseInfo) {
+	protected void syncAddOrUpdateOrgOneByOne(List<OuInfoModel> orgsToSyncAddOrUpdate, boolean isBaseInfo,
+			String apikey, String secretkey) {
 		List<OuInfoModel> tempList = new ArrayList<OuInfoModel>();
 		ResultEntity resultEntity = null;
 		for (OuInfoModel org : orgsToSyncAddOrUpdate) {
 			tempList.add(org);
 
 			try {
-				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
+				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, BASE_URL);
 				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					printLog("组织同步[" + syncServiceName + "]失败 ", org.getOuName(), resultEntity);
 				}
@@ -459,15 +501,15 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	 * @param orgsToSyncDelete
 	 * @param ifPringLog
 	 */
-	@Override
-	protected void syncDeleteOrgOneByOne(List<OuInfoModel> orgsToSyncDelete, boolean ifPringLog) {
+	protected void syncDeleteOrgOneByOne(List<OuInfoModel> orgsToSyncDelete, boolean ifPringLog, String apikey,
+			String secretkey) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (OuInfoModel org : orgsToSyncDelete) {
 			tempList.add(org.getID());
 
 			try {
-				resultEntity = orgService.deleteous(tempList, apikey, secretkey, baseUrl);
+				resultEntity = orgService.deleteous(tempList, apikey, secretkey, BASE_URL);
 
 				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
@@ -489,20 +531,20 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	 * @param usersToSyncAddOrUpdate
 	 * @param islink
 	 */
-	@Override
-	protected void syncAddOrUpdateUserOneByOne(List<UserInfoModel> usersToSyncAddOrUpdate, boolean islink) {
+	protected void syncAddOrUpdateUserOneByOne(List<UserInfoModel> usersToSyncAddOrUpdate, boolean islink,
+			String apikey, String secretkey) {
 		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToSyncAddOrUpdate) {
 			tempList.add(user);
 
 			try {
-				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, BASE_URL);
 				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					// 忽略邮箱再同步一次
 					user.setMail(null);
 					tempList.set(0, user);
-					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, BASE_URL);
 					if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 						printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
 					}
@@ -521,8 +563,8 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	 * @param usersToDisable
 	 * @param ifPringLog
 	 */
-	@Override
-	protected void syncDisableUserOneByOne(List<UserInfoModel> usersToDisable, boolean ifPringLog) {
+	protected void syncDisableUserOneByOne(List<UserInfoModel> usersToDisable, boolean ifPringLog, String apikey,
+			String secretkey) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToDisable) {
@@ -535,7 +577,7 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 			tempList.add(userName);
 
 			try {
-				resultEntity = userService.disabledusersSync(tempList, apikey, secretkey, baseUrl);
+				resultEntity = userService.disabledusersSync(tempList, apikey, secretkey, BASE_URL);
 				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
 						printLog("用户同步[" + syncServiceName + "]禁用失败 ", user.getID(), resultEntity);
@@ -555,8 +597,8 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 	 * @param usersToDelete
 	 * @param ifPringLog
 	 */
-	@Override
-	protected void syncDeleteUserOneByOne(List<UserInfoModel> usersToDelete, boolean ifPringLog) {
+	protected void syncDeleteUserOneByOne(List<UserInfoModel> usersToDelete, boolean ifPringLog, String apikey,
+			String secretkey) {
 		List<String> tempList = new ArrayList<String>();
 		ResultEntity resultEntity = null;
 		for (UserInfoModel user : usersToDelete) {
@@ -569,7 +611,7 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 			tempList.add(userName);
 
 			try {
-				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, baseUrl);
+				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, BASE_URL);
 				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
 						printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
@@ -664,5 +706,16 @@ public class JrttSyncService extends AbstractSyncService implements JrttConfig {
 		}
 
 		return resultList;
+	}
+
+	/**
+	 * 同步返回错误信息日志记录
+	 * 
+	 * @param type
+	 * @param errKey
+	 * @param resultEntity
+	 */
+	protected void printLog(String type, String errKey, ResultEntity resultEntity) {
+		logger.error(type + "ID：" + errKey + " 错误信息：" + resultEntity.getCode() + "-" + resultEntity.getMessage());
 	}
 }
