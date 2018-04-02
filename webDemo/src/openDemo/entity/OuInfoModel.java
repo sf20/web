@@ -60,12 +60,17 @@ public class OuInfoModel {
 	 * 组织删除状态
 	 */
 	private String deleteStatus;
-	
+
 	/**
 	 * 部门主管的员工号 后期新增
 	 */
 	private String managerId;
-	
+
+	/**
+	 * 上级部门名称 后期新增
+	 */
+	private String parentOuName;
+
 	public String getID() {
 		return ID;
 	}
@@ -152,6 +157,14 @@ public class OuInfoModel {
 
 	public void setManagerId(String managerId) {
 		this.managerId = managerId;
+	}
+
+	public String getParentOuName() {
+		return parentOuName;
+	}
+
+	public void setParentOuName(String parentOuName) {
+		this.parentOuName = parentOuName;
 	}
 
 	@Override
