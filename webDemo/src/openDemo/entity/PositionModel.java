@@ -76,7 +76,7 @@ public class PositionModel {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((pNo == null) ? 0 : pNo.hashCode());
+		result = prime * result + ((pNo == null) ? 0 : pNo.toLowerCase().hashCode());
 		return result;
 	}
 
@@ -92,7 +92,7 @@ public class PositionModel {
 		if (pNo == null) {
 			if (other.pNo != null)
 				return false;
-		} else if (!pNo.equals(other.pNo))
+		} else if (!pNo.equalsIgnoreCase(other.pNo))
 			return false;
 		return true;
 	}

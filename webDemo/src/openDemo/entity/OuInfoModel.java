@@ -171,7 +171,7 @@ public class OuInfoModel {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ID == null) ? 0 : ID.hashCode());
+		result = prime * result + ((ID == null) ? 0 : ID.toLowerCase().hashCode());
 		return result;
 	}
 
@@ -187,7 +187,7 @@ public class OuInfoModel {
 		if (ID == null) {
 			if (other.ID != null)
 				return false;
-		} else if (!ID.equals(other.ID))
+		} else if (!ID.equalsIgnoreCase(other.ID))
 			return false;
 		return true;
 	}
