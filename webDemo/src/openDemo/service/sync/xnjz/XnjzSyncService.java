@@ -16,9 +16,9 @@ import net.sf.json.JSONObject;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
-import openDemo.entity.sync.xnjz.XnjzOuInfoModel;
-import openDemo.entity.sync.xnjz.XnjzPositionModel;
-import openDemo.entity.sync.xnjz.XnjzUserInfoModel;
+import openDemo.entity.sync.landray.LandrayOuInfoModel;
+import openDemo.entity.sync.landray.LandrayPositionModel;
+import openDemo.entity.sync.landray.LandrayUserInfoModel;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceLocator;
 import openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext;
@@ -107,7 +107,7 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 
 	@Override
 	protected List<OuInfoModel> getOuInfoModelList(String mode) throws java.lang.Exception {
-		List<XnjzOuInfoModel> dataModelList = getDataModelList(mode, XnjzOuInfoModel.class);
+		List<LandrayOuInfoModel> dataModelList = getDataModelList(mode, LandrayOuInfoModel.class);
 		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
 
 		return newList;
@@ -115,9 +115,9 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 
 	@Override
 	protected List<PositionModel> getPositionModelList(String mode) throws java.lang.Exception {
-		List<XnjzPositionModel> dataModelList = getDataModelList(mode, XnjzPositionModel.class);
+		List<LandrayPositionModel> dataModelList = getDataModelList(mode, LandrayPositionModel.class);
 		// 岗位数据存在同岗位名不同岗位id（不同部门存在相同岗位名） 将部门名称设置为岗位类别名
-		for (XnjzPositionModel pos : dataModelList) {
+		for (LandrayPositionModel pos : dataModelList) {
 			pos.setpNameClass(getPositionNameClassFromOrgs(pos.getOrgBelongsTo()));
 		}
 
@@ -128,9 +128,9 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 
 	@Override
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws java.lang.Exception {
-		List<XnjzUserInfoModel> dataModelList = getDataModelList(mode, XnjzUserInfoModel.class);
+		List<LandrayUserInfoModel> dataModelList = getDataModelList(mode, LandrayUserInfoModel.class);
 		// 设置岗位编号
-		for (XnjzUserInfoModel user : dataModelList) {
+		for (LandrayUserInfoModel user : dataModelList) {
 			String[] postionNoList = user.getPostionNoList();
 			if (postionNoList != null && postionNoList.length > 0) {
 				// 人员数据中有多个岗位的以第一个岗位为主岗
@@ -150,11 +150,11 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 
 		SysSynchroGetOrgInfoContext reqParam = new SysSynchroGetOrgInfoContext();
 		JSONObject type = new JSONObject();
-		if (classType.isAssignableFrom(XnjzOuInfoModel.class)) {
+		if (classType.isAssignableFrom(LandrayOuInfoModel.class)) {
 			type.put("type", "dept");
-		} else if (classType.isAssignableFrom(XnjzPositionModel.class)) {
+		} else if (classType.isAssignableFrom(LandrayPositionModel.class)) {
 			type.put("type", "post");
-		} else if (classType.isAssignableFrom(XnjzUserInfoModel.class)) {
+		} else if (classType.isAssignableFrom(LandrayUserInfoModel.class)) {
 			type.put("type", "person");
 		}
 		JSONArray paramJson = new JSONArray();
@@ -176,14 +176,14 @@ public class XnjzSyncService extends AbstractSyncService implements XnjzConfig {
 		}
 
 		List<T> list = null;
-		if (classType.isAssignableFrom(XnjzOuInfoModel.class)) {
-			list = mapper.readValue(message, new TypeReference<List<XnjzOuInfoModel>>() {
+		if (classType.isAssignableFrom(LandrayOuInfoModel.class)) {
+			list = mapper.readValue(message, new TypeReference<List<LandrayOuInfoModel>>() {
 			});
-		} else if (classType.isAssignableFrom(XnjzPositionModel.class)) {
-			list = mapper.readValue(message, new TypeReference<List<XnjzPositionModel>>() {
+		} else if (classType.isAssignableFrom(LandrayPositionModel.class)) {
+			list = mapper.readValue(message, new TypeReference<List<LandrayPositionModel>>() {
 			});
-		} else if (classType.isAssignableFrom(XnjzUserInfoModel.class)) {
-			list = mapper.readValue(message, new TypeReference<List<XnjzUserInfoModel>>() {
+		} else if (classType.isAssignableFrom(LandrayUserInfoModel.class)) {
+			list = mapper.readValue(message, new TypeReference<List<LandrayUserInfoModel>>() {
 			});
 		}
 
