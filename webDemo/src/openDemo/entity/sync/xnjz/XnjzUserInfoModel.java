@@ -34,6 +34,18 @@ public class XnjzUserInfoModel {
 	@JsonProperty("isAvailable")
 	private String status;
 
+	/**
+	 * 专业
+	 */
+	@JsonProperty("ou_spciality")
+	private String spare1;
+
+	/**
+	 * 聘任职称级别
+	 */
+	@JsonProperty("ou_engerpostion2")
+	private String spare2;
+
 	public String getID() {
 		return ID;
 	}
@@ -112,6 +124,22 @@ public class XnjzUserInfoModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getSpare1() {
+		return spare1;
+	}
+
+	public void setSpare1(String spare1) {
+		this.spare1 = spare1;
+	}
+
+	public String getSpare2() {
+		return spare2;
+	}
+
+	public void setSpare2(String spare2) {
+		this.spare2 = spare2;
 	}
 
 }
