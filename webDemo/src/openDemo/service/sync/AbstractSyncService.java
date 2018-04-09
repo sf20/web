@@ -758,7 +758,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 						ouInfoList.add(org);
 					}
 					// 设置部门主管
-					if (StringUtils.isNotBlank(org.getManagerId())) {
+					// 亿利数据同步部门数据有不需要同步的managerId字段
+					if (StringUtils.isNotBlank(org.getManagerId()) && !"ElionSyncService".equals(syncServiceName)) {
 						resultEntity = orgService.setManager(org.getManagerId(), org.getID(), false, apikey, secretkey,
 								baseUrl);
 						if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
