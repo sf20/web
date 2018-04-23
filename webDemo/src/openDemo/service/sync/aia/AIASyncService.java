@@ -131,9 +131,12 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 	 */
 	public void asyncProcess(List<FileItem> fileItems) {
 		try {
+			LOGGER.info("定时同步[" + syncServiceName + "]开始");
 			// 先同步人员 后同步组织
 			syncUserInfoDataFromFile(fileItems);
 			syncOuInfoDataFromFile(fileItems);
+
+			LOGGER.info("定时同步[" + syncServiceName + "]结束");
 		} catch (Exception e) {
 			logger.error("定时同步[" + syncServiceName + "]出现异常", e);
 		}
@@ -242,7 +245,8 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 
 		setRootOrgParentId(dataList);
 
-		Map<String, List<OuInfoModel>> map = compareOrgList(getOuInfoList(), dataList);
+		List<OuInfoModel> ouInfoListFromDB = getOuInfoListFromDB();
+		Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoListFromDB, dataList);
 		List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
 		if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
 			syncDeleteOrgOneByOne(orgsToSyncDelete, true);
@@ -260,6 +264,8 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 		if (orgsToSyncUpdate != null && orgsToSyncUpdate.size() > 0) {
 			syncAddOrUpdateOrgOneByOne(orgsToSyncUpdate, isBaseInfo);
 		}
+
+		ouInfoListFromDB = null;
 	}
 
 	/**
@@ -346,9 +352,10 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 		logger.info("用户同步[" + syncServiceName + "]Total Size: " + dataList.size());
 
 		changePropValues(dataList);
-		setPositionNoToUser(dataList);
+		setDBPositionNoToUser(dataList);
 
-		Map<String, List<UserInfoModel>> map = compareUserList(getUserInfoList(), dataList);
+		List<UserInfoModel> userInfoListFromDB = getUserInfoListFromDB();
+		Map<String, List<UserInfoModel>> map = compareUserList(userInfoListFromDB, dataList);
 		List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
 		if (usersToDisable != null && usersToDisable.size() > 0) {
 			// 此处直接删除
@@ -364,6 +371,8 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 		if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
 			syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
 		}
+
+		userInfoListFromDB = null;
 	}
 
 	/**

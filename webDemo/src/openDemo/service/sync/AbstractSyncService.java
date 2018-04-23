@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,10 +59,10 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected SyncOrgService orgService;
 	@Autowired
 	protected SyncUserService userService;
-	// 用于存放请求获取到的数据的集合
-	private List<PositionModel> positionList = new LinkedList<PositionModel>();
-	private List<OuInfoModel> ouInfoList = new LinkedList<OuInfoModel>();
-	private List<UserInfoModel> userInfoList = new LinkedList<UserInfoModel>();
+	// 用于存放数据库查询到的数据的集合
+	private List<PositionModel> positionListFromDB;
+	private List<OuInfoModel> ouInfoListFromDB;
+	private List<UserInfoModel> userInfoListFromDB;
 
 	// 参数配置
 	private String apikey;
@@ -115,18 +114,6 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		this.syncServiceName = syncServiceName;
 	}
 
-	public List<PositionModel> getPositionList() {
-		return positionList;
-	}
-
-	public List<OuInfoModel> getOuInfoList() {
-		return ouInfoList;
-	}
-
-	public List<UserInfoModel> getUserInfoList() {
-		return userInfoList;
-	}
-
 	@Override
 	public void execute() {
 		try {
@@ -143,7 +130,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 */
 	public void sync() throws Exception {
 		LOGGER.info("定时同步[" + syncServiceName + "]开始");
-		int orgCount = ouInfoList.size();
+		ouInfoListFromDB = getOuInfoListFromDB();
+		int orgCount = ouInfoListFromDB.size();
 		if (orgCount > 0) {
 			// 组织增量同步
 			opOrgSync(modeUpdate, false);
@@ -152,7 +140,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// opOrgSync(modeFull, false);
 		}
 
-		int posCount = positionList.size();
+		positionListFromDB = getPositionsFromDB();
+		int posCount = positionListFromDB.size();
 		if (posCount > 0) {
 			// 岗位增量同步
 			opPosSync(modeUpdate);
@@ -161,7 +150,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// opPosSync(modeFull);
 		}
 
-		int userCount = userInfoList.size();
+		userInfoListFromDB = getUserInfoListFromDB();
+		int userCount = userInfoListFromDB.size();
 		if (userCount > 0) {
 			// 用户增量同步
 			opUserSync(modeUpdate, true);
@@ -170,11 +160,11 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			// opUserSync(modeFull, true);
 		}
 		LOGGER.info("定时同步[" + syncServiceName + "]结束");
-		// TODO to delete
-		LOGGER.info("同步后组织size:" + ouInfoList.size());
-		LOGGER.info("同步后岗位size:" + positionList.size());
-		LOGGER.info("同步后人员size:" + userInfoList.size());
-		LOGGER.info("同步service类名:" + syncServiceName);
+
+		// 释放内存
+		ouInfoListFromDB = null;
+		positionListFromDB = null;
+		userInfoListFromDB = null;
 	}
 
 	/**
@@ -206,9 +196,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		else {
 			Map<String, List<PositionModel>> map = null;
 			if (isPosIdProvided) {
-				map = comparePosList1(positionList, newList);
+				map = comparePosList1(positionListFromDB, newList);
 			} else {
-				map = comparePosList2(positionList, newList);
+				map = comparePosList2(positionListFromDB, newList);
 			}
 
 			List<PositionModel> posToSyncAdd = map.get(MAPKEY_POS_SYNC_ADD);
@@ -256,7 +246,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		}
 		// 增量模式
 		else {
-			Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoList, newList);
+			Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoListFromDB, newList);
 
 			List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
 			if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
@@ -309,7 +299,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		// 增量模式
 		else {
 			// 与增量list进行比较
-			Map<String, List<UserInfoModel>> map = compareUserList(userInfoList, newList);
+			Map<String, List<UserInfoModel>> map = compareUserList(userInfoListFromDB, newList);
 
 			List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
 			if (usersToDisable != null && usersToDisable.size() > 0) {
@@ -551,7 +541,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			String pNameInUser = user.getPostionName();
 
 			if (pNameInUser != null) {
-				for (PositionModel pos : positionList) {
+				for (PositionModel pos : positionListFromDB) {
 					// 根据岗位名(不带岗位类别)进行查找
 					if (pNameInUser.equals(getPositionName(pos.getpNames()))) {
 						user.setPostionNo(pos.getpNo());
@@ -560,6 +550,33 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 关联数据库岗位编号到用户（人员数据中只有岗位名没有岗位id数据）
+	 * 
+	 * @param newList
+	 * @throws SQLException
+	 */
+	protected void setDBPositionNoToUser(List<UserInfoModel> newList) throws SQLException {
+		// 获取数据库岗位数据
+		List<PositionModel> positionListDB = getPositionsFromDB();
+
+		for (UserInfoModel user : newList) {
+			String pNameInUser = user.getPostionName();
+
+			if (pNameInUser != null) {
+				for (PositionModel pos : positionListDB) {
+					// 根据岗位名(不带岗位类别)进行查找
+					if (pNameInUser.equals(pos.getpNames())) {
+						user.setPostionNo(pos.getpNo());
+						break;
+					}
+				}
+			}
+		}
+
+		positionListDB = null;
 	}
 
 	/**
@@ -610,7 +627,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected String getPositionNameClassFromOrgs(String orgId) {
 		String pNameClass = null;
 		if (orgId != null) {
-			for (OuInfoModel org : ouInfoList) {
+			for (OuInfoModel org : ouInfoListFromDB) {
 				if (orgId.equals(org.getID())) {
 					pNameClass = org.getOuName();
 					break;
@@ -695,9 +712,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			try {
 				resultEntity = positionService.syncPos(tempList, apikey, secretkey, baseUrl);
 
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					positionList.add(pos);
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					printLog("岗位同步[" + syncServiceName + "]新增失败 ", pos.getpNames(), resultEntity);
 				}
 			} catch (IOException e) {
@@ -721,10 +736,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 				resultEntity = positionService.changePosName(pos.getpNo(), getPositionName(pos.getpNames()), apikey,
 						secretkey, baseUrl);
 
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					positionList.remove(pos);
-					positionList.add(pos);
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					printLog("岗位同步[" + syncServiceName + "]更新失败 ", pos.getpNames(), resultEntity);
 				}
 			} catch (IOException e) {
@@ -749,21 +761,14 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			try {
 				resultEntity = orgService.ous(isBaseInfo, tempList, apikey, secretkey, baseUrl);
 				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					if (!ouInfoList.contains(org)) {
-						// 同步新增场合
-						ouInfoList.add(org);
-					} else {
-						// 同步更新场合
-						ouInfoList.remove(org);
-						ouInfoList.add(org);
-					}
 					// 设置部门主管
+					String managerId = org.getManagerId();
 					// 亿利数据同步部门数据有不需要同步的managerId字段
-					if (StringUtils.isNotBlank(org.getManagerId()) && !"ElionSyncService".equals(syncServiceName)) {
-						resultEntity = orgService.setManager(org.getManagerId(), org.getID(), false, apikey, secretkey,
+					if (StringUtils.isNotBlank(managerId) && !"ElionSyncService".equals(syncServiceName)) {
+						resultEntity = orgService.setManager(managerId, org.getID(), false, apikey, secretkey,
 								baseUrl);
 						if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-							printLog("设置部门主管[" + syncServiceName + "]失败 ", org.getOuName(), resultEntity);
+							printLog("设置部门主管[" + syncServiceName + "]失败 ", org.getOuName() + managerId, resultEntity);
 						}
 					}
 				} else {
@@ -792,9 +797,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			try {
 				resultEntity = orgService.deleteous(tempList, apikey, secretkey, baseUrl);
 
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					ouInfoList.remove(org);
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
 						printLog("组织同步[" + syncServiceName + "]删除失败 ", org.getOuName(), resultEntity);
 					}
@@ -822,31 +825,12 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 			try {
 				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					if (!userInfoList.contains(user)) {
-						// 同步新增场合
-						userInfoList.add(user);
-					} else {
-						// 同步更新场合
-						userInfoList.remove(user);
-						userInfoList.add(user);
-					}
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					// 忽略邮箱再同步一次
 					user.setMail(null);
 					tempList.set(0, user);
 					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
-					if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-						if (!userInfoList.contains(user)) {
-							// 同步新增场合
-							userInfoList.add(user);
-						} else {
-							// 同步更新场合
-							userInfoList.remove(user);
-							userInfoList.add(user);
-						}
-						// logger.warn("该用户邮箱异常未同步：" + user.getID());
-					} else {
+					if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 						printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
 					}
 				}
@@ -878,9 +862,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 			try {
 				resultEntity = userService.disabledusersSync(tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					userInfoList.remove(user);
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
 						printLog("用户同步[" + syncServiceName + "]禁用失败 ", user.getID(), resultEntity);
 					}
@@ -913,9 +895,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 			try {
 				resultEntity = userService.deletedusersSync(tempList, apikey, secretkey, baseUrl);
-				if (SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
-					userInfoList.remove(user);
-				} else {
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
 					if (ifPringLog) {
 						printLog("用户同步[" + syncServiceName + "]删除失败 ", user.getID(), resultEntity);
 					}
