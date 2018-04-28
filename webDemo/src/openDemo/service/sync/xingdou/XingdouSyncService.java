@@ -186,4 +186,12 @@ public class XingdouSyncService extends AbstractSyncService implements XingdouCo
 		return sharedModelList;
 	}
 
+	public static void main(String[] args) throws Exception {
+		XingdouSyncService service = new XingdouSyncService();
+		List<PositionModel> positionModelList = service.getPositionModelList(null);
+		System.out.println(positionModelList.size());
+		
+		service.getOuInfoModelList(null);
+		service.getUserInfoModelList(null);
+	}
 }
