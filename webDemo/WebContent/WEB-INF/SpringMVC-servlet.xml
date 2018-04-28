@@ -16,7 +16,9 @@
 	<mvc:annotation-driven />
 
 	<!-- 设置使用注解的类所在的jar包 -->
-	<context:component-scan base-package="openDemo.controller" />
+	<context:component-scan base-package="openDemo">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
 
 	<!-- 配置视图解析器：如何把handler方法返回值解析为实际的物理试图 -->
 	<bean
