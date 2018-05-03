@@ -152,7 +152,8 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 		userInfoListFromDB = getUserInfoListFromDB();
 		int userCount = userInfoListFromDB.size();
-		if (userCount > 0) {
+		// 用户表数据默认有3条员工数据
+		if (userCount > 3) {
 			// 用户增量同步
 			opUserSync(modeUpdate, true);
 		} else {
@@ -973,7 +974,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * @param date
 	 * @return
 	 */
-	protected static Date getYesterdayDate(Date date) {
+	protected Date getYesterdayDate(Date date) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		// 修改为返回三天前的日期，防止出现异常造成单日数据漏同步
