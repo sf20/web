@@ -60,9 +60,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	@Autowired
 	protected SyncUserService userService;
 	// 用于存放数据库查询到的数据的集合
-	private List<PositionModel> positionListFromDB;
-	private List<OuInfoModel> ouInfoListFromDB;
-	private List<UserInfoModel> userInfoListFromDB;
+	private List<PositionModel> positionListFromDB = new ArrayList<>();
+	private List<OuInfoModel> ouInfoListFromDB = new ArrayList<>();
+	private List<UserInfoModel> userInfoListFromDB = new ArrayList<>();
 
 	// 参数配置
 	private String apikey;
