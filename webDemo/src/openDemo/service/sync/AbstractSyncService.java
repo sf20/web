@@ -624,8 +624,14 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 
 	 * @param orgId
 	 * @return
+	 * @throws SQLException
 	 */
-	protected String getPositionNameClassFromOrgs(String orgId) {
+	protected String getPositionNameClassFromOrgs(String orgId) throws SQLException {
+		// 首次同步ouInfoListFromDB为空的情况
+		if (ouInfoListFromDB.size() == 0) {
+			// 重新从数据库获取部门数据
+			ouInfoListFromDB = getOuInfoListFromDB();
+		}
 		String pNameClass = null;
 		if (orgId != null) {
 			for (OuInfoModel org : ouInfoListFromDB) {
