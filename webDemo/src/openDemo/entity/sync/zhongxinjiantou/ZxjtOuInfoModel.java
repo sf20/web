@@ -7,6 +7,8 @@ public class ZxjtOuInfoModel {
 	private String parentID;
 	private String ouName;
 	private String status;
+	private String orgSortNo;
+	private int orderIndex;
 
 	@XmlElement(name = "orgid")
 	public String getID() {
@@ -44,4 +46,20 @@ public class ZxjtOuInfoModel {
 		this.status = status;
 	}
 
+	@XmlElement(name = "orgsortno")
+	public String getOrgSortNo() {
+		return orgSortNo;
+	}
+
+	public void setOrgSortNo(String orgSortNo) {
+		this.orgSortNo = orgSortNo;
+	}
+
+	public int getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(int orderIndex) {
+		this.orderIndex = orderIndex;
+	}
 }

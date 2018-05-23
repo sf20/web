@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -138,11 +139,21 @@ public class ZxjtSyncService extends AbstractSyncService implements ZxjtConfig {
 	@Override
 	protected List<OuInfoModel> getOuInfoModelList(String mode) throws java.lang.Exception {
 		String token = getReqToken();
-		
+
 		List<ZxjtOuInfoModel> dataModelList = getOuInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE, REQUEST_PARAM_STATUS_1);
+		// 设置部门排序
+		for (ZxjtOuInfoModel ouInfoModel : dataModelList) {
+			String orgSortNo = ouInfoModel.getOrgSortNo();
+			if (StringUtils.isNotBlank(orgSortNo)) {
+				String[] splits = orgSortNo.split("/");
+				// 取最后的值
+				ouInfoModel.setOrderIndex(Integer.parseInt(splits[splits.length - 1]));
+			}
+		}
+
 		List<ZxjtOuInfoModel> templList = getOuInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE, REQUEST_PARAM_STATUS_0);
 		dataModelList.addAll(templList);
-		
+
 		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
 
 		return newList;
@@ -181,6 +192,8 @@ LOGGER.debug(dataModelList.size());
 //		List<ZxjtUserInfoModel> tempList = getUserInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE_USER, REQUEST_PARAM_STATUS_0);
 //		dataModelList.addAll(tempList);
 		
+		// 人员排序
+		Collections.sort(dataModelList);
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
 
 		return newList;

@@ -2,7 +2,7 @@ package openDemo.entity.sync.zhongxinjiantou;
 
 import javax.xml.bind.annotation.XmlElement;
 
-public class ZxjtUserInfoModel {
+public class ZxjtUserInfoModel implements Comparable<ZxjtUserInfoModel>{
 	private String ID;
 	private String userName;
 	private String cnName;
@@ -13,6 +13,8 @@ public class ZxjtUserInfoModel {
 	private String mail;
 	private String entryTime;
 	private String status;
+	// 用户顺序
+	private int weightSeq;
 
 	@XmlElement(name = "employeeid")
 	public String getID() {
@@ -105,4 +107,19 @@ public class ZxjtUserInfoModel {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	@XmlElement(name = "weightseq")
+	public int getWeightSeq() {
+		return weightSeq;
+	}
+
+	public void setWeightSeq(int weightSeq) {
+		this.weightSeq = weightSeq;
+	}
+
+	@Override
+	public int compareTo(ZxjtUserInfoModel o) {
+		return this.weightSeq - o.getWeightSeq();
+	}
+
 }
