@@ -70,9 +70,9 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 	private static String EMP_FULLSYNC_SOAP_ACTION = "EL_INT_PER_FULLSYNC_OP.v1";
 	private static String EMP_FULLSYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_PER_FULLSYNC_RES.V1";
 	// 人员增量同步参数
-	private static String EMP_SYNC_OPERATION_NAME = "EL_INT_PER_SYNC_OP";
-	private static String EMP_SYNC_SOAP_ACTION = "EL_INT_PER_SYNC_OP.v1";
-	private static String EMP_SYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_PER_SYNC_RES.V1";
+	//	private static String EMP_SYNC_OPERATION_NAME = "EL_INT_PER_SYNC_OP";
+	//	private static String EMP_SYNC_SOAP_ACTION = "EL_INT_PER_SYNC_OP.v1";
+	//	private static String EMP_SYNC_RES_ELEMENT_NAMASPACE = "http://xmlns.oracle.com/Enterprise/Tools/schemas/EL_INT_PER_SYNC_RES.V1";
 	// 请求数据参数
 	private static final String DATA_SOURCE_ESB = "99";
 	private static final String DATA_FROM_INDEX = "1";
@@ -168,8 +168,13 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 						EMP_FULLSYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
 						EL_INT_PER_SYNC_RES.class);
 			} else {
-				setPropsBeforeCall(mode, call, EMP_SYNC_SOAP_ACTION, EMP_SYNC_OPERATION_NAME,
-						EMP_SYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+				// setPropsBeforeCall(mode, call, EMP_SYNC_SOAP_ACTION, EMP_SYNC_OPERATION_NAME,
+				// 		EMP_SYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
+				// 		EL_INT_PER_SYNC_RES.class);
+
+				// 获取增量数据接口无效  增量场合改为获取全量数据进行同步
+				setPropsBeforeCall(mode, call, EMP_FULLSYNC_SOAP_ACTION, EMP_FULLSYNC_OPERATION_NAME,
+						EMP_FULLSYNC_RES_ELEMENT_NAMASPACE, EL_INT_COMMON_SYNC_REQ_TypeShape.class,
 						EL_INT_PER_SYNC_RES.class);
 			}
 
@@ -407,7 +412,8 @@ public class ElionSyncService extends AbstractSyncService implements ElionConfig
 
 	@Override
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
-		List<EL_INT_PER_SYNC_RESLine> modelList = getDataModelList(mode, EL_INT_PER_SYNC_RESLine.class);
+		// 人员获取数据没有增量 全部走全量
+		List<EL_INT_PER_SYNC_RESLine> modelList = getDataModelList(MODE_FULL, EL_INT_PER_SYNC_RESLine.class);
 
 		List<UserInfoModel> newList = copyCreateEntityList(modelList, UserInfoModel.class);
 
