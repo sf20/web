@@ -119,7 +119,12 @@ public class ZxjtUserInfoModel implements Comparable<ZxjtUserInfoModel>{
 
 	@Override
 	public int compareTo(ZxjtUserInfoModel o) {
-		return this.weightSeq - o.getWeightSeq();
+		// 用户顺序相同时比较员工编号
+		if (this.weightSeq - o.getWeightSeq() == 0) {
+			return this.ID.compareTo(o.getID());
+		} else {
+			return this.weightSeq - o.getWeightSeq();
+		}
 	}
 
 }
