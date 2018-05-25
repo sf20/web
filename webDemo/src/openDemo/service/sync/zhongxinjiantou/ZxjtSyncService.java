@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import openDemo.common.SslNativeRequestUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
@@ -36,6 +35,7 @@ import openDemo.entity.sync.zhongxinjiantou.ZxjtOuInfoModel;
 import openDemo.entity.sync.zhongxinjiantou.ZxjtPositionModel;
 import openDemo.entity.sync.zhongxinjiantou.ZxjtUserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
+import openDemo.utils.HttpClientUtil4Sync;
 
 @Service
 public class ZxjtSyncService extends AbstractSyncService implements ZxjtConfig {
@@ -45,6 +45,7 @@ public class ZxjtSyncService extends AbstractSyncService implements ZxjtConfig {
 	
 	// 客户接口及参数
 	private static final String REQUEST_URL = "https://emsbdmz.csc.com.cn/httphub";
+	private static final String REQUEST_PROTOCOL = "SSL";
 	private static final String REQUEST_CODE_OK = "100";
 	private static final int REQUEST_PARAM_PAGESIZE = 10000;
 	private static final int REQUEST_PARAM_PAGESIZE_USER = 2000;
@@ -228,7 +229,7 @@ LOGGER.debug(dataModelList.size());
 		.append("]]></XMLDATA>")
 		.append("</ESBREQ>");
 
-		String response = SslNativeRequestUtil.postRequest(REQUEST_URL, xmlStr.toString());
+		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
 
 		// xml解析为java对象
 		ResXML resXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
@@ -277,7 +278,7 @@ System.out.println(token);
 		.append("</XMLDATA>")
 		.append("</ESBREQ>");
 
-		String response = SslNativeRequestUtil.postRequest(REQUEST_URL, xmlStr.toString());
+		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
 		
 		ResXML resDeptXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
 				.unmarshal(new StringReader(response));
@@ -320,7 +321,7 @@ System.out.println("TotalCount:" + resDeptData.getTotalCount());
 		.append("</XMLDATA>")
 		.append("</ESBREQ>");
 
-		String response = SslNativeRequestUtil.postRequest(REQUEST_URL, xmlStr.toString());
+		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
 		
 		ResXML resPosXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
 				.unmarshal(new StringReader(response));
@@ -363,7 +364,7 @@ System.out.println("TotalCount:" + resPosData.getTotalCount());
 		.append("</XMLDATA>")
 		.append("</ESBREQ>");
 
-		String response = SslNativeRequestUtil.postRequest(REQUEST_URL, xmlStr.toString());
+		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
 		
 		ResXML resPosXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
 				.unmarshal(new StringReader(response));
@@ -414,7 +415,7 @@ System.out.println("TotalCount1:" + resUserInfoData.getTotalCount());
 		.append("</XMLDATA>")
 		.append("</ESBREQ>");
 
-		String response = SslNativeRequestUtil.postRequest(REQUEST_URL, xmlStr.toString());
+		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
 		// xml非法字符替换
 		response = response.replace("&", "&amp;");
 		
@@ -453,17 +454,15 @@ System.out.println("TotalCount2:" + resUserInfoData.getTotalCount());
 //		List<PositionModel> resPosData = service.getPositionModelList(MODE_FULL);
 //		System.out.println(resPosData.size());
 //		for (PositionModel model : resPosData) {
-//			System.out.println(model.getpNo() + "--" + model.getpNames() + "--" + model.getpNameClass() + "--"
-//					+ model.getStatus());
+//			System.out.println("职级ID:" + model.getpNo() + "--" + "职级名称:" + model.getpNames());
 //		}
 		
 //		List<UserInfoModel> resEmpData = service.getUserInfoModelList(MODE_FULL);
 //		System.out.println(resEmpData.size());
-//		for (int i = 10010; i < 10110; i++) {
+//		for (int i = resEmpData.size() - 20; i < resEmpData.size(); i++) {
 //			UserInfoModel model = resEmpData.get(i);
-//			System.out.println(model.getID() + "--" + model.getCnName() + "--" + model.getSex() + "--"
-//					+ model.getMobile() + "--" + model.getMail() + "--" + model.getOrgOuCode() + "--"
-//					+ model.getPostionNo() + "--" + model.getEntryTime() + "--" + model.getStatus());
+//			System.out.println("员工工号:" + model.getID() + "--" + "姓名:" + model.getCnName() + "--" + "邮箱:" + model.getMail()
+//					+ "--" + "直属机构代码:" + model.getOrgOuCode() + "--" + "职级:" + model.getPostionNo());
 //		}
 //		for (UserInfoModel model : resEmpData) {
 //			System.out.println(model.getID() + "--" + model.getCnName() + "--" + model.getSex() + "--"
