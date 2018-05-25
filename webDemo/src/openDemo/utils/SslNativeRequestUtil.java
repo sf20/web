@@ -1,4 +1,4 @@
-package openDemo.common;
+package openDemo.utils;
 
 import java.io.OutputStreamWriter;
 import java.net.URL;
