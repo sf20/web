@@ -189,15 +189,74 @@ LOGGER.debug(dataModelList.size());
 				}
 			}
 		}
-		// 离职员工
-//		List<ZxjtUserInfoModel> tempList = getUserInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE_USER, REQUEST_PARAM_STATUS_0);
-//		dataModelList.addAll(tempList);
 		
 		// 人员排序
 		Collections.sort(dataModelList);
+		// 同员工岗位以总部最高职级为准
+		for (ZxjtUserInfoModel user : dataModelList) {
+			String cnName = user.getCnName();
+			if (StringUtils.isNotBlank(cnName)) {
+				for (ZxjtUserInfoModel tempUser : dataModelList) {
+					// 名字相同的员工账号
+					if (cnName.equals(tempUser.getCnName())) {
+						String tempRank = tempUser.getPostionNo();
+						if (StringUtils.isBlank(tempRank)) {
+							continue;
+						}
+						// 每次用最高职级进行比较
+						user.setPostionNo(compareGetHigherRank(user.getPostionNo(), tempRank));
+					}
+				}
+			}
+		}
+		
+		// 离职员工
+		List<ZxjtUserInfoModel> tempList = getUserInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE_USER, REQUEST_PARAM_STATUS_0);
+		dataModelList.addAll(0, tempList);
+		
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
 
 		return newList;
+	}
+
+	/**
+	 * 同员工岗位以总部最高职级为准
+	 * 
+	 * @param rank
+	 * @param tempRank
+	 * @return
+	 */
+	private String compareGetHigherRank(String rank, String tempRank) {
+		// 默认职级为空 职级id最大
+		int higherRank = Integer.MAX_VALUE;
+		int rankVal = Integer.MAX_VALUE;
+		int tempRankVal = Integer.MAX_VALUE;
+		if (StringUtils.isNotBlank(rank)) {
+			rankVal = Integer.parseInt(rank);
+			// 排除职级名称：无的职级ID为1的干扰
+			if (rankVal == 1) {
+				// 职级名称为无的职级id设置为比职级为空的小
+				rankVal = Short.MAX_VALUE;
+			}
+		}
+		if (StringUtils.isNotBlank(tempRank)) {
+			tempRankVal = Integer.parseInt(tempRank);
+			// 排除职级名称：无的职级ID为1的干扰
+			if (tempRankVal == 1) {
+				// 职级名称为无的职级id设置为比职级为空的小
+				tempRankVal = Short.MAX_VALUE;
+			}
+		}
+
+		// 职级id越小越大
+		higherRank = rankVal < tempRankVal ? rankVal : tempRankVal;
+		if (higherRank == Integer.MAX_VALUE) {
+			return null;
+		} else if (higherRank == Short.MAX_VALUE) {
+			return "1";
+		} else {
+			return String.valueOf(higherRank);
+		}
 	}
 
 	/**
