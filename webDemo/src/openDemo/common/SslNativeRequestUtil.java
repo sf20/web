@@ -17,7 +17,8 @@ import org.apache.commons.io.IOUtils;
 
 public class SslNativeRequestUtil {
 	private static final int TIME_OUT = 5000;
-	
+	private static final String CHARSET_UTF8 = "UTF-8";
+
 	public static String getRequest(String urlAddress) throws Exception {
 		URL url = new URL(urlAddress);
 		if ("https".equalsIgnoreCase(url.getProtocol())) {
@@ -26,7 +27,7 @@ public class SslNativeRequestUtil {
 		URLConnection conn = url.openConnection();
 		conn.setConnectTimeout(TIME_OUT);
 		conn.setReadTimeout(TIME_OUT);
-		return IOUtils.toString(conn.getInputStream());
+		return IOUtils.toString(conn.getInputStream(), CHARSET_UTF8);
 	}
 
 	public static String postRequest(String urlAddress, String params) throws Exception {
@@ -39,12 +40,11 @@ public class SslNativeRequestUtil {
 		conn.setDoOutput(true);
 		conn.setConnectTimeout(TIME_OUT);
 		conn.setReadTimeout(TIME_OUT);
-		OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+		OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream(), CHARSET_UTF8);
 		osw.write(params);
 		osw.flush();
 		osw.close();
-		conn.getOutputStream();
-		return IOUtils.toString(conn.getInputStream());
+		return IOUtils.toString(conn.getInputStream(), CHARSET_UTF8);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class SslNativeRequestUtil {
 	 * 
 	 * @throws Exception
 	 */
-	public static void ignoreSsl() throws Exception {
+	private static void ignoreSsl() throws Exception {
 		HostnameVerifier hv = new HostnameVerifier() {
 			public boolean verify(String urlHostName, SSLSession session) {
 				return true;
@@ -64,36 +64,25 @@ public class SslNativeRequestUtil {
 
 	private static void trustAllHttpsCertificates() throws Exception {
 		TrustManager[] trustAllCerts = new TrustManager[1];
-		TrustManager tm = new miTM();
+		TrustManager tm = new X509TrustManager() {
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+			}
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+		};
 		trustAllCerts[0] = tm;
 		SSLContext sc = SSLContext.getInstance("SSL");
 		sc.init(null, trustAllCerts, null);
 		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	}
-
-	static class miTM implements TrustManager, X509TrustManager {
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			return null;
-		}
-
-		public boolean isServerTrusted(X509Certificate[] certs) {
-			return true;
-		}
-
-		public boolean isClientTrusted(X509Certificate[] certs) {
-			return true;
-		}
-
-		@Override
-		public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-			return;
-		}
-
-		@Override
-		public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-			return;
-		}
 	}
 
 }
