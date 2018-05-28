@@ -8,7 +8,7 @@ public class ZxjtPositionModel {
 	private String pNameClass;
 	private String status;
 
-	@XmlElement(name = "rankid")
+	@XmlElement(name = "ranklevel")
 	public String getpNo() {
 		return pNo;
 	}

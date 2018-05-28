@@ -193,22 +193,22 @@ LOGGER.debug(dataModelList.size());
 		// 人员排序
 		Collections.sort(dataModelList);
 		// 同员工岗位以总部最高职级为准
-		for (ZxjtUserInfoModel user : dataModelList) {
-			String cnName = user.getCnName();
-			if (StringUtils.isNotBlank(cnName)) {
-				for (ZxjtUserInfoModel tempUser : dataModelList) {
-					// 名字相同的员工账号
-					if (cnName.equals(tempUser.getCnName())) {
-						String tempRank = tempUser.getPostionNo();
-						if (StringUtils.isBlank(tempRank)) {
-							continue;
-						}
-						// 每次用最高职级进行比较
-						user.setPostionNo(compareGetHigherRank(user.getPostionNo(), tempRank));
-					}
-				}
-			}
-		}
+//		for (ZxjtUserInfoModel user : dataModelList) {
+//			String cnName = user.getCnName();
+//			if (StringUtils.isNotBlank(cnName)) {
+//				for (ZxjtUserInfoModel tempUser : dataModelList) {
+//					// 名字相同的员工账号
+//					if (cnName.equals(tempUser.getCnName())) {
+//						String tempRank = tempUser.getPostionNo();
+//						if (StringUtils.isBlank(tempRank)) {
+//							continue;
+//						}
+//						// 每次用最高职级进行比较
+//						user.setPostionNo(compareGetHigherRank(user.getPostionNo(), tempRank));
+//					}
+//				}
+//			}
+//		}
 		
 		// 离职员工
 		List<ZxjtUserInfoModel> tempList = getUserInfoModelList(token, 1, REQUEST_PARAM_PAGESIZE_USER, REQUEST_PARAM_STATUS_0);
@@ -226,6 +226,7 @@ LOGGER.debug(dataModelList.size());
 	 * @param tempRank
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private String compareGetHigherRank(String rank, String tempRank) {
 		// 默认职级为空 职级id最大
 		int higherRank = Integer.MAX_VALUE;
