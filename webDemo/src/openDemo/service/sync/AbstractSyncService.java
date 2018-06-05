@@ -295,7 +295,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			}
 
 			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
-			syncAddOrUpdateUserOneByOne(newList, islink);
+			syncAddUserOneByOne(newList, islink);
 		}
 		// 增量模式
 		else {
@@ -309,12 +309,12 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 			List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
 			if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
-				syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink);
+				syncAddUserOneByOne(usersToSyncAdd, islink);
 			}
 
 			List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
 			if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
-				syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
+				syncUpdateUserOneByOne(usersToSyncUpdate, islink);
 			}
 		}
 
@@ -819,15 +819,25 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 逐个用户同步新增/更新
+	 * 逐个用户同步新增
 	 * 
-	 * @param usersToSyncAddOrUpdate
+	 * @param usersToSyncAdd
 	 * @param islink
 	 */
-	protected void syncAddOrUpdateUserOneByOne(List<UserInfoModel> usersToSyncAddOrUpdate, boolean islink) {
+	protected void syncAddUserOneByOne(List<UserInfoModel> usersToSyncAdd, boolean islink) {
+		syncUpdateUserOneByOne(usersToSyncAdd, islink);
+	}
+	
+	/**
+	 * 逐个用户同步更新
+	 * 
+	 * @param usersToSyncUpdate
+	 * @param islink
+	 */
+	protected void syncUpdateUserOneByOne(List<UserInfoModel> usersToSyncUpdate, boolean islink) {
 		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
 		ResultEntity resultEntity = null;
-		for (UserInfoModel user : usersToSyncAddOrUpdate) {
+		for (UserInfoModel user : usersToSyncUpdate) {
 			tempList.add(user);
 
 			try {

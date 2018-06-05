@@ -24,6 +24,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
+import openDemo.entity.ResultEntity;
 import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.zhongxinjiantou.ResHeader;
 import openDemo.entity.sync.zhongxinjiantou.ResOuInfoXMLDATA;
@@ -126,6 +127,17 @@ public class ZxjtSyncService extends AbstractSyncService implements ZxjtConfig {
 				}
 			}
 
+			// 手机修改
+			String mobile = tempModel.getMobile();
+			if (StringUtils.isNotBlank(mobile)) {
+				// 格式：{"mobilephone":["xxxxxxx"]}
+				JSONObject jsonObject = JSONObject.fromObject(mobile);
+				JSONArray jsonArray = JSONArray.fromObject(jsonObject.get("mobilephone"));
+				if (jsonArray != null) {
+					tempModel.setMobile((String) jsonArray.get(0));
+				}
+			}
+
 			// 入职日期截取
 			String entryTime = tempModel.getEntryTime();
 			if (StringUtils.isNotBlank(entryTime)) {
@@ -219,6 +231,42 @@ LOGGER.debug(dataModelList.size());
 		return newList;
 	}
 
+	@Override
+	protected void syncAddUserOneByOne(List<UserInfoModel> usersToSyncAdd, boolean islink) {
+		String syncServiceName = this.getClass().getSimpleName();
+		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
+		ResultEntity resultEntity = null;
+		for (UserInfoModel user : usersToSyncAdd) {
+			String mobile = user.getMobile();
+			// 手机号为空判断
+			if (StringUtils.isNotBlank(mobile) && mobile.length() == 11) {
+				tempList.add(user);
+
+				try {
+					// 先以手机号作为用户名进行同步
+					user.setUserName(mobile);
+					tempList.set(0, user);
+					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+					if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+						printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
+					} else {
+						// 正常的程序逻辑同步
+						user.setUserName(user.getID());
+						tempList.set(0, user);
+						resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+						if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+							printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
+						}
+					}
+				} catch (IOException e) {
+					LOGGER.error("用户同步[" + syncServiceName + "]失败 " + user.getID(), e);
+				}
+
+				tempList.clear();
+			}
+		}
+	}
+	
 	/**
 	 * 同员工岗位以总部最高职级为准
 	 * 
@@ -525,7 +573,7 @@ System.out.println("TotalCount2:" + resUserInfoData.getTotalCount());
 //					+ "--" + "直属机构代码:" + model.getOrgOuCode() + "--" + "职级:" + model.getPostionNo());
 //		}
 //		for (UserInfoModel model : resEmpData) {
-//			System.out.println(model.getID() + "--" + model.getCnName() + "--" + model.getSex() + "--"
+//			LOGGER.info(model.getID() + "--" + model.getCnName() + "--" + model.getSex() + "--"
 //					+ model.getMobile() + "--" + model.getMail() + "--" + model.getOrgOuCode() + "--"
 //					+ model.getPostionNo() + "--" + model.getEntryTime() + "--" + model.getStatus());
 //		}

@@ -364,12 +364,12 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 
 		List<UserInfoModel> usersToSyncAdd = map.get(MAPKEY_USER_SYNC_ADD);
 		if (usersToSyncAdd != null && usersToSyncAdd.size() > 0) {
-			syncAddOrUpdateUserOneByOne(usersToSyncAdd, islink);
+			syncUpdateUserOneByOne(usersToSyncAdd, islink);
 		}
 
 		List<UserInfoModel> usersToSyncUpdate = map.get(MAPKEY_USER_SYNC_UPDATE);
 		if (usersToSyncUpdate != null && usersToSyncUpdate.size() > 0) {
-			syncAddOrUpdateUserOneByOne(usersToSyncUpdate, islink);
+			syncUpdateUserOneByOne(usersToSyncUpdate, islink);
 		}
 
 		userInfoListFromDB = null;

@@ -71,8 +71,7 @@ public class ZxjtUserInfoModel implements Comparable<ZxjtUserInfoModel>{
 		this.postionNo = postionNo;
 	}
 
-	// 暂不同步
-	// @XmlElement(name = "mobilephone")
+	@XmlElement(name = "mobilephone")
 	public String getMobile() {
 		return mobile;
 	}
