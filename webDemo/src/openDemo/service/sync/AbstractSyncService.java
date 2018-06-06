@@ -180,17 +180,11 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		LOGGER.info("岗位同步[" + syncServiceName + "]Total Size: " + newList.size());
 
 		removeExpiredPos(newList);
-		if (!isPosIdProvided) {
-			// 仅全量模式下执行
-			if (modeFull.equals(mode)) {
-				compareDataWithDB(newList, apikey);
-			}
-		}
-		setFullPosNames(newList);
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
 			LOGGER.info("岗位同步[" + syncServiceName + "]新增Size: " + newList.size());
+			setFullPosNames(newList);
 			syncAddPosOneByOne(newList);
 		}
 		// 增量模式
@@ -204,6 +198,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 			List<PositionModel> posToSyncAdd = map.get(MAPKEY_POS_SYNC_ADD);
 			if (posToSyncAdd != null && posToSyncAdd.size() > 0) {
+				setFullPosNames(posToSyncAdd);
 				syncAddPosOneByOne(posToSyncAdd);
 			}
 
@@ -515,7 +510,10 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		// 使用Set保证无重复
 		Set<String> posNames = new HashSet<String>();
 		for (UserInfoModel modle : userModelList) {
-			posNames.add(modle.getPostionName());
+			// 只取非过期账号的岗位
+			if (!isUserExpired(modle)) {
+				posNames.add(modle.getPostionName());
+			}
 		}
 
 		List<PositionModel> list = new ArrayList<PositionModel>(posNames.size());
@@ -587,7 +585,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 设置岗位名为带类别岗位名
+	 * 设置岗位名为带类别岗位名(同步新增岗位之前设置)
 	 * 
 	 * @param newList
 	 */
