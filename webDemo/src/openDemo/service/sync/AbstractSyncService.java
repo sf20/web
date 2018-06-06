@@ -535,8 +535,14 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 关联岗位编号到用户（人员数据中只有岗位名没有岗位id数据）
 	 * 
 	 * @param newList
+	 * @throws SQLException
 	 */
-	protected void setPositionNoToUser(List<UserInfoModel> newList) {
+	protected void setPositionNoToUser(List<UserInfoModel> newList) throws SQLException {
+		// 首次同步positionListFromDB为空的情况
+		if (positionListFromDB.size() == 0) {
+			// 重新从数据库获取岗位数据
+			positionListFromDB = getPositionsFromDB();
+		}
 
 		for (UserInfoModel user : newList) {
 			String pNameInUser = user.getPostionName();
@@ -544,7 +550,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			if (pNameInUser != null) {
 				for (PositionModel pos : positionListFromDB) {
 					// 根据岗位名(不带岗位类别)进行查找
-					if (pNameInUser.equals(getPositionName(pos.getpNames()))) {
+					if (pNameInUser.equals(pos.getpNames())) {
 						user.setPostionNo(pos.getpNo());
 						break;
 					}
