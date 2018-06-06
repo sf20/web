@@ -331,7 +331,7 @@ public class AIASyncService extends AbstractSyncService implements AIAConfig {
 	private void opPosSync(String mode, List<PositionModel> dataList) throws Exception {
 		logger.info("岗位同步[" + syncServiceName + "]Total Size: " + dataList.size());
 
-		compareDataWithDB(dataList, apikey);
+		// compareDataWithDB(dataList, apikey);
 		setFullPosNames(dataList);
 
 		logger.info("岗位同步[" + syncServiceName + "]新增Size: " + dataList.size());

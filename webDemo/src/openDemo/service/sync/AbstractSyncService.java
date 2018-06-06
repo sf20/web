@@ -958,37 +958,6 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 将要同步的岗位数据和数据库中的岗位数据进行比较后替换岗位编号(已提供岗位编号不需要比较)
-	 * 
-	 * @param newList
-	 * @param apiKey
-	 * @throws SQLException
-	 */
-	protected void compareDataWithDB(List<PositionModel> newList, String apiKey) throws SQLException {
-		List<PositionModel> positionListDB = new ArrayList<PositionModel>();
-		// 获取数据库岗位数据
-		PositionDao dao = new PositionDao();
-		positionListDB = dao.getAllByOrgId(apiKey);
-
-		for (PositionModel newPos : newList) {
-			String newPosNames = newPos.getpNames();
-
-			if (newPosNames != null) {
-				for (PositionModel fullPos : positionListDB) {
-					// 岗位名存在时将岗位编号用数据库中岗位编号替换
-					if (newPosNames.equals(fullPos.getpNames())) {
-						newPos.setpNo(fullPos.getpNo());
-						break;
-					}
-				}
-			}
-
-		}
-
-		positionListDB = null;
-	}
-
-	/**
 	 * 计算得到昨天的日期
 	 * 
 	 * @param date
