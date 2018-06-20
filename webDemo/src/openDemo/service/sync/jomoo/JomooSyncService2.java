@@ -1,5 +1,6 @@
 package openDemo.service.sync.jomoo;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
+import openDemo.entity.ResultEntity;
 import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.jomoo.JomooUserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
@@ -89,7 +91,6 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 		parentDept.setOuName("客服中心");
 		newList.add(parentDept);
 		for (OuInfoModel dept : depts) {
-			dept.setParentID(null);
 			newList.add(dept);
 		}
 
@@ -106,7 +107,6 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 
 		// 获取服务商员工信息
 		LbRecord[] userRecords2 = queryGetResult("BC_APP_ServicerInfo_V");
-LOGGER.info("调用客户接口结束");
 		List<JomooUserInfoModel> dataModelList2 = mapRecordToServicerUser(userRecords2);
 
 		// 共用集合数据
@@ -117,12 +117,19 @@ LOGGER.info("调用客户接口结束");
 		sharedDataModelList = copyCreateEntityList(sharedUserList, UserInfoModel.class);
 
 		// 从商学院人员数据中提取部门信息
+		// 增加服务商人员类别分类
+		String parentIdServicer = "S20180620";
+		OuInfoModel parentDeptServicer = new OuInfoModel();
+		parentDeptServicer.setID(parentIdServicer);
+		parentDeptServicer.setOuName("服务商人员");
+		newList.add(parentDeptServicer);
 		for (JomooUserInfoModel user : dataModelList2) {
 			String deptName = user.getDeptName();
 			if (StringUtils.isNotBlank(deptName)) {
 				OuInfoModel ouInfo = new OuInfoModel();
 				ouInfo.setID(user.getOrgOuCode());
 				ouInfo.setOuName(deptName);
+				ouInfo.setParentID(parentIdServicer);
 				if (!newList.contains(ouInfo)) {
 					newList.add(ouInfo);
 				}
@@ -142,6 +149,42 @@ LOGGER.info("调用客户接口结束");
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 
 		return sharedDataModelList;
+	}
+
+	@Override
+	protected void syncUpdateUserOneByOne(List<UserInfoModel> usersToSyncUpdate, boolean islink) {
+		String syncServiceName = this.getClass().getSimpleName();
+		List<UserInfoModel> tempList = new ArrayList<UserInfoModel>();
+		// 临时添加
+		List<String> usernames = new ArrayList<String>();
+		ResultEntity resultEntity = null;
+		for (UserInfoModel user : usersToSyncUpdate) {
+			tempList.add(user);
+			usernames.add(user.getUserName());
+			try {
+				resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+				if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+					// 忽略邮箱再同步一次
+					user.setMail(null);
+					tempList.set(0, user);
+					resultEntity = userService.userSync(islink, tempList, apikey, secretkey, baseUrl);
+					if (!SYNC_CODE_SUCCESS.equals(resultEntity.getCode())) {
+						printLog("用户同步[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
+					}
+				}
+			} catch (IOException e) {
+				LOGGER.error("用户同步[" + syncServiceName + "]失败 " + user.getID(), e);
+			}
+			// 临时添加
+			try {
+				resultEntity = userService.enabledusersSync(usernames, apikey, secretkey, baseUrl);
+			} catch (IOException e) {
+				printLog("用户启用[" + syncServiceName + "]失败 ", user.getID(), resultEntity);
+			}
+			// 临时添加
+			usernames.clear();
+			tempList.clear();
+		}
 	}
 
 	private List<OuInfoModel> mapRecordToDept(LbRecord[] userRecords) {
@@ -177,7 +220,7 @@ LOGGER.info("调用客户接口结束");
 			userInfo.setEntryTime(String.valueOf(values[7]));
 			// 是否冻结无效
 			// userInfo.setStatus(String.valueOf(values[2]));
-			userInfo.setSpare1(String.valueOf(values[11]));
+			userInfo.setSpare1("无");
 			userInfoList.add(userInfo);
 		}
 		return userInfoList;
@@ -205,6 +248,26 @@ LOGGER.info("调用客户接口结束");
 			}
 			userInfo.setPostionName(String.valueOf(values[11]));
 			userInfo.setDeleteStatus(String.valueOf(values[26]));
+			// 网点名称
+			userInfo.setSpare1(String.valueOf(values[4]));
+			// 省份
+			userInfo.setSpare2(String.valueOf(values[5]));
+			// 城市
+			userInfo.setSpare3(String.valueOf(values[6]));
+			// 技师上岗证
+			userInfo.setSpare4(String.valueOf(values[14]));
+			// 信息员上岗证
+			userInfo.setSpare5(String.valueOf(values[17]));
+			// 备件员上岗证
+			userInfo.setSpare6(String.valueOf(values[18]));
+			// 不良品上岗证
+			userInfo.setSpare7(String.valueOf(values[19]));
+			// 结算员上岗证
+			userInfo.setSpare8(String.valueOf(values[20]));
+			// 兼职备件
+			userInfo.setSpare9(String.valueOf(values[21]));
+			// 兼职维修
+			userInfo.setSpare10(String.valueOf(values[24]));
 			userInfoList.add(userInfo);
 		}
 		return userInfoList;
