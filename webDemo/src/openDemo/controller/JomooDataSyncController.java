@@ -20,7 +20,7 @@ public class JomooDataSyncController {
 	@RequestMapping(value = "/datasync", method = RequestMethod.GET)
 	@ResponseBody
 	public void dataSync() throws Exception {
-		// jomooSyncService1.execute();
-		// jomooSyncService2.execute();
+		jomooSyncService1.execute();
+		jomooSyncService2.execute();
 	}
 }
