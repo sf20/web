@@ -1,10 +1,10 @@
 package openDemo.service.sync.aiqinhai;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,9 +16,9 @@ import net.sf.json.JSONObject;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
+import openDemo.entity.sync.aiqinhai.LandrayUserInfoModel;
 import openDemo.entity.sync.landray.LandrayOuInfoModel;
 import openDemo.entity.sync.landray.LandrayPositionModel;
-import openDemo.entity.sync.landray.LandrayUserInfoModel;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceLocator;
 import openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext;
@@ -31,11 +31,11 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
 	// 客户接口
-	private static final String ENDPOINT_ADDRESS = "http://eptest.hongsin.cn:8080/sys/webservice/sysSynchroGetOrgWebService";
-	// 日期格式化用
-	private static final SimpleDateFormat CUSTOM_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final String ENDPOINT_ADDRESS = "http://ep.hongsin.cn/sys/webservice/sysSynchroGetOrgWebService";
 	// json解析用
 	private ObjectMapper mapper;
+
+	private List<OuInfoModel> sharedDataModelList;
 
 	public AiqinhaiSyncService() {
 		super.setApikey(apikey);
@@ -89,12 +89,7 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 
 	@Override
 	protected void setRootOrgParentId(List<OuInfoModel> newList) {
-		for (OuInfoModel org : newList) {
-			// 客户数据中根组织的上级部门id为0 有多个根组织
-			if (org.getParentID() != null) {
-				org.setParentID(null);
-			}
-		}
+		// 无需设置
 	}
 
 	@Override
@@ -107,13 +102,37 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 			} else if ("F".equals(sex)) {
 				tempModel.setSex("女");
 			}
+			
+			// 设置密码加密方式
+			tempModel.setEncryptionType("MD5");
 		}
 	}
 
 	@Override
 	protected List<OuInfoModel> getOuInfoModelList(String mode) throws java.lang.Exception {
 		List<LandrayOuInfoModel> dataModelList = getDataModelList(mode, LandrayOuInfoModel.class);
-		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
+		List<OuInfoModel> ouInfoList = copyCreateEntityList(dataModelList, OuInfoModel.class);
+
+		List<OuInfoModel> newList = new ArrayList<OuInfoModel>();
+		// 商管系统
+		String parentId1 = "1464ae51f7cc23a57e91aa4481f80311";
+		List<OuInfoModel> childrenDepts1 = findAllChildrenDepts(parentId1, ouInfoList);
+		OuInfoModel parentDept1 = new OuInfoModel();
+		parentDept1.setID(parentId1);
+		parentDept1.setOuName("商管系统");
+		newList.add(parentDept1);
+		newList.addAll(childrenDepts1);
+
+		// 融超外管
+		String parentId2 = "155152c96abaabd2ca71e8a42c3935a8";
+		List<OuInfoModel> childrenDepts2 = findAllChildrenDepts(parentId2, ouInfoList);
+		OuInfoModel parentDept2 = new OuInfoModel();
+		parentDept2.setID(parentId2);
+		parentDept2.setOuName("融超外管");
+		newList.add(parentDept2);
+		newList.addAll(childrenDepts2);
+
+		sharedDataModelList = newList;
 
 		return newList;
 	}
@@ -121,12 +140,14 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 	@Override
 	protected List<PositionModel> getPositionModelList(String mode) throws java.lang.Exception {
 		List<LandrayPositionModel> dataModelList = getDataModelList(mode, LandrayPositionModel.class);
-		// 岗位数据存在同岗位名不同岗位id（不同部门存在相同岗位名） 将部门名称设置为岗位类别名
+		// 只同步客户指定二个组织下的岗位
+		List<LandrayPositionModel> tempDataModelList = new ArrayList<LandrayPositionModel>();
 		for (LandrayPositionModel pos : dataModelList) {
-			pos.setpNameClass(getPositionNameClassFromOrgs(pos.getOrgBelongsTo()));
+			if (isDeptIdInDepts(pos.getOrgBelongsTo(), sharedDataModelList)) {
+				tempDataModelList.add(pos);
+			}
 		}
-
-		List<PositionModel> newList = copyCreateEntityList(dataModelList, PositionModel.class);
+		List<PositionModel> newList = copyCreateEntityList(tempDataModelList, PositionModel.class);
 
 		return newList;
 	}
@@ -142,8 +163,15 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 				user.setPostionNo(postionNoList[0]);
 			}
 		}
+		List<UserInfoModel> userInfoList = copyCreateEntityList(dataModelList, UserInfoModel.class);
 
-		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
+		// 只同步客户指定二个组织下的员工
+		List<UserInfoModel> newList = new ArrayList<UserInfoModel>();
+		for (UserInfoModel user : userInfoList) {
+			if (isDeptIdInDepts(user.getOrgOuCode(), sharedDataModelList)) {
+				newList.add(user);
+			}
+		}
 
 		return newList;
 	}
@@ -166,11 +194,12 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 		paramJson.add(type);
 		reqParam.setReturnOrgType(paramJson.toString());
 		// 设置获取增量数据参数
-		if (MODE_UPDATE.equals(mode)) {
-			reqParam.setBeginTimeStamp(CUSTOM_DATE_FORMAT.format(getYesterdayDate(new Date())));
-		}
-		// 请求count暂时设置为10000，后期变动可修改
-		reqParam.setCount(10000);
+		// if (MODE_UPDATE.equals(mode)) {
+		// reqParam.setBeginTimeStamp(CUSTOM_DATE_FORMAT.format(getYesterdayDate(new
+		// Date())));
+		// }
+		// 请求count暂时设置为20000，后期变动可修改
+		reqParam.setCount(20000);
 
 		SysSynchroOrgResult result = service.getUpdatedElements(reqParam);
 		int returnState = result.getReturnState();
@@ -194,7 +223,57 @@ public class AiqinhaiSyncService extends AbstractSyncService implements Aiqinhai
 
 		return list;
 	}
-	
+
+	/**
+	 * 递归查询部门下的子部门
+	 * 
+	 * @param parentId
+	 * @param allList
+	 * @return
+	 */
+	private List<OuInfoModel> findAllChildrenDepts(String parentId, List<OuInfoModel> allList) {
+		List<OuInfoModel> resultList = new ArrayList<OuInfoModel>();
+		List<OuInfoModel> parentList = new ArrayList<OuInfoModel>();
+		List<OuInfoModel> childList = new ArrayList<OuInfoModel>();
+		for (OuInfoModel ouInfo : allList) {
+			if (StringUtils.isNotBlank(ouInfo.getOuName())) {
+				if (parentId.equals(ouInfo.getParentID())) {
+					parentList.add(ouInfo);
+				} else {
+					childList.add(ouInfo);
+				}
+			}
+		}
+
+		resultList.addAll(parentList);
+		for (OuInfoModel ouInfo : parentList) {
+			resultList.addAll(findAllChildrenDepts(ouInfo.getID(), childList));
+		}
+
+		return resultList;
+	}
+
+	/**
+	 * 判断部门id是否在给到的部门集合里
+	 * 
+	 * @param deptId
+	 * @param depts
+	 * @return
+	 */
+	private boolean isDeptIdInDepts(String deptId, List<OuInfoModel> depts) {
+		if (StringUtils.isBlank(deptId)) {
+			return false;
+		}
+		boolean flag = false;
+		for (OuInfoModel dept : depts) {
+			if (deptId.equals(dept.getID())) {
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+
 	public static void main(String[] args) throws Exception {
 //		AiqinhaiSyncService service = new AiqinhaiSyncService();
 //		List<OuInfoModel> ouInfoModelList = service.getOuInfoModelList(MODE_FULL);

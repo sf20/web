@@ -1,4 +1,4 @@
-package openDemo.entity.sync.landray;
+package openDemo.entity.sync.aiqinhai;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +12,12 @@ public class LandrayUserInfoModel {
 
 	@JsonProperty("name")
 	private String cnName;
+
+	/**
+	 * 增加密码同步
+	 */
+	@JsonProperty("password")
+	private String password;
 
 	@JsonProperty("sex")
 	private String sex;
@@ -56,6 +62,14 @@ public class LandrayUserInfoModel {
 
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getSex() {

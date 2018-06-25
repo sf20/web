@@ -18,7 +18,7 @@ import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.landray.LandrayOuInfoModel;
 import openDemo.entity.sync.landray.LandrayPositionModel;
-import openDemo.entity.sync.landray.LandrayUserInfoModel;
+import openDemo.entity.sync.xnjz.LandrayUserInfoModel;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebService;
 import openDemo.service.common.landray.oa.ISysSynchroGetOrgWebServiceServiceLocator;
 import openDemo.service.common.landray.oa.SysSynchroGetOrgInfoContext;
