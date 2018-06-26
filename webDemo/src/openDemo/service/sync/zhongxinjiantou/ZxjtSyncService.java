@@ -174,12 +174,12 @@ public class ZxjtSyncService extends AbstractSyncService implements ZxjtConfig {
 
 	@Override
 	protected List<PositionModel> getPositionModelList(String mode) throws java.lang.Exception {
-		String token = getReqToken();
-		
-		List<ZxjtPositionModel> dataModelList = getPositionModelList(token, 1, REQUEST_PARAM_PAGESIZE, REQUEST_PARAM_STATUS_1);
-		List<PositionModel> newList = copyCreateEntityList(dataModelList, PositionModel.class);
-
-		return newList;
+		// String token = getReqToken();
+		//
+		// List<ZxjtPositionModel> dataModelList = getPositionModelList(token, 1, REQUEST_PARAM_PAGESIZE, REQUEST_PARAM_STATUS_1);
+		// List<PositionModel> newList = copyCreateEntityList(dataModelList, PositionModel.class);
+		// 后期调整岗位数据不同步
+		return new ArrayList<PositionModel>(0);
 	}
 
 	@Override
