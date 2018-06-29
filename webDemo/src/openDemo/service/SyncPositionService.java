@@ -85,5 +85,24 @@ public class SyncPositionService {
 		String result = HttpResultUtil.getResult(params, url);
 		return HttpResultUtil.getResult(result);
 	}
-
+	
+	/**
+	 * 同步删除岗位
+	 * 
+	 * @param positionInfos
+	 * @param apikey
+	 * @param secretkey
+	 * @param baseUrl
+	 * @return
+	 * @throws IOException
+	 */
+	public ResultEntity syncDelPos(List<PositionModel> positionInfos, String apikey, String secretkey, String baseUrl) throws IOException{
+		JsonConfig jsonConfig = JsonUtil.jsonConfig(PositionModel.class);
+		JSONArray array = JSONArray.fromObject(positionInfos, jsonConfig);
+		Map<String, Object> params = HttpResultUtil.getParamsMap(apikey, secretkey);
+		params.put("positionInfo", array.toString());
+		String url = baseUrl + "el/sync/delpos";
+		String result = HttpResultUtil.getResult(params, url);
+		return HttpResultUtil.getResult(result);
+	}
 }
