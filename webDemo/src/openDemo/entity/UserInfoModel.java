@@ -24,6 +24,11 @@ public class UserInfoModel {
 	private String cnName;
 
 	/**
+	 * 工号
+	 */
+	private String userNo;
+
+	/**
 	 * 密码备注：如果用MD5或者CMD5加密则必须使用标准MD5 32位小写加密的字符串（如果不传使用平台配置的默认密码）
 	 */
 	private String password;
@@ -133,6 +138,14 @@ public class UserInfoModel {
 
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
+	}
+
+	public String getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
 	}
 
 	public String getPassword() {

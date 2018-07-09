@@ -30,6 +30,12 @@ public class MideaUserInfoModel {
 	private String cnName;
 
 	/**
+	 * 工号
+	 */
+	@JsonProperty("employeeNumber")
+	private String userNo;
+
+	/**
 	 * 性别
 	 */
 	@JsonProperty("smart-gender")
@@ -92,6 +98,14 @@ public class MideaUserInfoModel {
 
 	public String getCnName() {
 		return cnName;
+	}
+
+	public String getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
 	}
 
 	public void setCnName(String cnName) {
