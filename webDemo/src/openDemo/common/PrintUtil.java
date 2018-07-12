@@ -41,7 +41,10 @@ public class PrintUtil {
 			LOGGER.info("ID:" + model.getID() + "--CnName:" + model.getCnName() + "--Sex:" + model.getSex()
 					+ "--Mobile:" + model.getMobile() + "--Mail:" + model.getMail() + "--OrgOuCode:"
 					+ model.getOrgOuCode() + "--PostionNo:" + model.getPostionNo() + "--PostionName:"
-					+ model.getPostionName() + "--EntryTime:" + model.getEntryTime() + "--Status:" + model.getStatus());
+					+ model.getPostionName() + "--EntryTime:" + model.getEntryTime() + "--Status:" + model.getStatus()
+					+ "--DeleteStatus:" + model.getDeleteStatus() + "--Spare1:" + model.getSpare1() + "--Spare2:"
+					+ model.getSpare2() + "--Spare3:" + model.getSpare3() + "--Spare4:" + model.getSpare4()
+					+ "--Spare5:" + model.getSpare5());
 		}
 	}
 
