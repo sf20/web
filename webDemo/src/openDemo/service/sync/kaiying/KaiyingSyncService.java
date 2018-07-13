@@ -26,7 +26,6 @@ import openDemo.utils.HttpClientUtil4Sync;
 public class KaiyingSyncService extends AbstractSyncService implements KaiyingConfig {
 	// 用户接口请求参数值
 	private static final String REQUEST_ORG_URL = "http://api-oa.kingnet.com/api/org/list";
-	private static final String REQUEST_POS_URL = "http://api-oa.kingnet.com/api/post/list";
 	private static final String ENABLE_STATUS = "active";
 	private static final int RESPONSE_STATUS_OK = 1;
 
@@ -128,10 +127,8 @@ public class KaiyingSyncService extends AbstractSyncService implements KaiyingCo
 
 	@Override
 	protected List<PositionModel> getPositionModelList(String mode) throws Exception {
-		List<KaiyingPositionModel> userModelList = getDataModelList(mode, REQUEST_POS_URL, KaiyingPositionModel.class);
-		List<PositionModel> newList = copyCreateEntityList(userModelList, PositionModel.class);
-
-		return newList;
+		// 后期调整为同步职位名 不需要获取岗位列表
+		return new ArrayList<PositionModel>(0);
 	}
 
 	@Override

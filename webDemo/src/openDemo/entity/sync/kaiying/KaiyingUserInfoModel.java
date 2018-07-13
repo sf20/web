@@ -10,83 +10,89 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class KaiyingUserInfoModel {
 
-	/*
+	/**
 	 * 用户ID(同步必传)
 	 */
 	@JsonProperty("usr_uid")
 	private String ID;
 
-	/*
+	/**
 	 * 用户名(同步必传)
 	 */
 	@JsonProperty("usr_username")
 	private String userName;
 
-	/*
+	/**
 	 * 中文姓名(同步必传)
 	 */
 	@JsonProperty("usr_cn")
 	private String cnName;
 
-	/*
+	/**
 	 * 性别
 	 */
 	@JsonIgnore
 	private String sex;
 
-	/*
+	/**
 	 * 移动电话
 	 */
 	@JsonIgnore
 	private String mobile;
 
-	/*
+	/**
 	 * 电子邮件
 	 */
 	@JsonProperty("usr_email")
 	private String mail;
 
-	/*
+	/**
 	 * 部门编号
 	 */
 	@JsonProperty("org_code")
 	private String orgOuCode;
 
-	/*
+	/**
 	 * 岗位编号
 	 */
-	@JsonProperty("post_id")
+	@JsonIgnore
 	private String postionNo;
 
-	/*
-	 * 岗位名
+	/**
+	 * 岗位名 对应客户的职位名
 	 */
-	@JsonIgnore
+	@JsonProperty("position")
 	private String postionName;
 
-	/*
+	/**
 	 * 入职日期
 	 */
 	@JsonProperty("entry_date")
 	private String entryTime;
 
-	/*
+	/**
 	 * 出生日期
 	 */
 	@JsonIgnore
 	private String birthday;
 
-	/*
+	/**
 	 * 人员状态
 	 */
 	@JsonProperty("job_status")
 	private String status;
 
-	/*
-	 * 人员删除状态
+	/**
+	 * 扩展字段：客户的岗位名
 	 */
-	@JsonIgnore
-	private String deleteStatus;
+	@JsonProperty("post_name")
+	private String spare1;
+
+	/**
+	 * 扩展字段：客户的职级
+	 */
+	@JsonProperty("usr_rank")
+	private String spare2;
 
 	public String getID() {
 		return ID;
@@ -184,12 +190,20 @@ public class KaiyingUserInfoModel {
 		this.status = status;
 	}
 
-	public String getDeleteStatus() {
-		return deleteStatus;
+	public String getSpare1() {
+		return spare1;
 	}
 
-	public void setDeleteStatus(String deleteStatus) {
-		this.deleteStatus = deleteStatus;
+	public void setSpare1(String spare1) {
+		this.spare1 = spare1;
+	}
+
+	public String getSpare2() {
+		return spare2;
+	}
+
+	public void setSpare2(String spare2) {
+		this.spare2 = spare2;
 	}
 
 }
