@@ -31,7 +31,7 @@ import openDemo.service.SyncOrgService;
 import openDemo.service.SyncPositionService;
 import openDemo.service.SyncUserService;
 
-public abstract class AbstractSyncService implements CustomTimerTask {
+public abstract class AbstractSyncService {
 	// 自定义map的key
 	public static final String MAPKEY_USER_SYNC_ADD = "userSyncAdd";
 	public static final String MAPKEY_USER_SYNC_UPDATE = "userSyncUpdate";
@@ -60,9 +60,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	@Autowired
 	protected SyncUserService userService;
 	// 用于存放数据库查询到的数据的集合
-	private List<PositionModel> positionListFromDB = new ArrayList<>();
-	private List<OuInfoModel> ouInfoListFromDB = new ArrayList<>();
-	private List<UserInfoModel> userInfoListFromDB = new ArrayList<>();
+	private List<PositionModel> positionListFromDB = new ArrayList<PositionModel>(0);
+	private List<OuInfoModel> ouInfoListFromDB = new ArrayList<OuInfoModel>(0);
+	private List<UserInfoModel> userInfoListFromDB = new ArrayList<UserInfoModel>(0);
 
 	// 参数配置
 	private String apikey;
@@ -88,16 +88,26 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		this.baseUrl = baseUrl;
 	}
 
+	/**
+	 * 设置全量模式定义的值, 若未自定义无需设置。默认值为"1"
+	 * 
+	 * @param modeFull
+	 */
 	public void setModeFull(String modeFull) {
 		this.modeFull = modeFull;
 	}
 
+	/**
+	 * 设置增量模式定义的值, 若未自定义无需设置。默认值为"2"
+	 * 
+	 * @param modeUpdate
+	 */
 	public void setModeUpdate(String modeUpdate) {
 		this.modeUpdate = modeUpdate;
 	}
 
 	/**
-	 * 客户提供的岗位数据中没有岗位id或者提供了包含岗位id的岗位数据但人员数据中关联的只有岗位名时需设置该值为false
+	 * 客户提供的岗位数据中没有岗位id或者提供了包含岗位id的岗位数据但人员数据中关联的只有岗位名时需设置该值为false。默认为已提供
 	 * 
 	 * @param isPosIdProvided
 	 */
@@ -106,7 +116,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 设置子类同步service的类名
+	 * 设置子类同步service的类名，记录日志时用
 	 * 
 	 * @param syncServiceName
 	 */
@@ -114,7 +124,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		this.syncServiceName = syncServiceName;
 	}
 
-	@Override
+	/**
+	 * 对外提供的同步程序的启动方法
+	 */
 	public void execute() {
 		try {
 			sync();
@@ -124,7 +136,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 对外提供的同步方法
+	 * 同步主方法。注意同步顺序：部门>岗位>人员
 	 * 
 	 * @throws Exception
 	 */
@@ -137,7 +149,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			opOrgSync(modeUpdate, false);
 		} else {
 			// 组织全量同步
-			// opOrgSync(modeFull, false);
+			opOrgSync(modeFull, false);
 		}
 
 		positionListFromDB = getPositionsFromDB();
@@ -147,7 +159,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			opPosSync(modeUpdate);
 		} else {
 			// 岗位全量同步
-			// opPosSync(modeFull);
+			opPosSync(modeFull);
 		}
 
 		userInfoListFromDB = getUserInfoListFromDB();
@@ -158,7 +170,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 			opUserSync(modeUpdate, true);
 		} else {
 			// 用户全量同步
-			// opUserSync(modeFull, true);
+			opUserSync(modeFull, true);
 		}
 		LOGGER.info("定时同步[" + syncServiceName + "]结束");
 
@@ -169,7 +181,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 岗位同步 如不用同步岗位数据需用空实现覆盖此方法
+	 * 岗位同步
 	 * 
 	 * @param mode
 	 *            全量增量区分
@@ -219,6 +231,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * @throws Exception
 	 */
 	public void opOrgSync(String mode, boolean isBaseInfo) throws Exception {
+LOGGER.info("调用客户部门接口开始");
 		List<OuInfoModel> newList = getOuInfoModelList(mode);
 		LOGGER.info("组织同步[" + syncServiceName + "]Total Size: " + newList.size());
 
@@ -228,22 +241,23 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
+LOGGER.info("调用客户部门接口处理结束");
 			// 此处再次同步删除过期组织
 			if (expiredOrgs.size() > 0) {
 				LOGGER.info("组织同步[" + syncServiceName + "]删除Size: " + expiredOrgs.size());
-				syncDeleteOrgOneByOne(expiredOrgs, false);
+				// syncDeleteOrgOneByOne(expiredOrgs, false);
 			}
 
 			LOGGER.info("组织同步[" + syncServiceName + "]新增Size: " + newList.size());
 			// 进行多次同步
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 3; i++) {
 				syncAddOrUpdateOrgOneByOne(newList, isBaseInfo);
 			}
 		}
 		// 增量模式
 		else {
 			Map<String, List<OuInfoModel>> map = compareOrgList(ouInfoListFromDB, newList);
-
+LOGGER.info("调用客户部门接口处理结束");
 			List<OuInfoModel> orgsToSyncDelete = map.get(MAPKEY_ORG_SYNC_DELETE);
 			if (orgsToSyncDelete != null && orgsToSyncDelete.size() > 0) {
 				syncDeleteOrgOneByOne(orgsToSyncDelete, true);
@@ -271,6 +285,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * @throws Exception
 	 */
 	public void opUserSync(String mode, boolean islink) throws Exception {
+LOGGER.info("调用客户人员接口开始");
 		List<UserInfoModel> newList = getUserInfoModelList(mode);
 		LOGGER.info("用户同步[" + syncServiceName + "]Total Size: " + newList.size());
 
@@ -283,10 +298,11 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 		// 全量模式
 		if (modeFull.equals(mode)) {
+LOGGER.info("调用客户人员接口处理结束");
 			// 同步禁用过期用户
 			if (expiredUsers.size() > 0) {
 				LOGGER.info("用户同步[" + syncServiceName + "]禁用Size: " + expiredUsers.size());
-				syncDisableUserOneByOne(expiredUsers, false);
+				// syncDisableUserOneByOne(expiredUsers, false);
 			}
 
 			LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + newList.size());
@@ -296,7 +312,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 		else {
 			// 与增量list进行比较
 			Map<String, List<UserInfoModel>> map = compareUserList(userInfoListFromDB, newList);
-
+LOGGER.info("调用客户人员接口处理结束");
 			List<UserInfoModel> usersToDisable = map.get(MAPKEY_USER_SYNC_DISABLE);
 			if (usersToDisable != null && usersToDisable.size() > 0) {
 				syncDisableUserOneByOne(usersToDisable, true);
@@ -322,7 +338,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 *            全量岗位数据集合
 	 * @param newList
 	 *            最新获取岗位数据集合
-	 * @return
+	 * @return 包含 同步新增和更新的岗位集合的Map对象
 	 */
 	protected Map<String, List<PositionModel>> comparePosList1(List<PositionModel> fullList,
 			List<PositionModel> newList) {
@@ -367,7 +383,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 *            全量岗位数据集合
 	 * @param newList
 	 *            最新获取岗位数据集合
-	 * @return
+	 * @return 包含 同步新增的岗位集合的Map对象
 	 */
 	protected Map<String, List<PositionModel>> comparePosList2(List<PositionModel> fullList,
 			List<PositionModel> newList) {
@@ -504,7 +520,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 根据用户数据集合生成岗位对象集合（客户未提供岗位数据仅提供包含了岗位名的人员数据时调用该方法）
 	 * 
 	 * @param userModelList
-	 * @return
+	 * @return 岗位对象集合
 	 */
 	protected List<PositionModel> getPosListFromUsers(List<UserInfoModel> userModelList) {
 		// 使用Set保证无重复
@@ -558,7 +574,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 关联数据库岗位编号到用户（人员数据中只有岗位名没有岗位id数据）
+	 * 关联数据库岗位编号到用户（人员数据中只有岗位名没有岗位id数据），供自行实现同步时调用
 	 * 
 	 * @param newList
 	 * @throws SQLException
@@ -606,7 +622,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 从pNames中得到岗位名(pNames格式: 一级类别;二级类别;岗位名)
 	 * 
 	 * @param pNames
-	 * @return
+	 * @return 不带类别的岗位名
 	 */
 	protected String getPositionName(String pNames) {
 		if (pNames == null) {
@@ -627,7 +643,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	 * 不同组织存在同岗位名时调用该方法获取组织名作为岗位类别名(前提：1人员中关联的是岗位id，2同岗位名对应多个岗位id，3岗位数据中有所属组织id)
 	 * 
 	 * @param orgId
-	 * @return
+	 * @return 作为岗位类别的组织名
 	 * @throws SQLException
 	 */
 	protected String getPositionNameClassFromOrgs(String orgId) throws SQLException {
@@ -984,6 +1000,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 	/**
 	 * 从数据库获取岗位数据
+	 * 
+	 * @return
+	 * @throws SQLException
 	 */
 	protected List<PositionModel> getPositionsFromDB() throws SQLException {
 		PositionDao dao = new PositionDao();
@@ -992,6 +1011,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 	/**
 	 * 从数据库获取组织数据
+	 * 
+	 * @return
+	 * @throws SQLException
 	 */
 	protected List<OuInfoModel> getOuInfoListFromDB() throws SQLException {
 		OuInfoDao dao = new OuInfoDao();
@@ -1000,6 +1022,9 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 
 	/**
 	 * 从数据库获取人员数据
+	 * 
+	 * @return
+	 * @throws SQLException
 	 */
 	protected List<UserInfoModel> getUserInfoListFromDB() throws SQLException {
 		UserInfoDao dao = new UserInfoDao();
@@ -1007,7 +1032,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	}
 
 	/**
-	 * 判断组织是否过期
+	 * 判断组织是否过期.同步删除组织时用
 	 * 
 	 * @param org
 	 * @return
@@ -1015,7 +1040,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected abstract boolean isOrgExpired(OuInfoModel org);
 
 	/**
-	 * 判断岗位是否过期
+	 * 判断岗位是否过期.同步删除岗位时用
 	 * 
 	 * @param pos
 	 * @return
@@ -1023,7 +1048,7 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected abstract boolean isPosExpired(PositionModel pos);
 
 	/**
-	 * 判断用户是否过期
+	 * 判断用户是否过期.同步禁用或删除人员时用
 	 * 
 	 * @param user
 	 * @return
@@ -1045,29 +1070,29 @@ public abstract class AbstractSyncService implements CustomTimerTask {
 	protected abstract void changePropValues(List<UserInfoModel> newList);
 
 	/**
-	 * 获取组织对象集合
+	 * 调用客户接口获取组织对象集合，注意全量增量区分。组织不同步返回new ArrayList<>(0);
 	 * 
 	 * @param mode
 	 *            全量增量区分
-	 * @return
+	 * @return 全量或者增量组织对象集合
 	 */
 	protected abstract List<OuInfoModel> getOuInfoModelList(String mode) throws Exception;
 
 	/**
-	 * 获取岗位对象集合
+	 * 调用客户接口获取岗位对象集合，注意全量增量区分。岗位不同步返回new ArrayList<>(0);
 	 * 
 	 * @param mode
 	 *            全量增量区分
-	 * @return
+	 * @return 全量或者增量岗位对象集合
 	 */
 	protected abstract List<PositionModel> getPositionModelList(String mode) throws Exception;
 
 	/**
-	 * 获取用户对象集合
+	 * 调用客户接口获取用户对象集合，注意全量增量区分。用户不同步返回new ArrayList<>(0);
 	 * 
 	 * @param mode
 	 *            全量增量区分
-	 * @return
+	 * @return 全量或者增量用户对象集合
 	 */
 	protected abstract List<UserInfoModel> getUserInfoModelList(String mode) throws Exception;
 
