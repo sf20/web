@@ -52,8 +52,11 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
+		// 网点状态
+		String status = user.getStatus();
+		// 开通状态
 		String deleteStatus = user.getDeleteStatus();
-		if ("未开通".equals(deleteStatus)) {
+		if ("冻结".equals(status) || "撤点".equals(status) || "未开通".equals(deleteStatus)) {
 			return true;
 		} else {
 			return false;
@@ -247,6 +250,9 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 				userInfo.setDeptName(namePrefix + realManager);
 			}
 			userInfo.setPostionName(String.valueOf(values[11]));
+			// 网点状态
+			userInfo.setStatus(String.valueOf(values[8]));
+			// 开通状态
 			userInfo.setDeleteStatus(String.valueOf(values[26]));
 			// 网点名称
 			userInfo.setSpare1(String.valueOf(values[4]));
