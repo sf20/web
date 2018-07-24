@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,13 @@ import openDemo.utils.HttpClientUtil4Sync;
 
 @Service
 public class MideaSyncService extends AbstractSyncService implements MideaConfig {
-	private static final String REQUEST_USER_URL = "https://umcuat.mideadc.com/api/uc/v1/account/search";
-	private static final String REQUEST_DEPT_URL = "https://umcuat.mideadc.com/api/uc/v1/department/search";
+	private static final String REQUEST_USER_URL = "https://umc.mideadc.com/api/uc/v1/account/search";
+	private static final String REQUEST_DEPT_URL = "https://umc.mideadc.com/api/uc/v1/department/search";
 	private static final String RESPONSE_STATUS_OK = "0";
 	private static final String RESPONSE_STATUS_NORECORD = "10003";
-	private static final String SEARCH_BEGIN_TIME = "2018-07-01 00:00:00";
-	private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	private static final String SEARCH_BEGIN_TIME = "2018-05-20 00:00:00";
+	private static final String TIMESTAMP_FORMAT_YMD = "yyyy-MM-dd";
+	private static final String TIMESTAMP_FORMAT_HMS = " 00:00:00";
 	// 全量增量区分
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
@@ -84,13 +86,7 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 
 	@Override
 	protected void setRootOrgParentId(List<OuInfoModel> newList) {
-		for (OuInfoModel org : newList) {
-			// 客户数据中根组织的上级部门id为"DC2718129209"
-			if ("DC2718129209".equals(org.getParentID())) {
-				org.setParentID(null);
-				break;
-			}
-		}
+		// 无需设置
 	}
 
 	@Override
@@ -121,7 +117,49 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 
 	@Override
 	protected List<OuInfoModel> getOuInfoModelList(String mode) throws Exception {
-		String jsonString = requestGetJson(REQUEST_DEPT_URL, mode);
+		List<MideaOuInfoModel> dataModelList = new ArrayList<MideaOuInfoModel>();
+
+		if (MODE_FULL.equals(mode)) {
+			MideaOuInfoModel rootOrg = new MideaOuInfoModel();
+			String rootOrgId = "DC30003353";
+			rootOrg.setID(rootOrgId);
+			rootOrg.setOuName("置业集团");
+			dataModelList.add(rootOrg);
+
+			Date beginTime = DATE_FORMAT.parse(SEARCH_BEGIN_TIME);
+			Date endTime = getNextMonthDate(beginTime);
+			for (int i = 0; i < calcRequestTimes(); i++) {
+				// 每次获取数据日期间隔不能大于30天
+				dataModelList.addAll(requestGetOrgModel(beginTime, endTime));
+
+				// 调整下一次请求的开始结束时间
+				beginTime = endTime;
+				endTime = getNextMonthDate(beginTime);
+			}
+
+			// 将“物业总公司”挂到“置业集团”下
+			for (MideaOuInfoModel tempModel : dataModelList) {
+				// “物业总公司”的部门编号为“DC4203317441”
+				if ("DC4203317441".equals(tempModel.getID())) {
+					tempModel.setParentID(rootOrgId);
+					break;
+				}
+			}
+		} else {
+			// 获取增量数据
+			Date endTime = new Date();
+			Date beginTime = getYesterdayDate(endTime);
+
+			dataModelList = requestGetOrgModel(beginTime, endTime);
+		}
+
+		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
+
+		return newList;
+	}
+
+	private List<MideaOuInfoModel> requestGetOrgModel(Date beginTime, Date endTime) throws Exception {
+		String jsonString = requestGetJson(REQUEST_DEPT_URL, beginTime, endTime);
 
 		// 将json字符串转为用户json对象数据模型
 		MideaResJsonModel<MideaOuInfoModel> resJsonModel = mapper.readValue(jsonString,
@@ -133,17 +171,14 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 		String responseCode = resHeadMap.get("responseCode");
 		if (!RESPONSE_STATUS_OK.equals(responseCode)) {
 			if (RESPONSE_STATUS_NORECORD.equals(responseCode)) {
-				return new ArrayList<OuInfoModel>();
+				return new ArrayList<MideaOuInfoModel>(0);
 			} else {
 				throw new IOException(
 						"获取客户接口[" + this.getClass().getSimpleName() + "]数据错误：" + resHeadMap.get("responseMessage"));
 			}
 		}
 
-		List<MideaOuInfoModel> dataModelList = resJsonModel.getBody();
-		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
-
-		return newList;
+		return resJsonModel.getBody();
 	}
 
 	@Override
@@ -155,7 +190,42 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 
 	@Override
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
-		String jsonString = requestGetJson(REQUEST_USER_URL, mode);
+		List<MideaUserInfoModel> dataModelList = new ArrayList<MideaUserInfoModel>();
+
+		if (MODE_FULL.equals(mode)) {
+			Date beginTime = DATE_FORMAT.parse(SEARCH_BEGIN_TIME);
+			Date endTime = getNextMonthDate(beginTime);
+			for (int i = 0; i < calcRequestTimes(); i++) {
+				// 每次获取数据日期间隔不能大于30天
+				dataModelList.addAll(requestGetUserModel(beginTime, endTime));
+
+				// 调整下一次请求的开始结束时间
+				beginTime = endTime;
+				endTime = getNextMonthDate(beginTime);
+			}
+		} else {
+			// 获取增量数据
+			Date endTime = new Date();
+			Date beginTime = getYesterdayDate(endTime);
+
+			dataModelList = requestGetUserModel(beginTime, endTime);
+		}
+
+		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
+
+		return newList;
+	}
+
+	private Date getNextMonthDate(Date beginTime) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(beginTime);
+		calendar.add(Calendar.DAY_OF_YEAR, 30);
+
+		return calendar.getTime();
+	}
+
+	private List<MideaUserInfoModel> requestGetUserModel(Date beginTime, Date endTime) throws Exception {
+		String jsonString = requestGetJson(REQUEST_USER_URL, beginTime, endTime);
 
 		// 将json字符串转为用户json对象数据模型
 		MideaResJsonModel<MideaUserInfoModel> resJsonModel = mapper.readValue(jsonString,
@@ -167,44 +237,33 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 		String responseCode = resHeadMap.get("responseCode");
 		if (!RESPONSE_STATUS_OK.equals(responseCode)) {
 			if (RESPONSE_STATUS_NORECORD.equals(responseCode)) {
-				return new ArrayList<UserInfoModel>();
+				return new ArrayList<MideaUserInfoModel>(0);
 			} else {
 				throw new IOException(
 						"获取客户接口[" + this.getClass().getSimpleName() + "]数据错误：" + resHeadMap.get("responseMessage"));
 			}
 		}
 
-		List<MideaUserInfoModel> dataModelList = resJsonModel.getBody();
-		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
-
-		return newList;
+		return resJsonModel.getBody();
 	}
 
-	private String requestGetJson(String requestUrl, String mode) throws Exception {
+	private String requestGetJson(String requestUrl, Date beginTime, Date endTime) throws Exception {
 		// 获取客户接口参数值
-		String customerCode = "c201806251";
-		String secretId = "46a38af9826b485ba6a0ea8ea1a21bb7";
-		String secretKey = "7fd477ac837f480999a14980003af48b";
+		String customerCode = "c201807101";
+		String secretId = "c3641786958f4bdeb9b01dddda9578fa";
+		String secretKey = "b77a32abdd8f4ca2a6505ba463482927";
 		// 本次请求时间戳
 		long timeMillis = System.currentTimeMillis();
 		// 本次请求随机5位值
 		int random = (int) ((Math.random() * 9 + 1) * 10000);
-		// 数据修改时间戳，时间为GMT时间
-		Date nowDate = new Date();
-		String beginTime = DateFormatUtils.format(getYesterdayDate(nowDate), TIMESTAMP_FORMAT);
-		if (MODE_FULL.equals(mode)) {
-			beginTime = SEARCH_BEGIN_TIME;
-		}
-		// 数据修改时间戳，时间为GMT时间
-		String endTime = DateFormatUtils.format(nowDate, TIMESTAMP_FORMAT);
 
 		SortedMap<String, String> map = new TreeMap<>();
 		map.put("customerCode", customerCode);
 		map.put("secretId", secretId);
 		map.put("timestamp", Long.toString(timeMillis));
 		map.put("nonce", Integer.toString(random));
-		map.put("beginModifyTimestamp", beginTime);
-		map.put("endModifyTimestamp", endTime);
+		map.put("beginModifyTimestamp", DateFormatUtils.format(beginTime, TIMESTAMP_FORMAT_YMD) + TIMESTAMP_FORMAT_HMS);
+		map.put("endModifyTimestamp", DateFormatUtils.format(endTime, TIMESTAMP_FORMAT_YMD) + TIMESTAMP_FORMAT_HMS);
 
 		// 签名操作
 		StringBuilder sb = new StringBuilder();
@@ -220,6 +279,18 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 		String jsonString = HttpClientUtil4Sync.doPost(requestUrl, mapper.writeValueAsString(map));
 
 		return jsonString;
+	}
+
+	private int calcRequestTimes() throws ParseException {
+		Date beginTime = DATE_FORMAT.parse(SEARCH_BEGIN_TIME);
+		Date endTime = new Date();
+
+		long oneMonthTime = 30 * 24 * 60 * 60 * 1000l;
+		long timeGap = endTime.getTime() - beginTime.getTime();
+		long intVal = timeGap / oneMonthTime;
+		long modVal = timeGap % oneMonthTime > 0 ? 1 : 0;
+
+		return (int) (intVal + modVal);
 	}
 
 	/**
@@ -242,8 +313,8 @@ public class MideaSyncService extends AbstractSyncService implements MideaConfig
 
 	public static void main(String[] args) throws Exception {
 		MideaSyncService service = new MideaSyncService();
-		List<OuInfoModel> dataModelList = service.getOuInfoModelList(MODE_FULL);
+		List<UserInfoModel> dataModelList = service.getUserInfoModelList(MODE_FULL);
 		System.out.println(dataModelList.size());
-		PrintUtil.logPrintOrgs(dataModelList);
+		PrintUtil.logPrintUsers(dataModelList);
 	}
 }

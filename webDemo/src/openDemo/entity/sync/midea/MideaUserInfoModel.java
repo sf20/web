@@ -77,8 +77,17 @@ public class MideaUserInfoModel {
 	@JsonProperty("customized-joinsysdate")
 	private String entryTime;
 
+	/**
+	 * 员工状态
+	 */
 	@JsonProperty("smart-status")
 	private String status;
+
+	/**
+	 * 扩展字段：职级
+	 */
+	@JsonProperty("customized-postionattr")
+	private String spare1;
 
 	public String getID() {
 		return ID;
@@ -174,6 +183,14 @@ public class MideaUserInfoModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getSpare1() {
+		return spare1;
+	}
+
+	public void setSpare1(String spare1) {
+		this.spare1 = spare1;
 	}
 
 }
