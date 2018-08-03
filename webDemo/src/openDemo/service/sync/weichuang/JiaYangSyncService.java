@@ -15,12 +15,12 @@ import openDemo.common.PrintUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
-import openDemo.entity.sync.weichuang.WeichuangUserInfoModel;
+import openDemo.entity.sync.weichuang.JiaYangUserInfoModel;
 import openDemo.service.sync.AbstractSyncService;
 import openDemo.utils.HttpClientUtil4Sync;
 
 @Service
-public class JiayangSyncService extends AbstractSyncService implements JiayangConfig {
+public class JiaYangSyncService extends AbstractSyncService implements WeiChuangConfig {
 	// 参数配置
 	private static final String REQUEST_SERVER_ADDRESS = "http://192.168.1.76:8004";
 	private static final String REQUEST_URL_GET_TOKEN = "/KayangWebApi/Data/StartSession";
@@ -33,7 +33,7 @@ public class JiayangSyncService extends AbstractSyncService implements JiayangCo
 	// json解析用
 	private ObjectMapper mapper;
 
-	public JiayangSyncService() {
+	public JiaYangSyncService() {
 		super.setApikey(apikey);
 		super.setSecretkey(secretkey);
 		super.setBaseUrl(baseUrl);
@@ -108,7 +108,7 @@ public class JiayangSyncService extends AbstractSyncService implements JiayangCo
 		return null;
 	}
 
-	private List<WeichuangUserInfoModel> getDataModelList(String mode) throws Exception {
+	private List<JiaYangUserInfoModel> getDataModelList(String mode) throws Exception {
 		String requestUrl = REQUEST_SERVER_ADDRESS + REQUEST_URL_GET_DATA;
 
 		String token = getToken();
@@ -123,8 +123,8 @@ public class JiayangSyncService extends AbstractSyncService implements JiayangCo
 		// TODO QA
 		String rowList = jsonNode.get("Result").get("Emp").get("Row").toString();
 
-		List<WeichuangUserInfoModel> list = mapper.readValue(rowList,
-				new TypeReference<List<WeichuangUserInfoModel>>() {
+		List<JiaYangUserInfoModel> list = mapper.readValue(rowList,
+				new TypeReference<List<JiaYangUserInfoModel>>() {
 				});
 
 		// 清除token
@@ -169,15 +169,15 @@ public class JiayangSyncService extends AbstractSyncService implements JiayangCo
 	}
 
 	public static void main(String[] args) throws IOException, Exception {
-		JiayangSyncService service = new JiayangSyncService();
+		JiaYangSyncService service = new JiaYangSyncService();
 		// service.getDataModelList(null);
 		ObjectMapper objectMapper = service.mapper;
 		String content = "{\"MsgId\": 0,\"Msg\": \"Success(读取数据成功！)\",\"Result\": {\"Emp\": {\"Row\": [{\"EID\": 1,\"Badge\": \"000001\",\"Name\": \"嘉扬\",\"EName\": \"jiayang\",\"CompID\": 8,\"DepID\": 15,\"JobID\": 49,\"ReportTo\": null,\"wfreportto\": null,\"EmpStatus\": 1,\"JobStatus\": 1,\"EmpType\": 1,\"EmpGrade\": 1,\"EmpCustom1\": null,\"EmpCustom2\": null,\"EmpCustom3\": null,\"EmpCustom4\": null,\"EmpCustom5\": null,\"WorkCity\": 1,\"JoinTyp\": 2,\"ConTerm\": null,\"ConEndDate\": null,\"LeaveDate\": null,\"LeaveType\": null,\"LeaveReason\": null,\"Wyear_Adjust\": null,\"Cyear_Adjust\": null,\"Country\": 41,\"CertType\": 1,\"CertNo\": \"310110196001010011\",\"Gender\": 2,\"BirthDay\": \"1960-01-01T00:00:00\",\"email\": \"laidd@kayang.com\",\"Mobile\": \"13901750327\",\"office_phone\": \"021-51035100\",\"EZID\": 100,\"Remark\": null,\"Details\": {\"EmpFamily\": [{\"id\": 325,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"******\",\"relation\": 1,\"gender\": 1,\"Birthday\": \"1961-07-20T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 5,\"remark\": null},{\"id\": 326,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"Test\",\"relation\": 2,\"gender\": 2,\"Birthday\": \"1961-11-29T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 5,\"remark\": null},{\"id\": 327,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"@@@@@@\",\"relation\": 3,\"gender\": 2,\"Birthday\": \"1983-06-15T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 1,\"remark\": null},{\"id\": 329,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"张某\",\"relation\": 1,\"gender\": 1,\"Birthday\": \"1961-07-20T00:00:00\",\"Company\": \"石油公司\",\"Job\": \"行政部主任\",\"status\": 5,\"remark\": \"aaa\"},{\"id\": 330,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"李某\",\"relation\": 2,\"gender\": 2,\"Birthday\": \"1961-11-29T00:00:00\",\"Company\": \"服装公司\",\"Job\": \"设计师\",\"status\": 5,\"remark\": \"双方各个梵蒂冈和发货\"},{\"id\": 331,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"@@@@@@\",\"relation\": 3,\"gender\": 2,\"Birthday\": \"1983-06-15T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 1,\"remark\": null},{\"id\": 337,\"eid\": 1,\"badge\": \"000001\",\"Fname\": null,\"relation\": null,\"gender\": null,\"Birthday\": null,\"Company\": null,\"Job\": null,\"status\": null,\"remark\": null},{\"id\": 335,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"hh\",\"relation\": 1,\"gender\": 2,\"Birthday\": \"2016-10-19T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 2,\"remark\": null},{\"id\": 336,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"嘉某某\",\"relation\": null,\"gender\": 3,\"Birthday\": null,\"Company\": null,\"Job\": null,\"status\": 2,\"remark\": null},{\"id\": 343,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"李某\",\"relation\": 2,\"gender\": 2,\"Birthday\": \"1961-11-29T00:00:00\",\"Company\": \"服装公司\",\"Job\": \"设计师\",\"status\": null,\"remark\": \"双方各个梵蒂冈和发货\"},{\"id\": 344,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"@@@@@@\",\"relation\": 3,\"gender\": 2,\"Birthday\": \"1983-06-15T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 1,\"remark\": null},{\"id\": 345,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"hh\",\"relation\": 1,\"gender\": 2,\"Birthday\": \"2016-10-19T00:00:00\",\"Company\": null,\"Job\": null,\"status\": 2,\"remark\": null},{\"id\": 346,\"eid\": 1,\"badge\": \"000001\",\"Fname\": \"嘉某某\",\"relation\": null,\"gender\": 3,\"Birthday\": null,\"Company\": null,\"Job\": null,\"status\": 2,\"remark\": null}],\"EmpEdu\": [{\"ID\": 310,\"EID\": 1,\"badge\": \"000001\",\"BeginDate\": null,\"endDate\": null,\"SchoolName\": null,\"GradType\": null,\"StudyType\": null,\"EduType\": null,\"DegreeType\": null,\"DegreeName\": null,\"Major\": null,\"EduNo\": null,\"EduNoDate\": null,\"DegreeNo\": null,\"DegreeNoDate\": null,\"SchoolPlace\": null,\"Reference\": null,\"Tel\": null,\"isout\": null,\"remark\": null,\"isfulltimehigh\": null,\"EduCert\": null,\"DegreeCert\": null},{\"ID\": 607,\"EID\": 1,\"badge\": \"000001\",\"BeginDate\": \"2016-10-04T00:00:00\",\"endDate\": \"2016-10-20T00:00:00\",\"SchoolName\": \"24234\",\"GradType\": 2,\"StudyType\": 16,\"EduType\": 2,\"DegreeType\": 2,\"DegreeName\": null,\"Major\": null,\"EduNo\": null,\"EduNoDate\": null,\"DegreeNo\": null,\"DegreeNoDate\": null,\"SchoolPlace\": null,\"Reference\": null,\"Tel\": null,\"isout\": null,\"remark\": null,\"isfulltimehigh\": null,\"EduCert\": null,\"DegreeCert\": null}]}}]}}}";
 		JsonNode jsonNode = objectMapper.readTree(content);
 		String emps = jsonNode.get("Result").get("Emp").get("Row").toString();
 		System.out.println(emps);
-		List<WeichuangUserInfoModel> list = objectMapper.readValue(emps,
-				new TypeReference<List<WeichuangUserInfoModel>>() {
+		List<JiaYangUserInfoModel> list = objectMapper.readValue(emps,
+				new TypeReference<List<JiaYangUserInfoModel>>() {
 				});
 		List<UserInfoModel> userList = service.copyCreateEntityList(list, UserInfoModel.class);
 		PrintUtil.printUsers(userList);

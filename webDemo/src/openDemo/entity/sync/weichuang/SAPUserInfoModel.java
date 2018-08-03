@@ -4,77 +4,78 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * 微创用户json数据模型
+ * SAP公司用户json数据模型
  * 
  * @author yanl
+ *
  */
-public class WeichuangUserInfoModel {
+public class SAPUserInfoModel {
 
 	/**
 	 * 用户ID(同步必传)
 	 */
-	@JsonIgnore
+	@JsonProperty("userId")
 	private String ID;
 
 	/**
 	 * 用户名(同步必传)
 	 */
-	@JsonProperty("EName")
+	@JsonProperty("personIdExternal")
 	private String userName;
 
 	/**
 	 * 中文姓名(同步必传)
 	 */
-	@JsonProperty("Name")
+	@JsonProperty("formalName")
 	private String cnName;
 
 	/**
 	 * 性别
 	 */
-	@JsonProperty("Gender")
+	@JsonProperty("gender")
 	private String sex;
 
 	/**
 	 * 移动电话
 	 */
-	@JsonProperty("Mobile")
+	// @JsonProperty("phoneNumber")
 	private String mobile;
 
 	/**
 	 * 电子邮件
 	 */
-	@JsonProperty("email")
+	// @JsonProperty("emailAddress")
 	private String mail;
 
 	/**
 	 * 部门编号
 	 */
-	@JsonProperty("DepID")
+	@JsonProperty("department")
 	private String orgOuCode;
 
 	/**
 	 * 岗位编号
 	 */
-	@JsonProperty("JobID")
+	@JsonProperty("position")
 	private String postionNo;
 
 	/**
 	 * 入职日期
 	 */
-	@JsonIgnore
+	@JsonProperty("companyEntryDate")
 	private String entryTime;
 
 	/**
-	 * 出生日期
+	 * 员工状态
 	 */
-	@JsonIgnore
-	private String birthday;
+	@JsonProperty("emplStatus")
+	private String status;
 
 	/**
-	 * 人员状态
+	 * 扩展字段 1~10
 	 */
-	@JsonProperty("EmpStatus")
-	private String status;
+	@JsonIgnore
+	private String spare1;
 
 	public String getID() {
 		return ID;
@@ -148,14 +149,6 @@ public class WeichuangUserInfoModel {
 		this.entryTime = entryTime;
 	}
 
-	public String getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(String birthday) {
-		this.birthday = birthday;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -164,4 +157,12 @@ public class WeichuangUserInfoModel {
 		this.status = status;
 	}
 
+	public String getSpare1() {
+		return spare1;
+	}
+
+	public void setSpare1(String spare1) {
+		this.spare1 = spare1;
+	}
+	
 }
