@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * SAP岗位json数据模型
+ * 嘉扬岗位json数据模型
  * 
  * @author yanl
  */
-public class SAPPositionModel {
+public class JiaYangPositionModel {
 	/**
 	 * 岗位编号
 	 */
-	@JsonProperty("code")
+	@JsonProperty("jobcode")
 	private String pNo;
 
 	/**
@@ -24,14 +24,14 @@ public class SAPPositionModel {
 	/**
 	 * 一级类别；二级类别；岗位 (最后是岗位)
 	 */
-	@JsonProperty("externalName_zh_CN")
+	@JsonProperty("jobid")
 	private String pNames;
 
 	/**
-	 * 岗位所属部门
+	 * 所属公司编号
 	 */
-	@JsonProperty("company")
-	private String orgBelongsTo;
+	@JsonProperty("compid")
+	private String compBelongsTo;
 
 	public String getpNo() {
 		return pNo;
@@ -57,12 +57,12 @@ public class SAPPositionModel {
 		this.pNames = pNames;
 	}
 
-	public String getOrgBelongsTo() {
-		return orgBelongsTo;
+	public String getCompBelongsTo() {
+		return compBelongsTo;
 	}
 
-	public void setOrgBelongsTo(String orgBelongsTo) {
-		this.orgBelongsTo = orgBelongsTo;
+	public void setCompBelongsTo(String compBelongsTo) {
+		this.compBelongsTo = compBelongsTo;
 	}
 
 }

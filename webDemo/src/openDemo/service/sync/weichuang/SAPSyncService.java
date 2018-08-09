@@ -36,22 +36,26 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	private static final String REQUEST_SERVER_ADDRESS = "https://api15.sapsf.cn/";
 	private static final String REQUEST_URL_GET_SAML = "oauth/idp";
 	private static final String REQUEST_URL_GET_TOKEN = "oauth/token";
+	private static final String REQUEST_URL_VALIDATE_TOKEN = "oauth/validate";
 	private static final String REQUEST_ODATA_ADDRESS = "https://api15.sapsf.cn/odata/v2/";
 	private static final String REQUEST_ENTITY_FODEPARTMENT = "FODepartment?$format=json&$select=externalCode,name,parent,status";
 	private static final String REQUEST_ENTITY_FOCOMPANY = "FOCompany?$format=json&$select=externalCode,name,status";
-	private static final String REQUEST_ENTITY_POSITION = "Position?$format=json&$select=code,department,externalName_zh_CN";
-	private static final String REQUEST_ENTITY_PERPERSONAL = "PerPersonal?$format=json&$select=personIdExternal,formalName,gender";
+	private static final String REQUEST_ENTITY_POSITION = "Position?$format=json&$select=code,department,externalName_zh_CN,company";
+	private static final String REQUEST_ENTITY_PERPERSONAL = "PerPersonal?$format=json&$select=personIdExternal,formalName,gender,customString4";
 	private static final String REQUEST_ENTITY_PERPHONE = "PerPhone?$format=json&$select=personIdExternal,phoneNumber";
 	private static final String REQUEST_ENTITY_PEREMAIL = "PerEmail?$format=json&$select=personIdExternal,emailAddress";
 	private static final String REQUEST_ENTITY_EMPEMPLOYMENT = "EmpEmployment?$format=json&$select=personIdExternal,userId";
 	private static final String REQUEST_ENTITY_EMPJOB = "EmpJob?$format=json&$select=userId,department,position,companyEntryDate,emplStatus";
-	// private static final String REQUEST_ENTITY_USERACCOUNT = "UserAccount?$format=json&$select=username,personIdExternal";
+	// private static final String REQUEST_ENTITY_USERACCOUNT =
+	// "UserAccount?$format=json&$select=username,personIdExternal";
 
 	// 全量增量区分
 	private static final String MODE_FULL = "1";
 	private static final String MODE_UPDATE = "2";
 	// json解析用
 	private ObjectMapper mapper;
+	// 存放AccessToken
+	private String token;
 
 	public SAPSyncService() {
 		super.setApikey(apikey);
@@ -87,8 +91,8 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
 		String status = user.getStatus();
-		// status为null无效
-		if (status == null) {
+		// status为null或者518表示无效
+		if (status == null || "518".equals(status)) {
 			return true;
 		} else {
 			return false;
@@ -205,7 +209,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 		String response = null;
 		SAPResJsonModel<SAPUserInfoModel> resJsonModel = null;
 
-		// 查询登录账号名,中文名,性别信息
+		// 查询登录账号名,中文名,性别,工号信息
 		String requestUserUrl = REQUEST_ODATA_ADDRESS + REQUEST_ENTITY_PERPERSONAL;
 		List<SAPUserInfoModel> perPersonalList = new ArrayList<SAPUserInfoModel>();
 		do {
@@ -324,7 +328,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	private List<Header> getAuthHeader() throws IOException {
 		List<Header> headers = new ArrayList<Header>();
 		headers.add(new BasicHeader("Authorization", "Bearer "
-				+ "eyJ0b2tlbkNvbnRlbnQiOnsiYXBpS2V5IjoiT0dReFlUQTFZakpsWm1RM01UVXdPRFpsTldZNE5tSTBNamd6TUEiLCJzZlByaW5jaXBsZSI6IlNGQURNSU4jRElWI3NoYW5naGFpbWkiLCJpc3N1ZWRGb3IiOiJZWFRfZUxlYXJuaW5nXzIwMThfMDdfMzAiLCJzY29wZSI6IiIsImlzc3VlZEF0IjoxNTMzMjc4MzQyNTEyLCJleHBpcmVzQXQiOjE1MzMzNjQ3NDI1MTJ9LCJzaWduYXR1cmUiOiJib1ZGWUNuaFNqcDYzT2pER0cwTXdxOXFUNmdGSWRERHFTS052R2F4bjdqWW50elMvamV3eDFvdG9wbkEyZlJlQmNSanAwMi9xcWhNQStBbmZoUnVQMVBKRnNzek1VdEtuNnZ3STk4RER1a1FXN25RUDJxdGJtZUlRZlJGam9UL3JBU3U4TFBYREVPakZyb0dJcmxuNDJkVUIyeDUrNjErR3BGdzB4QVM4MlU9In0="));
+				+ "eyJ0b2tlbkNvbnRlbnQiOnsiYXBpS2V5IjoiT0dReFlUQTFZakpsWm1RM01UVXdPRFpsTldZNE5tSTBNamd6TUEiLCJzZlByaW5jaXBsZSI6IlNGQURNSU4jRElWI3NoYW5naGFpbWkiLCJpc3N1ZWRGb3IiOiJZWFRfZUxlYXJuaW5nXzIwMThfMDdfMzAiLCJzY29wZSI6IiIsImlzc3VlZEF0IjoxNTMzNzk2NTczMjM3LCJleHBpcmVzQXQiOjE1MzM4ODI5NzMyMzd9LCJzaWduYXR1cmUiOiJSYVNVc0hQU0Fqc0cvalN0dzg4d21mRk1mdGJXOUxGSVd1dEVHWmhWVHUxTWlEb0Y1SVhyenoxaEV5OWl0Z295M2diTytiUThWa0dndFVYM1I5RURjRVFxNzEwVVFsSkIyWmY5RjVaZDhxYTM3U0Q1Tk5NMEw0ZU85bHM4bWZhT3p4Y29DRVlnOXMycXJodWh4TGJRZnZTUGZmYkYxMnlkeU1Cc2RWc0F1MU09In0="));
 		return headers;
 	}
 
@@ -335,18 +339,42 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	 * @throws IOException
 	 */
 	private String getToken() throws IOException {
-		String requestUrl = REQUEST_SERVER_ADDRESS + REQUEST_URL_GET_TOKEN;
+		if (!isTokenValidate()) {
+			String requestUrl = REQUEST_SERVER_ADDRESS + REQUEST_URL_GET_TOKEN;
 
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("company_id", "shanghaimi");
-		paramMap.put("client_id", "OGQxYTA1YjJlZmQ3MTUwODZlNWY4NmI0MjgzMA");
-		paramMap.put("assertion", getSAMLAssertion());
-		paramMap.put("grant_type", "urn:ietf:params:oauth:grant-type:saml2-bearer");
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap.put("company_id", "shanghaimi");
+			paramMap.put("client_id", "OGQxYTA1YjJlZmQ3MTUwODZlNWY4NmI0MjgzMA");
+			paramMap.put("assertion", getSAMLAssertion());
+			paramMap.put("grant_type", "urn:ietf:params:oauth:grant-type:saml2-bearer");
 
-		String response = HttpClientUtil4Sync.doPost(requestUrl, paramMap);
-		JsonNode jsonNode = mapper.readTree(response);
+			String response = HttpClientUtil4Sync.doPost(requestUrl, paramMap);
+			JsonNode jsonNode = mapper.readTree(response);
 
-		return jsonNode.get("access_token").asText();
+			// 刷新token
+			token = jsonNode.get("access_token").asText();
+		}
+		return token;
+	}
+
+	private boolean isTokenValidate() throws IOException {
+		String requestUrl = REQUEST_SERVER_ADDRESS + REQUEST_URL_VALIDATE_TOKEN;
+
+		List<Header> headers = new ArrayList<Header>();
+		headers.add(new BasicHeader("Authorization", "Bearer " + token));
+		String response = HttpClientUtil4Sync.doGet(requestUrl, null, headers);
+		JsonNode jsonNode = mapper.readTree(response).get("expires_in");
+		if (jsonNode == null) {
+			return false;
+		} else {
+			String expiresIn = jsonNode.asText();
+			if (Integer.parseInt(expiresIn) < 60) {
+				return false;
+			}
+		}
+		System.out.println(response);
+
+		return true;
 	}
 
 	/**
@@ -369,10 +397,10 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	}
 
 	public static void main(String[] args) throws IOException, Exception {
-		// SAPSyncService service = new SAPSyncService();
-		// List<SAPOuInfoModel> dataModelList =
-		// service.getDeptDataModelList(null);
-		// System.out.println(dataModelList.size());
+		SAPSyncService service = new SAPSyncService();
+		// System.out.println(service.isTokenValidate());
+		List<SAPOuInfoModel> dataModelList = service.getDeptDataModelList(null);
+		System.out.println(dataModelList.size());
 		// List<OuInfoModel> entityList =
 		// service.copyCreateEntityList(dataModelList, OuInfoModel.class);
 		// PrintUtil.printOrgs(entityList);

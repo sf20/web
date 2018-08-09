@@ -24,6 +24,12 @@ public class SAPUserInfoModel {
 	private String userName;
 
 	/**
+	 * 工号
+	 */
+	@JsonProperty("customString4")
+	private String userNo;
+
+	/**
 	 * 中文姓名(同步必传)
 	 */
 	@JsonProperty("formalName")
@@ -91,6 +97,14 @@ public class SAPUserInfoModel {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
 	}
 
 	public String getCnName() {
@@ -164,5 +178,5 @@ public class SAPUserInfoModel {
 	public void setSpare1(String spare1) {
 		this.spare1 = spare1;
 	}
-	
+
 }

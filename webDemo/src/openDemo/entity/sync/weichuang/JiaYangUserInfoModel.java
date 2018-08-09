@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * 微创用户json数据模型
+ * 嘉扬用户json数据模型
  * 
  * @author yanl
  */
@@ -19,61 +19,61 @@ public class JiaYangUserInfoModel {
 	/**
 	 * 用户名(同步必传)
 	 */
-	@JsonProperty("EName")
+	@JsonProperty("account")
 	private String userName;
+
+	/**
+	 * 工号
+	 */
+	@JsonProperty("Badge")
+	private String userNo;
 
 	/**
 	 * 中文姓名(同步必传)
 	 */
-	@JsonProperty("Name")
+	@JsonProperty("name")
 	private String cnName;
 
 	/**
 	 * 性别
 	 */
-	@JsonProperty("Gender")
+	@JsonProperty("GENDER")
 	private String sex;
 
 	/**
 	 * 移动电话
 	 */
-	@JsonProperty("Mobile")
+	@JsonIgnore
 	private String mobile;
 
 	/**
 	 * 电子邮件
 	 */
-	@JsonProperty("email")
+	@JsonProperty("EMAIL")
 	private String mail;
 
 	/**
 	 * 部门编号
 	 */
-	@JsonProperty("DepID")
+	@JsonProperty("depcode")
 	private String orgOuCode;
 
 	/**
 	 * 岗位编号
 	 */
-	@JsonProperty("JobID")
+	@JsonProperty("jobcode")
 	private String postionNo;
 
 	/**
 	 * 入职日期
 	 */
-	@JsonIgnore
+	@JsonProperty("joindate")
 	private String entryTime;
-
-	/**
-	 * 出生日期
-	 */
-	@JsonIgnore
-	private String birthday;
 
 	/**
 	 * 人员状态
 	 */
-	@JsonProperty("EmpStatus")
+	@JsonProperty("STATUS")
 	private String status;
 
 	public String getID() {
@@ -90,6 +90,14 @@ public class JiaYangUserInfoModel {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getUserNo() {
+		return userNo;
+	}
+
+	public void setUserNo(String userNo) {
+		this.userNo = userNo;
 	}
 
 	public String getCnName() {
@@ -146,14 +154,6 @@ public class JiaYangUserInfoModel {
 
 	public void setEntryTime(String entryTime) {
 		this.entryTime = entryTime;
-	}
-
-	public String getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(String birthday) {
-		this.birthday = birthday;
 	}
 
 	public String getStatus() {
