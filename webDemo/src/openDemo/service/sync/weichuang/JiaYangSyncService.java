@@ -71,7 +71,7 @@ public class JiaYangSyncService extends AbstractSyncService implements WeiChuang
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
 		String status = user.getStatus();
-		if ("离职".equals(status)) {
+		if (status == null || "离职".equals(status)) {
 			return true;
 		} else {
 			return false;

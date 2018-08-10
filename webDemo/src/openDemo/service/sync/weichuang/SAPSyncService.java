@@ -137,7 +137,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	@Override
 	protected List<PositionModel> getPositionModelList(String mode) throws java.lang.Exception {
 		List<SAPPositionModel> dataModelList = getPosDataModelList(mode);
-		// 岗位数据存在同岗位名不同岗位id（不同部门存在相同岗位名） 将部门名称设置为岗位类别名
+		// 岗位数据存在同岗位名不同岗位id（不同部门存在相同岗位名） 将公司名称设置为岗位类别名
 		for (SAPPositionModel pos : dataModelList) {
 			pos.setpNameClass(getPositionNameClassFromOrgs(pos.getOrgBelongsTo()));
 		}
@@ -327,8 +327,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	 */
 	private List<Header> getAuthHeader() throws IOException {
 		List<Header> headers = new ArrayList<Header>();
-		headers.add(new BasicHeader("Authorization", "Bearer "
-				+ "eyJ0b2tlbkNvbnRlbnQiOnsiYXBpS2V5IjoiT0dReFlUQTFZakpsWm1RM01UVXdPRFpsTldZNE5tSTBNamd6TUEiLCJzZlByaW5jaXBsZSI6IlNGQURNSU4jRElWI3NoYW5naGFpbWkiLCJpc3N1ZWRGb3IiOiJZWFRfZUxlYXJuaW5nXzIwMThfMDdfMzAiLCJzY29wZSI6IiIsImlzc3VlZEF0IjoxNTMzNzk2NTczMjM3LCJleHBpcmVzQXQiOjE1MzM4ODI5NzMyMzd9LCJzaWduYXR1cmUiOiJSYVNVc0hQU0Fqc0cvalN0dzg4d21mRk1mdGJXOUxGSVd1dEVHWmhWVHUxTWlEb0Y1SVhyenoxaEV5OWl0Z295M2diTytiUThWa0dndFVYM1I5RURjRVFxNzEwVVFsSkIyWmY5RjVaZDhxYTM3U0Q1Tk5NMEw0ZU85bHM4bWZhT3p4Y29DRVlnOXMycXJodWh4TGJRZnZTUGZmYkYxMnlkeU1Cc2RWc0F1MU09In0="));
+		headers.add(new BasicHeader("Authorization", "Bearer " + getToken()));
 		return headers;
 	}
 
@@ -354,9 +353,16 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 			// 刷新token
 			token = jsonNode.get("access_token").asText();
 		}
+		System.out.println(token);
 		return token;
 	}
 
+	/**
+	 * 验证token是否过期
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean isTokenValidate() throws IOException {
 		String requestUrl = REQUEST_SERVER_ADDRESS + REQUEST_URL_VALIDATE_TOKEN;
 
@@ -368,11 +374,12 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 			return false;
 		} else {
 			String expiresIn = jsonNode.asText();
+			System.out.println("token有效期：" + expiresIn);
+			// token有效期小于60秒重新获取token
 			if (Integer.parseInt(expiresIn) < 60) {
 				return false;
 			}
 		}
-		System.out.println(response);
 
 		return true;
 	}
