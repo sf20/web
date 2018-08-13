@@ -5,5 +5,5 @@ public interface MeiliTianyuanConfig {
 
 	String secretkey = "ae456577-e2f7-4295-a73b-534f67ce240c";
 
-	String baseUrl = "http://api.qida.yunxuetang.com.cn/";
+	String baseUrl = "http://api-netadel.yunxuetang.com.cn/";
 }
