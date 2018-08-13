@@ -74,7 +74,8 @@ public class MideaUserInfoModel {
 	/**
 	 * 入职日期
 	 */
-	@JsonProperty("customized-joinsysdate")
+	// @JsonProperty("customized-joinsysdate")
+	@JsonProperty("customized-hiredate")
 	private String entryTime;
 
 	/**
