@@ -54,6 +54,11 @@ public class UserInfoModel {
 	private String orgOuCode;
 
 	/**
+	 * 部门名称
+	 */
+	private String orgOuName;
+
+	/**
 	 * 密码加密方式： YXT(云学堂加密默认)、MD5 (密码MD5加密)、CMD5(用户名+密码MD5加密)
 	 */
 	private String encryptionType;
@@ -186,6 +191,14 @@ public class UserInfoModel {
 
 	public void setOrgOuCode(String orgOuCode) {
 		this.orgOuCode = orgOuCode;
+	}
+
+	public String getOrgOuName() {
+		return orgOuName;
+	}
+
+	public void setOrgOuName(String orgOuName) {
+		this.orgOuName = orgOuName;
 	}
 
 	public String getEncryptionType() {
