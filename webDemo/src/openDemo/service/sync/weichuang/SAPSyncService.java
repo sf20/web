@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,7 +17,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import openDemo.common.PrintUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
@@ -56,6 +53,9 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	private ObjectMapper mapper;
 	// 存放AccessToken
 	private String token;
+
+	private List<OuInfoModel> sharedOuInfoModelList;
+	private List<PositionModel> sharedPositionModelList;
 
 	public SAPSyncService() {
 		super.setApikey(apikey);
@@ -131,6 +131,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 		List<SAPOuInfoModel> dataModelList = getDeptDataModelList(mode);
 		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
 
+		sharedOuInfoModelList = newList;
 		return newList;
 	}
 
@@ -143,6 +144,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 		}
 		List<PositionModel> newList = copyCreateEntityList(dataModelList, PositionModel.class);
 
+		sharedPositionModelList = newList;
 		return newList;
 	}
 
@@ -150,6 +152,34 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws java.lang.Exception {
 		List<SAPUserInfoModel> dataModelList = getUserDataModelList(mode);
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
+
+		// 设置部门名和岗位名
+		for (UserInfoModel user : newList) {
+			for (OuInfoModel org : sharedOuInfoModelList) {
+				if (org.getID().equals(user.getOrgOuCode())) {
+					user.setOrgOuName(org.getOuName());
+					break;
+				}
+			}
+			for (PositionModel pos : sharedPositionModelList) {
+				if (pos.getpNo().equals(user.getPostionNo())) {
+					user.setPostionName(pos.getpNames());
+					break;
+				}
+			}
+			String orgName = user.getOrgOuName();
+			String posName = user.getPostionName();
+			if (StringUtils.isNotBlank(posName)) {
+				if (StringUtils.isNotBlank(orgName)) {
+					// 设置岗位名为带部门名分类岗位名
+					user.setPostionName(orgName + POSITION_CLASS_SEPARATOR + posName);
+				} else {
+					user.setPostionName(POSITION_CLASS_DEFAULT + POSITION_CLASS_SEPARATOR + posName);
+				}
+			}
+		}
+		// 将岗位编号用数据库已有岗位的编号替换
+		setDBPositionNoToUser(newList);
 
 		return newList;
 	}
