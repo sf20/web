@@ -49,7 +49,8 @@ public class JiaYangUserInfoModel {
 	/**
 	 * 电子邮件
 	 */
-	@JsonProperty("EMAIL")
+	// @JsonProperty("EMAIL")
+	@JsonIgnore
 	private String mail;
 
 	/**
@@ -59,10 +60,22 @@ public class JiaYangUserInfoModel {
 	private String orgOuCode;
 
 	/**
+	 * 所属公司组织名
+	 */
+	@JsonProperty("comtitle")
+	private String orgOuName;
+
+	/**
 	 * 岗位编号
 	 */
 	@JsonProperty("jobcode")
 	private String postionNo;
+
+	/**
+	 * 岗位名
+	 */
+	@JsonProperty("jobid")
+	private String postionName;
 
 	/**
 	 * 入职日期
@@ -140,12 +153,28 @@ public class JiaYangUserInfoModel {
 		this.orgOuCode = orgOuCode;
 	}
 
+	public String getOrgOuName() {
+		return orgOuName;
+	}
+
+	public void setOrgOuName(String orgOuName) {
+		this.orgOuName = orgOuName;
+	}
+
 	public String getPostionNo() {
 		return postionNo;
 	}
 
 	public void setPostionNo(String postionNo) {
 		this.postionNo = postionNo;
+	}
+
+	public String getPostionName() {
+		return postionName;
+	}
+
+	public void setPostionName(String postionName) {
+		this.postionName = postionName;
 	}
 
 	public String getEntryTime() {

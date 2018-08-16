@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -143,6 +144,23 @@ public class JiaYangSyncService extends AbstractSyncService implements WeiChuang
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws java.lang.Exception {
 		List<JiaYangUserInfoModel> dataModelList = getDataModelList(mode, JiaYangUserInfoModel.class);
 		List<UserInfoModel> newList = copyCreateEntityList(dataModelList, UserInfoModel.class);
+
+		// 设置公司组织名和岗位名
+		for (UserInfoModel user : newList) {
+			String orgName = user.getOrgOuName();
+			String posName = user.getPostionName();
+			// 增加contains条件解决重复设置bug
+			if (StringUtils.isNotBlank(posName) && !posName.contains(POSITION_CLASS_SEPARATOR)) {
+				if (StringUtils.isNotBlank(orgName)) {
+					// 设置岗位名为带部门名分类岗位名
+					user.setPostionName(orgName + POSITION_CLASS_SEPARATOR + posName);
+				} else {
+					user.setPostionName(POSITION_CLASS_DEFAULT + POSITION_CLASS_SEPARATOR + posName);
+				}
+			}
+		}
+		// 将岗位编号用数据库已有岗位的编号替换
+		setDBPositionNoToUser(newList);
 
 		return newList;
 	}

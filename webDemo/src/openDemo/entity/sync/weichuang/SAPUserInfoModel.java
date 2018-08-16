@@ -68,8 +68,7 @@ public class SAPUserInfoModel {
 	/**
 	 * 岗位编号
 	 */
-	// @JsonProperty("position")
-	@JsonIgnore
+	@JsonProperty("position")
 	private String postionNo;
 
 	/**
