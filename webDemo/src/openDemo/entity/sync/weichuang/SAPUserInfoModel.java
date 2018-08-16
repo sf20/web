@@ -60,22 +60,10 @@ public class SAPUserInfoModel {
 	private String orgOuCode;
 
 	/**
-	 * 部门编号
-	 */
-	@JsonIgnore
-	private String orgName;
-
-	/**
 	 * 岗位编号
 	 */
 	@JsonProperty("position")
 	private String postionNo;
-
-	/**
-	 * 部门编号
-	 */
-	@JsonIgnore
-	private String postionName;
 
 	/**
 	 * 入职日期
