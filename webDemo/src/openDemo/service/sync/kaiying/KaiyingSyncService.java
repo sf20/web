@@ -18,6 +18,7 @@ import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
 import openDemo.entity.sync.kaiying.KaiyingOuInfoModel;
 import openDemo.entity.sync.kaiying.KaiyingPositionModel;
+import openDemo.entity.sync.kaiying.KaiyingPositionListModel;
 import openDemo.entity.sync.kaiying.KaiyingResJsonModel;
 import openDemo.service.sync.AbstractSyncService;
 import openDemo.utils.HttpClientUtil4Sync;
@@ -26,6 +27,8 @@ import openDemo.utils.HttpClientUtil4Sync;
 public class KaiyingSyncService extends AbstractSyncService implements KaiyingConfig {
 	// 用户接口请求参数值
 	private static final String REQUEST_ORG_URL = "http://api-oa.kingnet.com/api/org/list";
+	// private static final String REQUEST_POSITION_URL = "http://api-oa.kingnet.com/api/position/list";
+	private static final String REQUEST_POST_URL = "http://api-oa.kingnet.com/api/post/list";
 	private static final String ENABLE_STATUS = "active";
 	private static final int RESPONSE_STATUS_OK = 1;
 
@@ -74,6 +77,10 @@ public class KaiyingSyncService extends AbstractSyncService implements KaiyingCo
 		if (classType.isAssignableFrom(KaiyingPositionModel.class)) {
 			resJsonModel = mapper.readValue(jsonString, new TypeReference<KaiyingResJsonModel<KaiyingPositionModel>>() {
 			});
+		} else if (classType.isAssignableFrom(KaiyingPositionListModel.class)) {
+			resJsonModel = mapper.readValue(jsonString,
+					new TypeReference<KaiyingResJsonModel<KaiyingPositionListModel>>() {
+					});
 		} else if (classType.isAssignableFrom(KaiyingOuInfoModel.class)) {
 			resJsonModel = mapper.readValue(jsonString, new TypeReference<KaiyingResJsonModel<KaiyingOuInfoModel>>() {
 			});
@@ -126,9 +133,29 @@ public class KaiyingSyncService extends AbstractSyncService implements KaiyingCo
 	}
 
 	@Override
-	protected List<PositionModel> getPositionModelList(String mode) throws Exception {
-		// 后期调整为同步职位名 不需要获取岗位列表
-		return new ArrayList<PositionModel>(0);
+	public List<PositionModel> getPositionModelList(String mode) throws Exception {
+		// List<KaiyingPositionListModel> modelList = getDataModelList(mode,
+		// REQUEST_POSITION_URL,
+		// KaiyingPositionListModel.class);
+		// List<PositionModel> newList = new ArrayList<PositionModel>();
+		// for (KaiyingPositionListModel pos : modelList) {
+		// String postType = pos.getPostType();
+		// List<Map<String, String>> positionList = pos.getPositionList();
+		// for (Map<String, String> map : positionList) {
+		// PositionModel position = new PositionModel();
+		// position.setpNo(UUID.randomUUID().toString());
+		// position.setpNameClass(postType);
+		// position.setpNames(map.get("position"));
+		// newList.add(position);
+		// }
+		// }
+		// return newList;
+
+		List<KaiyingPositionModel> modelList = getDataModelList(mode, REQUEST_POST_URL, KaiyingPositionModel.class);
+		List<PositionModel> newList = copyCreateEntityList(modelList, PositionModel.class);
+		return newList;
+		// // 后期调整为同步职位名 不需要获取岗位列表
+		// return new ArrayList<PositionModel>(0);
 	}
 
 	@Override
