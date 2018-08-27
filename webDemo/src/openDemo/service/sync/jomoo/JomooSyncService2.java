@@ -2,8 +2,6 @@ package openDemo.service.sync.jomoo;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import openDemo.common.EncryptUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.ResultEntity;
@@ -245,7 +244,7 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 			String realManager = String.valueOf(values[9]);
 			if (StringUtils.isNotBlank(realManager)) {
 				// 管理区域经理名字进行md5编码作为部门id
-				userInfo.setOrgOuCode(getMd5(realManager));
+				userInfo.setOrgOuCode(EncryptUtil.getMd5(realManager));
 				// 部门名显示 管理区域经理：xxx
 				userInfo.setDeptName(namePrefix + realManager);
 			}
@@ -335,29 +334,4 @@ public class JomooSyncService2 extends AbstractSyncService implements JomooConfi
 		return resultList;
 	}
 
-	public String getMd5(String plainText) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(plainText.getBytes());
-			byte b[] = md.digest();
-
-			int i;
-
-			StringBuilder buf = new StringBuilder("");
-			for (int offset = 0; offset < b.length; offset++) {
-				i = b[offset];
-				if (i < 0)
-					i += 256;
-				if (i < 16)
-					buf.append("0");
-				buf.append(Integer.toHexString(i));
-			}
-			// 32位加密
-			return buf.toString();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
 }

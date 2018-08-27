@@ -1,8 +1,6 @@
 package openDemo.service.sync.kaiying;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import openDemo.common.EncryptUtil;
 import openDemo.common.PrintUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
@@ -66,7 +65,7 @@ public class KaiyingSyncService extends AbstractSyncService implements KaiyingCo
 		long ts = System.currentTimeMillis() / 1000;
 
 		String message = "app_id=" + appId + "&ts=" + ts;
-		String hash = getMd5(message + appKey);
+		String hash = EncryptUtil.getMd5(message + appKey);
 
 		String url = requestUrl + "?app_id=" + appId + "&ts=" + ts + "&encryptionType=md5" + "&sign=" + hash;
 		String jsonString = HttpClientUtil4Sync.doGet(url);
@@ -196,29 +195,4 @@ public class KaiyingSyncService extends AbstractSyncService implements KaiyingCo
 		PrintUtil.printPoss(ouInfoModelList);
 	}
 
-	public static String getMd5(String plainText) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(plainText.getBytes());
-			byte b[] = md.digest();
-
-			int i;
-
-			StringBuilder buf = new StringBuilder("");
-			for (int offset = 0; offset < b.length; offset++) {
-				i = b[offset];
-				if (i < 0)
-					i += 256;
-				if (i < 16)
-					buf.append("0");
-				buf.append(Integer.toHexString(i));
-			}
-			// 32位加密
-			return buf.toString();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
 }
