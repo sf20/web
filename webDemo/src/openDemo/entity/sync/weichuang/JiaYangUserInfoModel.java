@@ -89,6 +89,12 @@ public class JiaYangUserInfoModel {
 	@JsonProperty("STATUS")
 	private String status;
 
+	/**
+	 * 人员状态
+	 */
+	@JsonProperty("JOBTYPE")
+	private String deleteStatus;
+
 	public String getID() {
 		return ID;
 	}
@@ -191,6 +197,14 @@ public class JiaYangUserInfoModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
 	}
 
 }

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import openDemo.common.PrintUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
@@ -42,7 +43,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	private static final String REQUEST_ENTITY_PERPHONE = "PerPhone?$format=json&$select=personIdExternal,phoneNumber";
 	private static final String REQUEST_ENTITY_PEREMAIL = "PerEmail?$format=json&$select=personIdExternal,emailAddress";
 	private static final String REQUEST_ENTITY_EMPEMPLOYMENT = "EmpEmployment?$format=json&$select=personIdExternal,userId";
-	private static final String REQUEST_ENTITY_EMPJOB = "EmpJob?$format=json&$select=userId,department,position,companyEntryDate,emplStatus";
+	private static final String REQUEST_ENTITY_EMPJOB = "EmpJob?$format=json&$select=userId,department,position,companyEntryDate,emplStatus,customString12";
 	// private static final String REQUEST_ENTITY_USERACCOUNT =
 	// "UserAccount?$format=json&$select=username,personIdExternal";
 
@@ -91,8 +92,10 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
 		String status = user.getStatus();
-		// status为null或者518表示无效
-		if (status == null || "518".equals(status)) {
+		// TODO 员工类型
+		String deleteStatus = user.getDeleteStatus();
+		// status为null或者518表示无效 员工类型为一线员工574的不同步
+		if ((status == null || "518".equals(status)) || (deleteStatus == null || "574".equals(deleteStatus))) {
 			return true;
 		} else {
 			return false;
@@ -333,7 +336,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 			}
 		}
 
-		// 关联部门ID,岗位ID,入职日期
+		// 关联部门ID,岗位ID,入职日期,员工类型
 		for (SAPUserInfoModel empJob : empJobList) {
 			for (SAPUserInfoModel perPersonal : perPersonalList) {
 				if (empJob.getID().equals(perPersonal.getID())) {
@@ -341,6 +344,7 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 					perPersonal.setPostionNo(empJob.getPostionNo());
 					perPersonal.setEntryTime(empJob.getEntryTime());
 					perPersonal.setStatus(empJob.getStatus());
+					perPersonal.setDeleteStatus(empJob.getDeleteStatus());
 					break;
 				}
 			}
@@ -436,8 +440,8 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 	public static void main(String[] args) throws IOException, Exception {
 		SAPSyncService service = new SAPSyncService();
 		// System.out.println(service.isTokenValidate());
-		List<SAPOuInfoModel> dataModelList = service.getDeptDataModelList(null);
-		System.out.println(dataModelList.size());
+		// List<SAPOuInfoModel> dataModelList = service.getDeptDataModelList(null);
+		// System.out.println(dataModelList.size());
 		// List<OuInfoModel> entityList =
 		// service.copyCreateEntityList(dataModelList, OuInfoModel.class);
 		// PrintUtil.printOrgs(entityList);
@@ -449,12 +453,10 @@ public class SAPSyncService extends AbstractSyncService implements WeiChuangConf
 		// service.copyCreateEntityList(dataModelList, PositionModel.class);
 		// PrintUtil.logPrintPoss(entityList);
 
-		// List<SAPUserInfoModel> dataModelList =
-		// service.getUserDataModelList(null);
-		// System.out.println(dataModelList.size());
-		// List<UserInfoModel> entityList =
-		// service.copyCreateEntityList(dataModelList, UserInfoModel.class);
-		// PrintUtil.logPrintUsers(entityList);
+		List<SAPUserInfoModel> dataModelList = service.getUserDataModelList(null);
+		System.out.println(dataModelList.size());
+		List<UserInfoModel> entityList = service.copyCreateEntityList(dataModelList, UserInfoModel.class);
+		PrintUtil.logPrintUsers(entityList);
 
 		// ObjectMapper objectMapper = service.mapper;
 		// String content = "";

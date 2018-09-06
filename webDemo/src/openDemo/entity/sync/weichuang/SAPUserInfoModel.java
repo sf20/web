@@ -78,6 +78,12 @@ public class SAPUserInfoModel {
 	private String status;
 
 	/**
+	 * 员工类型
+	 */
+	@JsonProperty("customString12")
+	private String deleteStatus;
+
+	/**
 	 * 扩展字段 1~10
 	 */
 	@JsonIgnore
@@ -169,6 +175,14 @@ public class SAPUserInfoModel {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
 	}
 
 	public String getSpare1() {

@@ -1,8 +1,7 @@
 package openDemo.service.sync.weichuang;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,9 @@ public class JiaYangSyncService extends AbstractSyncService implements WeiChuang
 	@Override
 	protected boolean isUserExpired(UserInfoModel user) {
 		String status = user.getStatus();
-		if (status == null || "离职".equals(status)) {
+		// TODO 员工是否是一线工人 1：是 2：否
+		String deleteStatus = user.getDeleteStatus();
+		if ((status == null || "离职".equals(status)) || "1".equals(deleteStatus)) {
 			return true;
 		} else {
 			return false;
@@ -242,32 +243,6 @@ public class JiaYangSyncService extends AbstractSyncService implements WeiChuang
 		jsonParams.put("accessToken", token);
 
 		HttpClientUtil4Sync.doPost(requestUrl, jsonParams.toString());
-	}
-
-	public String getMd5(String plainText) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(plainText.getBytes());
-			byte b[] = md.digest();
-
-			int i;
-
-			StringBuilder buf = new StringBuilder("");
-			for (int offset = 0; offset < b.length; offset++) {
-				i = b[offset];
-				if (i < 0)
-					i += 256;
-				if (i < 16)
-					buf.append("0");
-				buf.append(Integer.toHexString(i));
-			}
-			// 32位加密
-			return buf.toString();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-
 	}
 
 	public static void main(String[] args) throws IOException, Exception {
