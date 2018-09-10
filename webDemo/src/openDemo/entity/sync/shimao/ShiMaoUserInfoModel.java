@@ -20,7 +20,7 @@ public class ShiMaoUserInfoModel {
 	/**
 	 * 用户名(同步必传)
 	 */
-	@JsonProperty("AccountName")
+	@JsonIgnore
 	private String userName;
 
 	/**
@@ -38,15 +38,13 @@ public class ShiMaoUserInfoModel {
 	/**
 	 * 移动电话
 	 */
-	// @JsonProperty("Phone")
-	@JsonIgnore
+	@JsonProperty("Phone")
 	private String mobile;
 
 	/**
 	 * 电子邮件
 	 */
-	// @JsonProperty("Mail")
-	@JsonIgnore
+	@JsonProperty("Mail")
 	private String mail;
 
 	/**

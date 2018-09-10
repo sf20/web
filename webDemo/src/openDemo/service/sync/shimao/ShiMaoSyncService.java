@@ -31,8 +31,9 @@ public class ShiMaoSyncService extends AbstractSyncService implements ShiMaoConf
 	// 请求参数
 	public static String PARAM_SOURCESYS = "CaresoftDC";
 	public static int PARAM_PAGESIZE = 10000;
+	public static String MAIL_SEPARATOR = "@";
 	// WebServiceLocator
-	private GetPersonInfoServiceLocator locator = new GetPersonInfoServiceLocator();
+	private GetPersonInfoForeignServiceLocator locator = new GetPersonInfoForeignServiceLocator();
 	// 用于复用的对象集合
 	private List<PositionModel> sharedPositionModelList = new ArrayList<PositionModel>();
 	private Map<String, String> sharedPosNoDeptIdMap = new HashMap<String, String>();
@@ -84,6 +85,13 @@ public class ShiMaoSyncService extends AbstractSyncService implements ShiMaoConf
 
 	@Override
 	protected void changePropValues(List<UserInfoModel> newList) {
+		for (UserInfoModel tempModel : newList) {
+			String mail = StringUtils.lowerCase(tempModel.getMail());
+			if (StringUtils.isNotBlank(mail) && mail.contains(MAIL_SEPARATOR)) {
+				// 使用邮箱前缀作为登录名
+				tempModel.setUserName(mail.split(MAIL_SEPARATOR)[0]);
+			}
+		}
 	}
 
 	@Override
@@ -191,7 +199,7 @@ public class ShiMaoSyncService extends AbstractSyncService implements ShiMaoConf
 
 	private <T> List<T> getDataModelList(String mode, Class<T> listClassType) throws Exception {
 		// 调用WebService对象
-		GetPersonInfoServiceSoap service = locator.getGetPersonInfoServiceSoap();
+		GetPersonInfoForeignServiceSoap service = locator.getGetPersonInfoForeignServiceSoap();
 
 		int pageIndex = 1;
 		List<T> pageDataModelList = null;
@@ -273,11 +281,12 @@ public class ShiMaoSyncService extends AbstractSyncService implements ShiMaoConf
 
 	public static void main(String[] args) throws Exception {
 		ShiMaoSyncService service = new ShiMaoSyncService();
-		service.getOuInfoModelList(null);
+		List<OuInfoModel> ouInfoModelList = service.getOuInfoModelList(null);
+		System.out.println(ouInfoModelList.size());
 		// List<PositionModel> dataModelList =
 		// service.getPositionModelList(null);
 		List<UserInfoModel> dataModelList = service.getUserInfoModelList(null);
 		System.out.println(dataModelList.size());
-		PrintUtil.logPrintUsers(dataModelList);
+		// PrintUtil.logPrintUsers(dataModelList);
 	}
 }
