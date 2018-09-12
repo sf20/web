@@ -90,6 +90,8 @@ public class ShiMaoSyncService extends AbstractSyncService implements ShiMaoConf
 			if (StringUtils.isNotBlank(mail) && mail.contains(MAIL_SEPARATOR)) {
 				// 使用邮箱前缀作为登录名
 				tempModel.setUserName(mail.split(MAIL_SEPARATOR)[0]);
+				// 使用ID作为工号
+				tempModel.setUserNo(tempModel.getID());
 			}
 		}
 	}

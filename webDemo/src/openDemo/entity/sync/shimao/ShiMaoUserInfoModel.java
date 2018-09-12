@@ -38,7 +38,7 @@ public class ShiMaoUserInfoModel {
 	/**
 	 * 移动电话
 	 */
-	@JsonProperty("Phone")
+	@JsonIgnore
 	private String mobile;
 
 	/**
@@ -77,6 +77,12 @@ public class ShiMaoUserInfoModel {
 	// TODO
 	@JsonIgnore
 	private String entryTime;
+
+	/**
+	 * 出生日期
+	 */
+	@JsonProperty("Birthday")
+	private String birthday;
 
 	/**
 	 * 员工有效状态
@@ -176,6 +182,14 @@ public class ShiMaoUserInfoModel {
 
 	public void setEntryTime(String entryTime) {
 		this.entryTime = entryTime;
+	}
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
 	}
 
 	public String getStatus() {
