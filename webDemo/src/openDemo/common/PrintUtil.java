@@ -15,9 +15,9 @@ public class PrintUtil {
 	public static void printUsers(List<UserInfoModel> userList) {
 		System.out.println(userList.size());
 		for (UserInfoModel model : userList) {
-			System.out.println(model.getID() + "--" + model.getCnName() + "--" + model.getSex() + "--"
-					+ model.getMobile() + "--" + model.getMail() + "--" + model.getOrgOuCode() + "--"
-					+ model.getPostionNo() + "--" + model.getEntryTime() + "--" + model.getStatus());
+			System.out.println(model.getID() + "--" + model.getUserName() + "--" + model.getCnName() + "--"
+					+ model.getSex() + "--" + model.getMobile() + "--" + model.getMail() + "--" + model.getOrgOuCode()
+					+ "--" + model.getPostionNo() + "--" + model.getEntryTime() + "--" + model.getStatus());
 		}
 	}
 
@@ -38,13 +38,13 @@ public class PrintUtil {
 
 	public static void logPrintUsers(List<UserInfoModel> userList) {
 		for (UserInfoModel model : userList) {
-			LOGGER.info("ID:" + model.getID() + "--CnName:" + model.getCnName() + "--Sex:" + model.getSex()
-					+ "--Mobile:" + model.getMobile() + "--Mail:" + model.getMail() + "--OrgOuCode:"
-					+ model.getOrgOuCode() + "--PostionNo:" + model.getPostionNo() + "--PostionName:"
-					+ model.getPostionName() + "--EntryTime:" + model.getEntryTime() + "--Status:" + model.getStatus()
-					+ "--DeleteStatus:" + model.getDeleteStatus() + "--Spare1:" + model.getSpare1() + "--Spare2:"
-					+ model.getSpare2() + "--Spare3:" + model.getSpare3() + "--Spare4:" + model.getSpare4()
-					+ "--Spare5:" + model.getSpare5());
+			LOGGER.info("ID:" + model.getID() + "--UserName:" + model.getUserName() + "--CnName:" + model.getCnName()
+					+ "--Sex:" + model.getSex() + "--Mobile:" + model.getMobile() + "--Mail:" + model.getMail()
+					+ "--OrgOuCode:" + model.getOrgOuCode() + "--OrgOuName:" + model.getOrgOuName() + "--PostionNo:"
+					+ model.getPostionNo() + "--PostionName:" + model.getPostionName() + "--EntryTime:"
+					+ model.getEntryTime() + "--Status:" + model.getStatus() + "--DeleteStatus:"
+					+ model.getDeleteStatus() + "--UserNo:" + model.getUserNo() + "--Spare1:" + model.getSpare1()
+					+ "--Spare2:" + model.getSpare2() + "--DeleteStatus:" + model.getDeleteStatus());
 		}
 	}
 
