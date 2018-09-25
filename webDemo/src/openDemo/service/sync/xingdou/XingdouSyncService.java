@@ -13,6 +13,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import openDemo.common.PrintUtil;
 import openDemo.entity.OuInfoModel;
 import openDemo.entity.PositionModel;
 import openDemo.entity.UserInfoModel;
@@ -156,7 +157,7 @@ public class XingdouSyncService extends AbstractSyncService implements XingdouCo
 				tempModel.setBirthday(birthday.substring(0, 10));// yyyy-MM-dd共10位
 			}
 
-			// 性别字符串转换 1：男 2：女  后期客户接口已修改无须替换
+			// 性别字符串转换 1：男 2：女 后期客户接口已修改无须替换
 		}
 	}
 
@@ -188,10 +189,9 @@ public class XingdouSyncService extends AbstractSyncService implements XingdouCo
 
 	public static void main(String[] args) throws Exception {
 		XingdouSyncService service = new XingdouSyncService();
-		List<PositionModel> positionModelList = service.getPositionModelList(null);
-		System.out.println(positionModelList.size());
-		
-		service.getOuInfoModelList(null);
-		service.getUserInfoModelList(null);
+		service.getPositionModelList(MODE_FULL);
+		List<UserInfoModel> modelList = service.getUserInfoModelList(null);
+		System.out.println(modelList.size());
+		PrintUtil.logPrintUsers(modelList);
 	}
 }
