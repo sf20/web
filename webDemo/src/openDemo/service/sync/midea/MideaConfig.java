@@ -1,9 +1,10 @@
 package openDemo.service.sync.midea;
 
 public interface MideaConfig {
-	String apikey = "095864e2-71e8-44df-ad6b-b13421564f94";
+	String apikey = "10478f15-8bd6-40e7-9ae4-888a2aab5ae6";
 
-	String secretkey = "bbd25f20-d7f2-4e84-99fa-2eb592761b1d";
-
-	String baseUrl = "http://api.qida.yunxuetang.com.cn/";
+	String secretkey = "ff9103a4-b957-409d-9cc6-63583d64f144";
+	
+	String baseUrl = "https://api-netadel.yunxuetang.com.cn/";
+	
 }
