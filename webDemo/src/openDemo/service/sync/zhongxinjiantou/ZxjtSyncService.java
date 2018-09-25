@@ -430,7 +430,7 @@ System.out.println("TotalCount:" + resDeptData.getTotalCount());
 		.append("</ESBREQ>");
 
 		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
-		
+
 		ResXML resPosXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
 				.unmarshal(new StringReader(response));
 		ResHeader resHeader = resPosXml.getHeader();
@@ -473,7 +473,7 @@ System.out.println("TotalCount:" + resPosData.getTotalCount());
 		.append("</ESBREQ>");
 
 		String response = HttpClientUtil4Sync.doSSLPost(REQUEST_URL, REQUEST_PROTOCOL, xmlStr.toString());
-		
+
 		ResXML resPosXml = (ResXML) JAXBContext.newInstance(ResXML.class).createUnmarshaller()
 				.unmarshal(new StringReader(response));
 		ResHeader resHeader = resPosXml.getHeader();
@@ -567,6 +567,8 @@ System.out.println("TotalCount2:" + resUserInfoData.getTotalCount());
 		
 //		List<UserInfoModel> resEmpData = service.getUserInfoModelList(MODE_FULL);
 //		System.out.println(resEmpData.size());
+		// PrintUtil.logPrintUsers(resEmpData);
+
 //		for (int i = resEmpData.size() - 20; i < resEmpData.size(); i++) {
 //			UserInfoModel model = resEmpData.get(i);
 //			System.out.println("员工工号:" + model.getID() + "--" + "姓名:" + model.getCnName() + "--" + "邮箱:" + model.getMail()
