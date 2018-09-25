@@ -78,10 +78,9 @@ public class MeiliTianyuanSyncService extends AbstractSyncService implements Mei
 	@Override
 	protected void setRootOrgParentId(List<OuInfoModel> newList) {
 		for (OuInfoModel org : newList) {
-			// 客户数据中根组织的上级部门id为JT
-			if ("JT".equals(org.getParentID())) {
+			// 客户数据中根组织的上级部门id修改为BF
+			if ("BF".equals(org.getParentID())) {
 				org.setParentID(null);
-				break;
 			}
 		}
 	}
@@ -107,6 +106,16 @@ public class MeiliTianyuanSyncService extends AbstractSyncService implements Mei
 		List<MeiliTianyuanOuInfoModel> dataModelList = getDataModelList(mode, MeiliTianyuanOuInfoModel.class);
 		List<OuInfoModel> newList = copyCreateEntityList(dataModelList, OuInfoModel.class);
 
+		Iterator<OuInfoModel> iterator = newList.iterator();
+		// 去除根组织 美丽田园
+		while (iterator.hasNext()) {
+			OuInfoModel ouInfoModel = iterator.next();
+			if ("BF".equals(ouInfoModel.getID())) {
+				iterator.remove();
+				break;
+			}
+		}
+
 		return newList;
 	}
 
@@ -117,12 +126,11 @@ public class MeiliTianyuanSyncService extends AbstractSyncService implements Mei
 		while (iterator.hasNext()) {
 			MeiliTianyuanUserInfoModel model = iterator.next();
 			// 员工性质：1：美田员工，2：加盟商，3：贝黎诗
-			String status = model.getStatus();
+			// String status = model.getStatus();
 			String postionName = model.getPostionName();
-			// 加盟店除“美疗师”，“技术监理”，“主任”，“客户经理”，“客户助理”5个岗位外的人员和保洁人员不同步
-			if (("2".equals(status) && !("美疗师".equals(postionName) || "技术监理".equals(postionName)
-					|| "主任".equals(postionName) || "客户经理".equals(postionName) || "客户助理".equals(postionName)))
-					|| (StringUtils.isNotBlank(postionName) && postionName.contains("保洁"))) {
+			// 2018-08-13修改 加盟店除“美疗师”，“技术监理”，“主任”，“客户经理”，“客户助理”5个岗位外的人员和保洁人员不同步
+			// 2018-08-28修改 只有保洁人员不同步
+			if (StringUtils.isNotBlank(postionName) && postionName.contains("保洁")) {
 				iterator.remove();
 			}
 		}
