@@ -2,7 +2,9 @@ package openDemo.service.sync.jomoo;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.rpc.ServiceException;
 
@@ -26,13 +28,15 @@ import openDemo.service.sync.jomoows.QueryResult;
 public class JomooSyncService1 extends AbstractSyncService implements JomooConfig1 {
 	public static Logger LOGGER = LogManager.getLogger(JomooSyncService1.class);
 	private List<UserInfoModel> sharedDataModelList;
+	private String syncServiceName;
 
 	public JomooSyncService1() {
 		super.setApikey(apikey);
 		super.setSecretkey(secretkey);
 		super.setBaseUrl(baseUrl);
 		super.setIsPosIdProvided(false);
-		super.setSyncServiceName(this.getClass().getSimpleName());
+		syncServiceName = this.getClass().getSimpleName();
+		super.setSyncServiceName(syncServiceName);
 	}
 
 	@Override
@@ -109,6 +113,54 @@ public class JomooSyncService1 extends AbstractSyncService implements JomooConfi
 	protected List<UserInfoModel> getUserInfoModelList(String mode) throws Exception {
 
 		return sharedDataModelList;
+	}
+
+	@Override
+	protected Map<String, List<UserInfoModel>> compareUserList(List<UserInfoModel> fullList,
+			List<UserInfoModel> newList) {
+		Map<String, List<UserInfoModel>> map = new HashMap<String, List<UserInfoModel>>();
+
+		List<UserInfoModel> usersToSyncAdd = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncUpdate = new ArrayList<UserInfoModel>();
+		List<UserInfoModel> usersToSyncDisable = new ArrayList<UserInfoModel>();
+
+		for (UserInfoModel newUser : newList) {
+			UserInfoModel userInFullList = null;
+			for (UserInfoModel fullUser : fullList) {
+				if (fullUser.equals(newUser)) {
+					userInFullList = fullUser;
+					break;
+				}
+			}
+			// 待新增用户
+			if (userInFullList == null) {
+				usersToSyncAdd.add(newUser);
+			}
+			// 存在用户更新
+			else {
+				usersToSyncUpdate.add(newUser);
+			}
+		}
+
+		// 被删除的用户
+		for (UserInfoModel oldUser : fullList) {
+			// 手工创建账号则不删除,第三方ID(THIRDSYSTEMUSERNO)为空则是手动创建
+			if (StringUtils.isNotBlank(oldUser.getID())) {
+				if (!newList.contains(oldUser)) {
+					usersToSyncDisable.add(oldUser);
+				}
+			}
+		}
+
+		map.put(MAPKEY_USER_SYNC_ADD, usersToSyncAdd);
+		map.put(MAPKEY_USER_SYNC_UPDATE, usersToSyncUpdate);
+		map.put(MAPKEY_USER_SYNC_DISABLE, usersToSyncDisable);
+
+		LOGGER.info("用户同步[" + syncServiceName + "]新增Size: " + usersToSyncAdd.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]更新Size: " + usersToSyncUpdate.size());
+		LOGGER.info("用户同步[" + syncServiceName + "]禁用Size: " + usersToSyncDisable.size());
+
+		return map;
 	}
 
 	private List<UserInfoModel> mapRecordToUser(LbRecord[] userRecords) {
