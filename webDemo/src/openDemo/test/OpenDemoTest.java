@@ -30,9 +30,10 @@ import openDemo.service.sync.midea.MideaSyncService;
 import openDemo.service.sync.opple.OppleConfig;
 import openDemo.service.sync.shimao.ShiMaoConfig;
 import openDemo.service.sync.weichuang.WeiChuangConfig;
+import openDemo.service.sync.xnjz.XnjzConfig;
 import openDemo.service.sync.zhongxinjiantou.ZxjtConfig;
 
-public class OpenDemoTest implements MideaConfig { //KaiyingConfig {
+public class OpenDemoTest implements KaiyingConfig {
 
 	public static void main(String[] args) throws Exception {
 		new OpenDemoTest();
@@ -59,7 +60,7 @@ public class OpenDemoTest implements MideaConfig { //KaiyingConfig {
 		// disabledusersTest();
 		//
 		// //4.同步启用用户: el/sync/enabledusers
-		enabledusersTest();
+		// enabledusersTest();
 		//
 		// //5.同步删除用户: el/sync/deletedusers
 		// deletedusersTest();
@@ -279,17 +280,17 @@ public class OpenDemoTest implements MideaConfig { //KaiyingConfig {
 		SyncUserService userService = new SyncUserService();
 		List<UserInfoModel> users = new ArrayList<UserInfoModel>();
 		UserInfoModel userEntity = new UserInfoModel();
-		userEntity.setID("op021236");
-		userEntity.setUserName("op021236");
-		userEntity.setCnName("吕晓雨");
-		userEntity.setSex("女");
-//		userEntity.setPostionNo("xxxxx");
+		userEntity.setID("tetsid");
+		userEntity.setUserName("tetsid");
+		userEntity.setCnName("测试");
+		userEntity.setSex("男");
+//		userEntity.setOrgOuCode("");
+//		userEntity.setPostionNo("");
+//		userEntity.setMobile("");
+//		userEntity.setMail("xxx");
 //		userEntity.setSpare1(null);
 //		userEntity.setPassword(null);
-		userEntity.setOrgOuCode("4363");
 //		userEntity.setSex("男");
-//		userEntity.setMail("xxx");
-//		userEntity.setMobile("111");
 		users.add(userEntity);
 
 		ResultEntity resultEntity = userService.userSync(true, users, apikey, secretkey, baseUrl);
@@ -355,11 +356,23 @@ public class OpenDemoTest implements MideaConfig { //KaiyingConfig {
 
 	// 同步禁用用户: el/sync/disabledusers
 	void disabledusersTest() throws IOException {
+//		SyncUserService userService = new SyncUserService();
+//		List<String> userNames = new ArrayList<String>();
+//		userNames.add("WD44786");
+//		ResultEntity resultEntity = userService.disabledusersSync(userNames, apikey, secretkey, baseUrl);
+//		print("同步禁用用户", resultEntity);
+		
+		String [] arr = {"yiqing_gao","zhongxia_zheng","xueping_lin","wei_zhu2","yufeng_shi3","jiajie_mei","xingfan_wu","chang_liu6","jingsong_zhu","ying_hu2","feng_xu1","yun_lu","chang_zhou1","qin_guo","yangyue_wu","jiali_yang","lu_zeng","yujia_shi","ye_wu","kangmin_zhao","yuhang_zhao","danting_guo","li_hang","peng_xu9","chang_liu7","guoyu_yin","xiaoyi_ma","jie_guo5","xinxing_zhang","moye_zhou","qingbing_zhang","fengli_yu","minghong_wen","qingwei_ding","hui_xu3","jun_li15","li_wang9","yue_zhang4","cheng_cao1","sihao_zhou","yanjing_gong","wei_xi","shidong_xu","zhen_wang9","ying_xiong9","xiaoqiong_yan","jiaying_cai2","sen_guan","ziyang_song","xin_zhao5","caiyong_li2","shaonan_zhang","wentao_hu","jianqiang_bu","jiahua_pan","fan_zhang6","wenxia_li","yue_bai4","kang_liu3","yudong_qian","xiaoqing_qian","junjie_deng","hui_hong","qian_yang3","gaoxiang_lu","jiaqi_yang","xinyuan_chen","jing_dong2","shujia_yu","lijun_yang3","weiyue_zhang","ling_li12","xinyi_li2","kun_sun","hui_chen4","yaping_sun2","wei_song","lulu_ding","jing_cheng4","congnan_zhang2","honmei_yang","xiaowei_sun2","zhu_chen2","shengliang_liu","yinnan_wang","huan_bian","yanan_lin","xinnan_li","zhengrong_qian","jing_huang14","ji_chen","xiaohu_chen","biao_long","jie_han6","zhenyu_chen","ye_wang5","qiujian_tang","ying_lu3","yixing_shen2","haiyan_li","yan_zhang24","yanting_gao","lei_xiao","jianping_huang","jianglin_hu2","shuang_xie","weiru_zhou","yufan_feng","yifan_zhang3","wei_tan","jin_ji2","yunxing_gu","qiang_han","honmei_gong","qian_yao2","chao_gu2","yang_zhao7","lizhi_zhou","haoran_xu","quan_xu2","guilan_han","jiani_lu","junjun_sun","weiting_shi2","lian_wang3","haoning_wu","yulong_duan","yu_wang9","dan_huang4","mingzhu_zhang","mengdan_zhu","xin_li","shunchang_li","ying_li3","yan_xie","yingyue_shen","yingjie_gu","jun_ding","yan_chen4","dequn_shi","jie_he5","yang_xu9","fengjing_sun","qiongling_li","feng_qian3","ji_wang2","yiinyin_cai","haihua_mao","yan_wu5","miaoming_zhou3","maoqian_gao","boya_wei","qingpeng_liu","xiang_gao2","dingxin_wang","jian_zhang9","peng_zhao2","na_huang1","jingjing_jiang","junhui_zhu","liuqing_li1","zhengyang_cai","liyuan_wang3","yongming_duan","yu_shi3","zhiping_yuan","yufang_wang2","rongchang_jia","qiyong_ji","ganqing_lu","shaohua_qin","jianguo_liu3","zhenyu_wu2","yuhan_zhu1","weiqin_shu","zhu_chen3","mengxue_li2","yuan_yao3","jianjun_qin","shengwei_shen","jie_wang9","yongjuan_chen","guofeng_shou","haiyan_du","yuntong_jia2","wenwen_zhang4","yujie_zeng","haichen_hu","congwen_xue","fangyong_xu","jin_feng2","feng_wang7","qingfeng_liu2","hao_yang3","zhigang_zhang3","ting_dong3","lunqin_lei","zhizheng_ye","junyan_ni","bingjie_chen","yuyan_pan","haidong_wang3","bin_wang8","fangmin_shu","yujiao_cai","lisen_shi","xuegang_miao","rui_he3","man_li3","wenjing_li8","mengdi_huang","shaobo_gu2","bincheng_zhu","haocong_zhang","sijia_qian2","jingyun_ye","peng_li10","yong_yang7","xiantian_weng","xuetao_jiao2","hongsheng_shu","shuguang_ge","chao_lin3","nan_yu","yan_song3","xiaolei_wang4","shiwen_yan","wuzheng_zhang","juan_xia2","wenli_wang","jie_shen","menghuan_wei","zhi_cheng","ming_yin1","yihai_yao","haibing_lu","renjun_shen","chen_chen8","guoyan_chen2","fang_fang3","shijie_feng","yi_yang5","fan_cao","guoyong_huang3","xiandang_zhang","yiying_chen3","ping_lu3","xiaolan_zhang","limei_cui","mengjie_wei","wei_qian3","chenliang_ke","ye_yang","xujun_deng","yinjuan_tang","ying_jiang2","jue_zhang","xiaoyan_zeng","xiaoming_jiang","yanjie_fan","rongfang_zhang","qiguo_wu","yating_wang3","li_zhang21","ming_zhu","yuxin_jiang","yufei_cao","kai_qin","kai_xu2","zhigang_zhang","huali_cai","bin_chen7","xuan_zhu3","haojie_huang","yanting_wang","qing_zhang3","haifeng_yuan","meizhu_ping","min_zeng","dong_wang5","yadong_he","sitong_zhao","sichan_chen","guiyuan_zhao","chang_liu4","yulin_wang","chenggen_zhao2","chunyan_zhu2","yan_zhao3","gang_hai","xinbo_yang","yan_miao","zhenzhen_xu","peng_xu4","shijun_he1","jianguo_xue1","jinyue_teng","zhaolei_pang","xu_han1","yuqing_xue","yuancheng_qian","hailong_zuo2","jun_xu2","ye_zhu2","yujun_lu","chen_jiang1","chao_jiang5","jianzhong_shao","hai_dong1","minghao_wei2","yuanming_jiang","caijuan_hu1","lan_ni","dandan_liu","xiang_peng1","minyan_zhi","nan_ji","xiaojing_dong","haiyang_pan2","qiang_chen1","zhi_li11","xingmeng_pan","xuefeng_zhuang","chong_chen","hongcheng_ni","xiaolin_gao","siyan_ma","jie_liu9","xiaodong_ding","juan_xu","jun_dong","zhongkun_sun","wenyi_zhou","jiaying_lu","luqi_jiang3","peipei_liu","panpan_wang3","lei_huang3","jun_zhou","shunbo_tang","nan_wu","zhiwei_feng","shuya_xu2","yalan_chen","xingrong_pan","xiaoyi_zhang","baoju_li","lei_mao","yue_chen5","yongjun_xu1","li_zhang15","xiaohan_bi","jin_sun2","huanhuan_yang","nan_lin","jingjing_geng","qi_shen1","lan_yang","xi_zhu","jiang_zou3","xiaoying_liu2","qiao_wu","wei_shen12","yinghua_song","jiaojiao_li","xinwei_sun","xiangyu_shi","rui_qiu","yu_xun","yongdong_li","jieyan_pan2","ke_wang","wenlong_chen","gong_gu","li_kang","ting_wang4","mingyue_bu","yubin_zhao","xiaoyi_ge2","yue_chen2","fengdan_wang","saiwei_chen1","yunyun_shi","xuan_chen","shuneng_hua","yuqian_qian","chen_chen12","he_zhang3","di_yang3","jingao_hu","bin_li9","yang_chen7","hao_zhou2","hui_zhang19","peisong_sun","qiming_wei","shiyan_qin1","wei_wang31","tianguo_gu","zhuqun_zhu","chen_ding","yan_cui","ji_cha","jie_wu8","xiaoyang_zhang","hailing_wang","zhenghua_xiong","wen_jiang2","jianhong_huang2","xiaowan_han","rongtao_wu","sheng_feng","si_wang","xiaoqing_zhao1","xuecheng_you","zhengwang_wang","xin_jin","lingbo_xue","anquan_zhou","le_yu","jianfeng_li1","lanlan_yu5","qianfeng_xu","luming_wang","yuhui_cheng","caiyan_dong","xiaodong_ling","wenfeng_shen","zhichao_chu","chenyun_yu","jinhuai_li","yingying_jin","weikang_xiong","le_xu","xiaoyue_wang1","zhiwei_wan","yongwei_lv","jun_qin","dandan_shen1","xue_bai1","xiaowei_chen","yongjie_he","zhenzhen_yang","shaoxin_lu","wentao_wu","li_chen11","da_xu","qiao_chen","ting_huang3","dongdong_wang","yayan_zhang","kuan_liu","qian_li7","liang_zhou","linye_zhong","zhengpin_xie","jia_yu","yong_sun1","lulu_sun1","jian_zhu5","yaoyao_ding","mengyao_tan","shengqiang_zheng","lixun_zhu","meiling_qin","xiaojie_ma","chao_chen5","tina_fang","bin_xu","jane_gao","ping_zhu1","lijuan_weng","huan_zhou","ping_cao2","bohan_yang","yongguo_zhao","xingda_ma1","zhongbo_xu","jia_chu1","feng_he","zhongming_zhang","shaojin_wang","wei_yao1","li_chen","chengcheng_ma","ke_ye","jiajie_wang","xiaoping_zhou","qing_yang","teng_gu","su_qin","gaoqun_xing","xinhua_wu","min_luo3","zhiguo_shen","chunying_liang","haijuan_cao","li_wang8","jian_shen","zhongtao_shan","weichong_li","lei_zhang11","wenxiao_zhou","hui_jin1","min_zhou1","tingting_lv","jiahuan_lu","houqin_ding","fangfang_han","jayson_ji","hengyi_zhang","qingyu_cai","keji_yang","qian_ma","juan_wang3","jiang_yan","ke_li","yan_zhang7","xing_yin","gang_pan","hongmin_liu","weixiang_wang","jin_zhou2","peng_cui","tingting_wang","bo_zhang","yao_zhang","chengying_pu","yong_cao1","hao_zhang2","xiaoyi_xu","yan_feng2","chensong_zhang","jilin_liu","ivan_zhang","alisa_wang","bin_zhang","wenka_song","dongying_ma","yi_xie","qinghua_ni","dan_chen1","xiaoxia_zou","chunyan_chen1","naixia_jiang","lizzy_zhao","pan_xu","gang_li4","jingjing_sun","lingji_kong","junmin_ge","hualing_zhu","lianjie_wang","fei_yu","jianjun_ke","xiaoyu_chen","hua_dai","zhiqi_wang","yann_zhu","yu_tang","rui_gao","wei_sun2","wen_zheng","aili_wang","liyan_gong1","le_ma","jun_zhang6","jialing_teng","yili_liu","freda_xue","xiaoli_zhou","jian_xiao","dongmei_zhou","hongli_zhou","yelong_zhang","wenfeng_liu","bing_jiang","yanfeng_sun","cindy_cao","lifeng_jiang","yuanjun_wan","min_huang1","hao_he1","simi_liu","junpu_guo","zhiling_xue","hong_fang3","qi_fang","rongrong_jiang","cunyang_fan","guodong_long","lianghua_chen","yufei_xu","guoqiang_wang","zhilong_qian","ji_tang","vivian_xiong","fangshuo_song","fei_geng","ping_chen3","qian_zhong","juan_bo","huiling_li","xuzhou_wang","yanwen_tian","lijun_chen","haihong_tang","guowen_wu","shan_yang","luwei_xu","qiang_zhang2","limin_jiang","ping_jiang","hao_zeng","yisong_li","jiaxi_liu","li_zhu","dong_chen","zhendong_xie","zheng_zhu","ben_niu","yingshu_dai","aifang_ge","yunwei_zhang","sweets_shao","mei_liu","dongming_zhou","rong_yu","zhiyan_wang","zhirui_zhang","yu_cai","guifeng_chen","tingting_liu","jingjing_xie","junyan_hua","aaron_wang1","jiajia_liu","ying_wang3","lina_wang","kitty_gu","wenhao_zhang","yunsong_qiang","xiaoxiang_chen","le_zhong","liqin_chen1","zuohua_huang","bin_zhao","zonglun_yuan","zeta_cai","shuguang_he","chunhui_yin","gary_wang","yu_cao","michael_liu","yanjun_wang","yunyan_zhang","calven_chen","wenjun_gu","yiming_lu","kang_meng","wei_yang1","lin_wu","hongyu_pan","liu_zang","bingru_sun","sandra_sui","yuchen_zhu","wenbin_tang","jiajun_luo","louise_liu","lijun_chen1","zixia_chen","kenneth_chen","liande_tang","dante_zhao","lijuan_yin1","yinping_cheng","shuming_wang","wenjuan_zou","zhongguo_hu","li_cao","minxi_tang","dongyang_li","yongping_ma","xiaoping_he","tiffany_sun","zhenying_zhang","li_xu1","christine_yao","xianmei_gao"};
+		System.out.println(arr.length);
+		// List<String> asList = Arrays.asList(arr);
 		SyncUserService userService = new SyncUserService();
 		List<String> userNames = new ArrayList<String>();
-		userNames.add("WD44786");
-		ResultEntity resultEntity = userService.disabledusersSync(userNames, apikey, secretkey, baseUrl);
-		print("同步禁用用户", resultEntity);
+		for(String username : arr){
+			userNames.add(username);
+			ResultEntity resultEntity = userService.disabledusersSync(userNames, apikey, secretkey, baseUrl);
+			print("同步禁用用户 " + username , resultEntity);
+			userNames.clear();
+		}
 	}
 
 	// 同步启用用户: el/sync/enabledusers
@@ -398,11 +411,22 @@ public class OpenDemoTest implements MideaConfig { //KaiyingConfig {
 
 	// 同步删除用户: el/sync/deletedusers
 	void deletedusersTest() throws IOException {
+//		SyncUserService userService = new SyncUserService();
+//		List<String> userNames = new ArrayList<String>();
+//		userNames.add("CSV00001");
+//		ResultEntity resultEntity = userService.deletedusersSync(userNames, apikey, secretkey, baseUrl);
+//		print("同步删除用户", resultEntity);
+		
+		String [] arr = {"CSC14468","CSC14471","CSC14472","CSC14473","CSC14475","CSC14509","CSC14511","CSC14512","CSC14670","CSC14679","CSC14681","CSC14691","CSC14694","CSC14700","CSC14701","CSC14702","CSC14709","CSC14710","CSC14711","CSC14713","CSC14715","CSC14716","CSC14717","CSC14719","CSC14723","CSC14724","CSC14726","CSC14728","CSC14735","CSC14737","CSC14739","CSC14743","CSC14747","CSC14748","CSC14781","CSC14791","CSC17571","CSC17923","CSC17926","CSC17928","CSC17937","CSC17939","CSC17940","CSC17944","CSC17947","CSC17951","CSC17953","CSC17954","CSC17962","CSC17965","CSC17966","CSC17969","CSC17970","CSC17972","CSC17973","CSC17974","CSC17975","CSC17976","CSC17978","CSC17990","CSC17991","CSC17995","CSC18004","CSC18013","CSC18016","CSC18192","CSC18193","CSC18217","CSC18236","CSC18237","CSC18238","CSC18245","CSC18247","CSC18875","CSC19391","CSC20068","CSC20140","CSC20228","CSC20283","CSC20307","CSC20457","CSC20527","CSC21098","CSV00002","CSV00003","CSV00029","CSV00049","CSC08460","CSC08555","CSC08562","CSC08590","CSC09223","CSC09397","CSC09407","CSC09415","CSC09532","CSC09634","CSC09689","CSC09767","CSC10872","CSC10925","CSC10948","CSC11004","CSC11126","CSC11876","CSC11956","CSC12007","CSC12299","CSC12536","CSC12594","CSC12837","CSC12899","CSC14097","CSC14137","CSC14201","CSC14203","CSC14368","CSC14371","CSC14396","CSC14399","CSC14449","CSC14451","CSC14469","CSC14470","CSC14474","CSC14491","CSC14510","CSC14513","CSC14514","CSC14515","CSC14669","CSC14671","CSC14672","CSC14677","CSC14690","CSC14692","CSC14712","CSC14714","CSC14720","CSC14721","CSC14736","CSC14738","CSC14745","CSC14746","CSC14782","CSC14783","CSC14795","CSC14804","CSC14835","CSC14837","CSC14930","CSC14932","CSC14988","CSC15069","CSC15212","CSC15319","CSC15320","CSC15340","CSC15354","CSC15486","CSC15527","CSC15576","CSC15733","CSC16000","CSC16874","CSC17131","CSC17150","CSC17170","CSC17516","CSC17528","CSC17553","CSC17556","CSC17576","CSC17585","CSC17586","CSC17683","CSC17700","CSC17724","CSC17726","CSC17727","CSC17728","CSC17729","CSC17822","CSC17835","CSC17852","CSC17855","CSC17913","CSC17924","CSC17925","CSC17927","CSC17929","CSC17932","CSC17933","CSC17934","CSC17935","CSC17936","CSC17941","CSC17942","CSC17946","CSC17948","CSC17949","CSC17950","CSC17955","CSC17956","CSC17957","CSC17958","CSC17959","CSC17960","CSC17961","CSC17963","CSC17964","CSC17967","CSC17968","CSC17971","CSC17979","CSC17980","CSC17981","CSC17982","CSC17984","CSC17985","CSC17986","CSC17987","CSC17988","CSC17989","CSC17992","CSC17993","CSC17994","CSC17996","CSC17998","CSC17999","CSC18000","CSC18005","CSC18014","CSC18030","CSC18111","CSC18128","CSC18210","CSC18216","CSC18224","CSC18225","CSC18227","CSC18239","CSC18240","CSC18241","CSC18242","CSC18243","CSC18244","CSC18248","CSC18251","CSC18273","CSC18296","CSC18297","CSC18305","CSC18473","CSC18499","CSC18500","CSC18988","CSC19000","CSC19164","CSC19458","CSC19459","CSC19460","CSC19461","CSC19491","CSC19492","CSC19567","CSC19619","CSC19670","CSC19679","CSC19703","CSC19709","CSC19710","CSC19717","CSC19736","CSC19738","CSC19745","CSC19769","CSC19817","CSC19819","CSC19825","CSC19830","CSC19855","CSC19856","CSC19861","CSC19866","CSC19900","CSC19901","CSC19919","CSC19928","CSC19959","CSC19964","CSC19966","CSC19967","CSC19986","CSC19993","CSC20004","CSC20005","CSC20025","CSC20044","CSC20045","CSC20048","CSC20059","CSC20061","CSC20105","CSC20106","CSC20108","CSC20130","CSC20132","CSC20141","CSC20142","CSC20156","CSC20170","CSC20183","CSC20186","CSC20188","CSC20191","CSC20195","CSC20201","CSC20202","CSC20203","CSC20204","CSC20205","CSC20211","CSC20214","CSC20218","CSC20225","CSC20226","CSC20230","CSC20240","CSC20262","CSC20270","CSC20287","CSC20289","CSC20292","CSC20301","CSC20305","CSC20319","CSC20321","CSC20322","CSC20323","CSC20324","CSC20329","CSC20337","CSC20368","CSC20379","CSC20416","CSC20423","CSC20425","CSC20434","CSC20438","CSC20439","CSC20447","CSC20448","CSC20472","CSC20473","CSC20485","CSC20486","CSC20487","CSC20517","CSC20518","CSC20521","CSC20522","CSC20534","CSC20535","CSC20541","CSC20542","CSC20587","CSC20590","CSC20596","CSC20597","CSC20603","CSC20608","CSC20609","CSC20610","CSC20635","CSC20636","CSC20661","CSC20692","CSC20708","CSC20783","CSC20784","CSC20826","CSC20828","CSC20829","CSC20836","CSC20902","CSC20904","CSC20985","CSC20986","CSC20987","CSC20989","CSC21007","CSC21019","CSC21024","CSC21025","CSC21063","CSC21064","CSC21066","CSC21078","CSC21079","CSC21081","CSC21082","CSC21083","CSC21085","CSC21089","CSC21092","CSC21096","CSC21100","CSC21105","CSC21106","CSC21111","CSC21113","CSC21116","CSC21117","CSC21118","CSC21119","CSC21120","CSC21195","CSC21201","CSC21204","CSC21207","CSC21220","CSC21221","CSC21222","CSC21224","CSC21225","CSC21231","CSC21232","CSC21234","CSC21245","CSC21247","CSC21275","CSV00001","CSV00004","CSV00005","CSV00008","CSV00009","CSV00012","CSV00015","CSV00016","CSV00017","CSV00019","CSV00021","CSV00022","CSV00023","CSV00024","CSV00025","CSV00026","CSV00027","CSV00028","CSV00030","CSV00031","CSV00032","CSV00033","CSV00034","CSV00035","CSV00036","CSV00037","CSV00038","CSV00039","CSV00040","CSV00041","CSV00042","CSV00043","CSV00044","CSV00045","CSV00046","CSV00047","CSV00048","CSV00050","CSV00051","CSV00052","CSV00053","CSV00068","CSC14450","CSC18177","CSC17612","CSC20424","CSC09987","CSC16246","CSC16989","CSC17445","CSC20237","CSC20417","CSC09715"};
+		System.out.println(arr.length);
 		SyncUserService userService = new SyncUserService();
 		List<String> userNames = new ArrayList<String>();
-		userNames.add("jyzq1");
-		ResultEntity resultEntity = userService.deletedusersSync(userNames, apikey, secretkey, baseUrl);
-		print("同步删除用户", resultEntity);
+		for(String username : arr){
+			userNames.add(username);
+			ResultEntity resultEntity = userService.deletedusersSync(userNames, apikey, secretkey, baseUrl);
+			print("同步删除用户", resultEntity);
+			userNames.clear();
+		}
 	}
 
 	// 同步组织单位: el/sync/ous
